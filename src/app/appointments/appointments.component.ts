@@ -12,6 +12,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { getCacheData, checkIfDateOldThanOneDay} from '../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from 'src/config/constant';
 import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, RescheduleAppointmentModalResponseModel } from '../model/model';
+import { AppConfigService } from '../services/app-config.service';
+import { MindmapService } from '../services/mindmap.service';
 
 @Component({
   selector: 'app-appointments',
@@ -22,11 +24,12 @@ export class AppointmentsComponent implements OnInit {
 
   items = ["Appointments"];
   expandedIndex = 0;
-  displayedColumns: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'actions'];
+  displayedColumns: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'telephone', 'actions'];
   dataSource = new MatTableDataSource<any>();
   baseUrl: string = environment.baseURL;
   isLoaded: boolean = false;
   appointments: AppointmentModel[] = [];
+  patientRegFields: string[] = [];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild('searchInput', { static: true }) searchElement: ElementRef;
@@ -41,7 +44,14 @@ export class AppointmentsComponent implements OnInit {
     private pageTitleService: PageTitleService,
     private coreService: CoreService,
     private toastr: ToastrService,
-    private translateService: TranslateService) { }
+    private translateService: TranslateService,
+    private mindmapService: MindmapService,
+    private appConfigService: AppConfigService) { 
+      Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
+        this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter(e=>e.is_enabled).map(e=>e.name));
+      }); 
+      this.displayedColumns = this.displayedColumns.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
+    }
 
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
@@ -63,6 +73,7 @@ export class AppointmentsComponent implements OnInit {
             if (appointment.visit) {
               appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
               appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
+              appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person)
               this.appointments.push(appointment);
             }
           }
@@ -145,6 +156,7 @@ export class AppointmentsComponent implements OnInit {
               this.appointmentService.rescheduleAppointment(appointment).subscribe((res: ApiResponseModel) => {
                 const message = res.message;
                 if (res.status) {
+                  this.mindmapService.notifyHwForRescheduleAppointment(appointment)
                   this.getAppointments();
                   this.toastr.success(this.translateService.instant("The appointment has been rescheduled successfully!"), this.translateService.instant('Rescheduling successful!'));
                 } else {
@@ -203,4 +215,19 @@ export class AppointmentsComponent implements OnInit {
     this.searchElement.nativeElement.value = "";
   }
 
+  checkPatientRegField(fieldName): boolean{
+    return this.patientRegFields.indexOf(fieldName) !== -1;
+  }
+
+  /**
+  * Get whatsapp link
+  * @return {string} - Whatsapp link
+  */
+  getWhatsAppLink(telephoneNumber: string): string {
+    return this.visitService.getWhatsappLink(telephoneNumber);
+  }
+  
+  getTelephoneNumber(person: AppointmentModel['visit']['person']) {
+    return person?.person_attribute.find((v: { person_attribute_type_id: number; }) => v.person_attribute_type_id == 8)?.value;
+  }
 }

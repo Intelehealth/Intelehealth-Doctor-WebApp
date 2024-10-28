@@ -1,0 +1,92 @@
+.intel-card .card-header {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  line-height: 150%;
+  font-weight: 700;
+  color: #1b163a;
+  background: none;
+  border: none;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+.row {
+  margin: 0px;
+}
+
+.card>hr {
+  margin-right: 22px;
+  margin-left: 22px;
+}
+
+h6 {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--color-black);
+}
+
+table {
+  width: 100%;
+  font-family: DM Sans;
+}
+
+.mat-raised-button {
+  font-size: 16px;
+  font-weight:bold;
+}
+
+th.mat-header-cell {
+  border: none;
+  font-size: 14px !important;
+  font-weight: 700;
+  color: var(--color-gray);
+  height: 21px;
+}
+
+th.mat-header-cell,
+td.mat-cell,
+td.mat-footer-cell {
+  border: none;
+  min-width: 60px;
+  padding-right: 24px;
+  white-space: nowrap;
+}
+
+td.mat-cell {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+tr.mat-row,
+tr.mat-footer-row {
+  height: 88px;
+  border-radius: 8px;
+}
+
+tr.mat-row:nth-child(odd) {
+  background: #F7F7FA;
+}
+
+td:first-child,
+th:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+// Set border-radius on the top-right and bottom-right of the last table data on the table row
+td:last-child,
+th:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+#btnMindmapDownload {
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .mat-elevation-z8 {
+    box-shadow: none;
+    width: 100%;
+    overflow-x: auto;
+  }
+}

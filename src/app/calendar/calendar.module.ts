@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CalendarRoutingModule } from './calendar-routing.module';
@@ -34,6 +34,7 @@ import { SharedModule } from '../shared.module';
     }),
     MatTabsModule,
     SharedModule
-  ]
+  ],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class CalendarModule { }

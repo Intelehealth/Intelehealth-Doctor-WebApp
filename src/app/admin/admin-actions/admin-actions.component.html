@@ -1,0 +1,26 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card intel-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 p-2" *ngFor="let item of itemList;">
+                            <div class="chip-item chip-item-blue">
+                                <div class="chip-body">
+                                    <img class="chip-img" src="{{item.icon}}" alt="" />
+                                    <div class="chip-info">
+                                        <h6>{{ item.title | translate}}</h6>
+                                        <span>{{ item.desc | translate}}</span>
+                                    </div>
+                                </div>
+                                <div class="chip-action">
+                                    <button type="button" (click)="onModifyClick(item)" class="btn">{{ "Modify" | translate }}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

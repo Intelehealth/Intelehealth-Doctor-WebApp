@@ -40,10 +40,10 @@
                   </div>
                 </div>
                 <div class="form-group col-md-4">
-                  <label for="middleName">{{'Middle name' | translate}} *</label>
+                  <label for="middleName">{{'Middle name' | translate}}</label>
                   <input type="text" class="form-control" formControlName="middleName" placeholder="{{'Enter middle name'| translate}}" data-test-id="etMiddleName">
                   <div *ngIf="submitted && f1.middleName.errors">
-                    <small class="error-msg" *ngIf="f1.middleName.errors.required">{{'Enter middle name' | translate}}</small>
+                    <!-- <small class="error-msg" *ngIf="f1.middleName.errors.required">{{'Enter middle name' | translate}}</small> -->
                     <small class="error-msg" *ngIf="f1.middleName.errors.pattern">{{'Enter alphabates only' | translate}}</small>
                   </div>
                 </div>

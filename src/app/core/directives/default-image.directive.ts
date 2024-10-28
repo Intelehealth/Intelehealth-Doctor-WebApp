@@ -13,7 +13,8 @@ export class DefaultImageDirective {
   public defaultImg: string = 'assets/svgs/user.svg';
 
   public onError() {
-    this.src = this.defaultImg;
+    if(this.src.includes('openmrs'))
+      this.src = this.defaultImg;
   }
 
   public checkPath(src: string) {

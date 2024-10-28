@@ -135,7 +135,7 @@ export class WebrtcService {
    * Assign received streaming video to the passed local video container or id
    */
   attachLocalVideo() {
-    const camTrack = this.room.localParticipant.getTrack(Track.Source.Camera);
+    const camTrack = this.room.localParticipant.getTrackPublication(Track.Source.Camera);
 
     if (camTrack?.isSubscribed) {
       const videoElement = camTrack.videoTrack?.attach();
@@ -220,12 +220,12 @@ export class WebrtcService {
       this.room.disconnect(stopTracks);
     }, 0);
     this.room.disconnect(stopTracks);
-    const cam: any = this.room.localParticipant.getTrack(Track.Source.Camera);
+    const cam: any = this.room.localParticipant.getTrackPublication(Track.Source.Camera);
     if (cam) {
       this.room.localParticipant.unpublishTrack(cam, true);
     }
 
-    const mic: any = this.room.localParticipant.getTrack(Track.Source.Microphone);
+    const mic: any = this.room.localParticipant.getTrackPublication(Track.Source.Microphone);
     if (mic) {
       this.room.localParticipant.unpublishTrack(mic, true);
     }

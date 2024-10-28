@@ -38,21 +38,22 @@ export class HelpMenuComponent implements OnInit, OnDestroy {
   * Send a message.
   * @return {void}
   */
-  sendMessage() {
-    if (this.message) {
-      const payload = {
-        type: 'text',
-        message: this.message,
-        from: this.user.uuid,
-        to: 'System Administrator'
-      };
-      this.supportService.sendMessage(payload).subscribe((res: ApiResponseModel) => {
-        if (res.success) {
-          this.message = '';
-          this.getMessages();
-        }
-      });
+  sendMessage(): void {
+    if (!this.message || this.message.trim() === '') {
+      return; // Do not send a blank message
     }
+    const payload = {
+      type: 'text',
+      message: this.message,
+      from: this.user.uuid,
+      to: 'System Administrator'
+    };
+    this.supportService.sendMessage(payload).subscribe((res: ApiResponseModel) => {
+      if (res.success) {
+        this.message = '';
+        this.getMessages();
+      }
+    });
   }
 
   /**

@@ -1,9 +1,26 @@
-import { NgModule } from '@angular/core';
+import { inject, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
+import { Router, RouterModule, Routes } from '@angular/router';
 import { MainContainerComponent } from './main-container/main-container.component';
 import { RouteAuthGuard } from './core/guards/route-auth.guard';
-import { NgxPermissionsGuard } from 'ngx-permissions';
+import { NgxPermissionsGuard, NgxRolesService } from 'ngx-permissions';
+import { AppConfigService } from './services/app-config.service';
+
+const canActivateMenu = (menu: string | number) => {
+  const sidebar_menus = inject(AppConfigService).sidebar_menus;
+  const router = inject(Router);
+  const roleService = inject(NgxRolesService);
+  const isAdmin = !!roleService.getRole('ORGANIZATIONAL:SYSTEM ADMINISTRATOR');
+  if(!sidebar_menus || isAdmin) return true;
+
+  if(sidebar_menus && !sidebar_menus[menu]) {
+    router?.navigateByUrl('/dashboard');
+    return false
+  }
+  
+  return true;
+  
+}
 
 const routes: Routes = [
   {
@@ -36,6 +53,7 @@ const routes: Routes = [
         data: {
           breadcrumb: 'Messages'
         },
+        canActivate:[() => canActivateMenu('messages')],
         loadChildren: () => import('./messages/messages.module').then(m => m.MessagesModule)
       },
       {
@@ -43,6 +61,7 @@ const routes: Routes = [
         data: {
           breadcrumb: 'Calendar'
         },
+        canActivate:[() => canActivateMenu('calendar')],
         loadChildren: () => import('./calendar/calendar.module').then(m => m.CalendarModule)
       },
       {
@@ -50,6 +69,7 @@ const routes: Routes = [
         data: {
           breadcrumb: 'Appointments'
         },
+        canActivate:[() => canActivateMenu('appointment')],
         loadChildren: () => import('./appointments/appointments.module').then(m => m.AppointmentsModule)
       },
       {
@@ -57,6 +77,7 @@ const routes: Routes = [
         data: {
           breadcrumb: 'Prescription'
         },
+        canActivate:[() => canActivateMenu('prescription')],
         loadChildren: () => import('./prescription/prescription.module').then(m => m.PrescriptionModule)
       },
       {
@@ -64,6 +85,7 @@ const routes: Routes = [
         data: {
           breadcrumb: 'Help & Support'
         },
+        canActivate:[() => canActivateMenu('help_support')],
         loadChildren: () => import('./help-and-support/help-and-support.module').then(m => m.HelpAndSupportModule)
       },
       {

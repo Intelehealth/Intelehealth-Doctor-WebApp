@@ -1,0 +1,87 @@
+
+.row {
+  margin: 0px;
+}
+
+.nav-tabs {
+    border: none;
+  
+    .nav-item {
+      .nav-link {
+        border-radius: 0px;
+        border: none;
+        padding: 0px;
+      
+  
+        .chip-item {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          height: 86px;
+          width: 256px;
+          margin: 0px 20px 20px 0px;
+          border-radius: 12px;
+          align-items: center;
+          padding: 16px;
+  
+          .chip-img {
+            width: 44px;
+          }
+  
+          .chip-info {
+            font-family: 'DM Sans';
+            font-style: normal;
+            color:#7F7B92;
+            padding: 16px;
+          }
+  
+          .chip-info span {
+            font-size: 16px;
+            color: var(--color-white);
+          }
+        }
+  
+        .chip-item-blue {
+          background: #EFE8FF;
+        }
+  
+        .chip-item-gray {
+          background: #EFE8FF;
+        }
+  
+      }
+  
+      .nav-link.active {
+        background: #2E1E91;
+        border-radius: 12px;
+        margin-right: 16px;
+
+        .chip-item .chip-info span {
+          color: white;
+        }
+  
+        .chip-item-blue {
+          background: var(--color-darkBlue);
+        }
+  
+      }
+    }
+  }
+
+
+  @media (max-width: 768px) {
+    .nav-tabs {
+      .nav-item {
+        width: 100%;
+  
+        .chip-item {
+          width: 100% !important;
+          margin: 0px 0px 10px !important;
+        }
+        .nav-link.active { 
+         margin-right: 0px;
+     }
+      }
+      
+    }
+  }

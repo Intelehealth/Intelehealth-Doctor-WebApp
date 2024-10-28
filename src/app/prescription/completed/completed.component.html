@@ -11,7 +11,7 @@
                 <h6 class="mb-0 ml-2">{{'Completed Visits'|translate}} ({{completedVisitsCount}})</h6>
                 <mat-icon class="info_icon" aria-hidden="false" aria-label="help icon" matTooltip="{{'Ended visits after prescription'|translate}}" matTooltipPosition="right" data-test-id="matIcoHelpCompleted">help_outline</mat-icon>
                 <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
-                  <input type="text" #compSearchInput class="form-control" placeholder="Search" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchCompleted">
+                  <input type="text" #compSearchInput class="form-control" placeholder="{{ 'Search' | translate }}" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchCompleted">
                   <div class="input-group-append">
                     <span class="input-group-text" id="basic-addon1" *ngIf="!dataSource.filter">
                       <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
@@ -34,7 +34,7 @@
                 <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'compPatient'+j">
                   <div class="d-flex align-items-center">
                     <img src="{{ baseUrl + '/personimage/' + element.person.uuid }}" alt="" width="32px" height="32px" style="border-radius: 50%;">
-                    <span class="font-bold ml-2">{{element.patient_name.given_name}} {{element.patient_name?.middle_name ? element.patient_name?.middle_name+" " : ""}}{{element.patient_name.family_name}} ({{(element.person.gender) | translate}})</span>
+                    <span class="font-bold ml-2">{{element.patient_name.given_name}} {{checkPatientRegField('Middle Name') &&  element.patient_name?.middle_name ? element.patient_name?.middle_name+" " : ""}}{{element.patient_name.family_name}} ({{(element.person.gender) | translate}})</span>
                   </div>
                 </td>
               </ng-container>
@@ -95,10 +95,10 @@
               <tr mat-row *matRowDef="let row; let x=index; columns: displayedColumns;" [attr.data-test-id]="'comp'+x" [routerLink]="['/dashboard/visit-summary', row?.uuid]" ></tr>
             </table>
 
-            <mat-paginator #tempPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]" hidden aria-label="Select page of periodic elements"></mat-paginator>
-            <mat-paginator #completedPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]"
+            <mat-paginator #tempPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]" aria-label="Select page of periodic elements"></mat-paginator>
+            <!-- <mat-paginator #completedPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]"
             [length]="completedVisitsCount" [pageIndex]="pageIndex" [pageSize]="pageSize" (page)="pageEvent = getData($event)" aria-label="Select page of periodic elements" data-test-id="matPaginatorCompleted">
-            </mat-paginator>
+            </mat-paginator> -->
           </div>
 
         </mat-expansion-panel>

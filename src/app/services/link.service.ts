@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -49,5 +49,16 @@ export class LinkService {
   */
   verifyPresctionOtp(hash, otp): Observable<any> {
     return this.http.post(`${this.baseURL}/links/verifyOtp`, ({ hash, otp } as any));
+  }
+
+  /**
+  * get Facility Contact
+  * @param {number} id - Id of Facility Contact
+  * @return {Observable<any>}
+  */
+  getFacilityContact(id): Observable<any> {
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append('Authorization', 'Basic ' + environment.externalPrescriptionCred);
+    return this.http.get(`${this.baseURL}/links/getFacilityContacts/${id}`, { headers });
   }
 }

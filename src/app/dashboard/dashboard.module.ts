@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NO_ERRORS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
@@ -31,6 +31,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MatPaginationIntlService } from '../services/mat-pagination.service';
 import { SharedModule } from '../shared.module';
 import { OpenChatComponent } from './open-chat/open-chat.component';
+import { CompletedVisitsComponent } from './completed-visits/completed-visits.component';
+import { FollowupVisitsComponent } from './followup-visits/followup-visits.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -45,7 +47,9 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     VisitSummaryComponent,
     ChangePasswordComponent,
     HwProfileComponent,
-    OpenChatComponent
+    OpenChatComponent,
+    CompletedVisitsComponent,
+    FollowupVisitsComponent
   ],
   imports: [
     CommonModule,
@@ -83,6 +87,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MatPaginationIntlService },
-  ]
+  ],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class DashboardModule { }

@@ -2,13 +2,19 @@
   <div class="row justify-content-center">
     <div class="text-center">
       <button (click)="download()" type="button" class="blue-btn m-2" data-test-id="btnDownloadPrecription">
-        Download e-Prescription
+        Download e-{{ linkType==='visit-summary-verification' ? 'Visit Summary' : 'Prescription'}}
       </button>
     </div>
   </div>
   <div class="row">
     <page #prescription id="prescription" size="A4" class="external-prescription">
+      <app-view-visit-summary *ngIf="linkType==='visit-summary-verification'"
+        [isDownloadVisitSummary]="true"
+        [visitId]="visitId"
+        [download]="eventsSubject.asObservable()"
+      ></app-view-visit-summary>
       <app-view-visit-prescription
+        *ngIf="linkType==='presctiption-verification'"
         [isDownloadPrescription]="true"
         [visitId]="visitId"
         [download]="eventsSubject.asObservable()"

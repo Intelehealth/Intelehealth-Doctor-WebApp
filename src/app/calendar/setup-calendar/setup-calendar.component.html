@@ -252,6 +252,12 @@
                           </button>
                         </td>
                       </tr>
+                      <tr *ngIf="_addMoreTiming && last && timeslotError">
+                        <td colspan="4" class="td-error">
+                          <div class="d-flex">{{ timeslotError | translate}}
+                          </div>
+                        </td>
+                      </tr>
                     </ng-container>
                   </ng-container>
                 </tbody>

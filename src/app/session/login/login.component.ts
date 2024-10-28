@@ -104,11 +104,14 @@ export class LoginComponent implements OnInit {
     const role = this.rolesService.getRole('ORGANIZATIONAL: SYSTEM ADMINISTRATOR');
     const isNurse = this.rolesService.getRole('ORGANIZATIONAL: NURSE');
     if (role) {
+      setCacheData(doctorDetails.ROLE, 'admin');
       this.router.navigate(['/admin']);
     } else {
       if (isNurse) {
+        setCacheData(doctorDetails.ROLE, 'nurse');
         this.router.navigate(['/dashboard/hw-profile']);
       } else {
+        setCacheData(doctorDetails.ROLE, 'doctor');
         this.router.navigate(['/dashboard']);
       }
     }

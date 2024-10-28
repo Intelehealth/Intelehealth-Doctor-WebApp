@@ -7,6 +7,7 @@ $breadcrumb-divider: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap.scss';
 @import "angular-calendar/css/angular-calendar.css";
+@import "./app/core/directives/mat-table-responsive.directive.scss";
 
 @font-face {
   font-family: arty;
@@ -321,6 +322,8 @@ body.font-lato td {
         margin: 4px 0px;
         background: #faf9ff;
         text-overflow: wrap;
+        word-wrap: break-word;
+        word-break: break-all;
       }
 
       li.chat-item.left {
@@ -420,7 +423,7 @@ body.font-lato td {
 }
 
 .pretty.p-switch .state label:after {
-  background-color: #2e1e91 !important;
+  background-color: var(--color-darkBlue) !important;
 }
 
 .pretty.p-switch.p-fill input~.state:before {
@@ -429,8 +432,21 @@ body.font-lato td {
 }
 
 .pretty.p-switch.p-fill input:checked~.state:before {
-  border-color: #2e1e91;
-  background-color: #2e1e91 !important;
+  border-color: var(--color-darkBlue);
+  background-color: var(--color-darkBlue) !important;
+}
+
+.pretty.p-switch.light-green .state label:after {
+  background-color: var(--color-green) !important;
+}
+
+.pretty.p-switch.light-green.p-fill input:checked~.state:before {
+  border-color: var(--color-green);
+  background-color: var(--color-green) !important;
+}
+
+.pretty.p-switch.light-red .state label:after {
+  background-color: var(--color-lightRed) !important;
 }
 
 .mat-checkbox-checked .mat-checkbox-background,
@@ -554,13 +570,13 @@ body.font-lato td {
           border-radius: 8px;
           font-size: 18px;
           line-height: 150%;
-          color: #2E1E91;
+          color: var(--color-darkBlue);
           font-weight: bold;
         }
 
         .modal-btn.blue-btn {
-          background: #2E1E91;
-          border: 1px solid #2E1E91;
+          background: var(--color-darkBlue);
+          border: 1px solid var(--color-darkBlue);
           color: #FFFFFF;
         }
       }
@@ -622,13 +638,13 @@ body.font-lato td {
           border-radius: 8px;
           font-size: 18px;
           line-height: 150%;
-          color: #2E1E91;
+          color: var(--color-darkBlue);
           font-weight: bold;
         }
 
         .modal-btn.blue-btn {
-          background: #2E1E91;
-          border: 1px solid #2E1E91;
+          background: var(--color-darkBlue);
+          border: 1px solid var(--color-darkBlue);
           color: #FFFFFF;
         }
       }
@@ -688,13 +704,13 @@ body.font-lato td {
           border-radius: 8px;
           font-size: 18px;
           line-height: 150%;
-          color: #2E1E91;
+          color: var(--color-darkBlue);
           font-weight: bold;
         }
 
         .modal-btn.blue-btn {
-          background: #2E1E91;
-          border: 1px solid #2E1E91;
+          background: var(--color-darkBlue);
+          border: 1px solid var(--color-darkBlue);
           color: #FFFFFF;
         }
       }
@@ -751,6 +767,10 @@ body.font-lato td {
   .mat-tab-label {
     padding: 0px 10px !important;
   }
+
+  .mat-paginator-range-label{
+    margin: 0 10px 0 0 !important;
+  }
 }
 
 .vc-modal-lg.minimized {
@@ -797,7 +817,7 @@ body.font-lato td {
         height: 20px;
         width: 20px;
         font-size: 20px;
-        color: #2E1E91;
+        color: var(--color-darkBlue);
         margin-left: 8px;
       }
 
@@ -903,7 +923,7 @@ body.font-lato td {
 }
 
 .intel-blue-btn {
-  background: #2E1E91;
+  background: var(--color-darkBlue);
   border-radius: 8px;
   padding: 10px 32px;
   font-family: DM Sans;
@@ -1008,7 +1028,7 @@ body.font-lato td {
 }
 
 .mat-fab.mat-accent {
-  background-color: #2e1e91;
+  background-color: var(--color-darkBlue);
 }
 
 .msg-time {
@@ -1046,4 +1066,9 @@ body.font-lato td {
   .ng-option-label {
     font-weight: normal !important;
   }
+}
+
+.custom-tooltip {
+  background: #7F7B92 !important;
+  color: white;
 }

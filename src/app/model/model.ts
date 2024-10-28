@@ -1,3 +1,11 @@
+export interface BaseModel {
+  key?: string
+  createdAt?: string
+  id: number
+  is_enabled: boolean
+  name: string
+  updatedAt?: string
+}
 export interface LoginResponseModel {
   authenticated: boolean,
   sessionId: string,
@@ -20,7 +28,8 @@ export interface UserModel {
     uuid: string
   },
   roles: RolesModel[],
-  privileges: PrivilegesModel[]
+  privileges: PrivilegesModel[],
+  dateCreated? : string
 }
 
 export interface RolesModel {
@@ -178,7 +187,8 @@ export interface ConversationModel {
   messages?: MessageModel[],
   hwName?: string,
   patientPic?: string,
-  openMrsId?: string
+  openMrsId?: string,
+  count?: number
 }
 
 export interface MessageModel {
@@ -215,7 +225,7 @@ export interface AppointmentModel {
   slotDuration: any,
   slotDurationUnit: string,
   slotJsDate: string,
-  slotTime: string|SlotModel,
+  slotTime: string | SlotModel,
   speciality: string,
   status: string,
   type: string,
@@ -227,6 +237,7 @@ export interface AppointmentModel {
   cheif_complaint?: string[],
   starts_in?: string,
   appointmentId?: number
+  telephone?: string
 }
 
 export interface CustomVisitModel {
@@ -246,6 +257,7 @@ export interface CustomVisitModel {
     birthdate?: string,
     gender?: string,
     uuid?: string
+    person_attribute?: any[]
   }
 }
 
@@ -332,8 +344,21 @@ export interface PatientModel {
     gender?: string,
     attributes?: PersonAttributeModel[],
     preferredAddress?: {
-      cityVillage?: string
+      address2: string,
+      address1: string,
+      cityVillage?: string,
+      countyDistrict?: string,
+      stateProvince?: string,
+      country?: string,
+      postalCode?: string
     }
+    preferredName?: {
+      givenName?: string,
+      middleName?: string,
+      familyName?: string
+    }
+    abhaNumber?: string
+    abhaAddress?: string
   }
 }
 
@@ -394,7 +419,7 @@ export interface ObsModel {
       uuid?: string
     }
   }
-  comment?:string
+  comment?: string
 }
 
 export interface ScheduleModel {
@@ -536,4 +561,155 @@ export interface HwModel {
   hwAge: number,
   hwGender: string,
   hwProviderUuid: string
+}
+
+export interface DoctorSpecialityModel {
+  createdAt?: string,
+  id: number,
+  isActive: boolean,
+  specialization: string,
+  doctorsMapped: number,
+  updatedAt: string
+}
+
+export interface MobileAppLanguageModel {
+  createdAt?: string,
+  id: number,
+  isActive: boolean,
+  name: string,
+  en_name: string,
+  updatedAt: string
+  isDefault: boolean
+}
+
+export interface PatientRegistrationFieldsModel {
+  createdAt?: string,
+  id?: number,
+  is_enabled: boolean,
+  name: string,
+  updatedAt?: string
+  is_mandatory: boolean,
+  is_editable: boolean,
+  is_locked: boolean
+}
+
+export interface SpecializationModel {
+  name: string,
+  key?: string
+}
+
+export interface LanguageModel {
+  name: string,
+  code: string,
+  is_default: boolean
+}
+
+export interface PatientRegistrationFieldsConfigModel {
+  personal: PatientRegistrationFieldsModel[],
+  address: PatientRegistrationFieldsModel[],
+  other: PatientRegistrationFieldsModel[]
+}
+
+export interface PatientVitalModel {
+  id?: number,
+  name: string,
+  key: string;
+  createdAt?: string,
+  updatedAt?: string
+  is_mandatory: boolean,
+  is_enabled: boolean,
+}
+
+export interface PatientDiagnosticModel {
+  id?: number,
+  name: string,
+  key: string;
+  createdAt?: string,
+  updatedAt?: string
+  is_mandatory: boolean,
+  is_enabled: boolean,
+}
+
+export interface VitalModel {
+  name: string,
+  key: string,
+  uuid: string,
+  is_mandatory: boolean
+}
+
+export interface FeatureModel extends BaseModel {}
+export interface WebrtcModel extends BaseModel {}
+export interface WebrtcDataModel {
+  webrtc_section: FeatureModel,
+  webrtc: WebrtcModel[]
+}
+
+export interface WebRTCConfigModel {
+  chat: boolean;
+  video_call: boolean;
+}
+
+export interface PatientVisitSummaryModel {
+  id?: number,
+  name: string,
+  is_enabled: boolean,
+  createdAt?: string,
+  updatedAt?: string,
+}
+
+export interface PatientVisitSummaryConfigModel {
+  appointment_button: boolean
+  attachment_section: boolean
+  doctor_specialty_section: boolean
+  facility_to_visit_section: boolean
+  notes_section: boolean
+  priority_visit_section: boolean
+  severity_of_case_section: boolean
+  completed_visit_section: boolean
+  follow_up_visit_section: boolean
+  hw_interaction: boolean
+}
+
+export interface PagerdutyList {
+  currentPage: number,
+  tickets: PagerdutyModel[],
+  totalItems: number,
+  totalPages: number,
+  openItems?: number
+}
+
+export interface PagerdutyModel{
+  id: number,
+  incident_key: string,
+  incident_id: string,
+  title: string,
+  priority: string,
+  status: string,
+  createdAt: string,
+  updatedAt: string
+}
+
+export interface PagerDutyDetail {
+  incident: PagerdutyModel
+}
+
+export interface MenuConfig {
+  createdAt?: string,
+  id: number,
+  is_enabled: boolean,
+  name: string,
+  key: string,
+  updatedAt?: string
+  is_locked: boolean
+}
+
+export interface PatientVisitSection {
+  id: number;
+  is_enabled: boolean;
+  is_locked: boolean;
+  is_editable: boolean;
+  name: string;
+  key: string;
+  updatedAt?: string;
+  createdAt?: string
 }

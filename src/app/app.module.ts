@@ -6,6 +6,7 @@ import {
   LocationStrategy,
   HashLocationStrategy,
   registerLocaleData,
+  DecimalPipe,
 } from "@angular/common";
 
 import localeRu from '@angular/common/locales/ru';
@@ -62,6 +63,8 @@ import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import { JwtInterceptor } from "./core/interceptors/jwt.interceptor";
 import { getCacheData } from "./utils/utility-functions";
 import { languages } from "src/config/constant";
+import { AppConfigService } from "./services/app-config.service";
+import { SidebarMenuListComponent } from "./main-container/sidebar-menu-list/sidebar-menu-list.component";
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "#2E1E91",
@@ -82,6 +85,12 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }
 
+export function appConfigInit(appConfigService: AppConfigService) {
+  return () => {
+    return appConfigService.load()
+  };
+}
+
 registerLocaleData(localeRu);
 registerLocaleData(localeEn);
 
@@ -89,7 +98,8 @@ registerLocaleData(localeEn);
   declarations: [
     AppComponent,
     TestComponent,
-    MainContainerComponent
+    MainContainerComponent,
+    SidebarMenuListComponent
   ],
 
   imports: [
@@ -124,7 +134,8 @@ registerLocaleData(localeEn);
         'https://dev.intelehealth.org:3004/api/messages/',
         'https://dev.intelehealth.org:3004/api/support/',
         'https://dev.intelehealth.org:3004/api/auth/validateProviderAttribute',
-        'https://dev.intelehealth.org:3000/api/getToken'
+        'https://dev.intelehealth.org:3000/api/getToken',
+        'https://dev.intelehealth.org/pl/'
       ]
     }),
     NgxPermissionsModule.forRoot({
@@ -145,6 +156,12 @@ registerLocaleData(localeEn);
     })
   ],
   providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appConfigInit,
+      multi: true,
+      deps: [AppConfigService]
+    },
     CookieService,
     SocketService,
     { provide: APP_BASE_HREF, useValue: "/" },
@@ -171,7 +188,8 @@ registerLocaleData(localeEn);
       useFactory: initializer,
       deps: [PwaService],
       multi: true
-    }
+    },
+    DecimalPipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
   bootstrap: [AppComponent],

@@ -4,6 +4,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { tr } from 'date-fns/locale';
 import { Observable } from 'rxjs/internal/Observable';
 import { AddLicenseKeyComponent } from 'src/app/modal-components/add-license-key/add-license-key.component';
+import { AddTicketComponent } from 'src/app/modal-components/add-ticket/add-ticket.component';
 import { AppointmentDetailMonthComponent } from 'src/app/modal-components/appointment-detail-month/appointment-detail-month.component';
 import { AppointmentDetailComponent } from 'src/app/modal-components/appointment-detail/appointment-detail.component';
 import { CancelAppointmentConfirmComponent } from 'src/app/modal-components/cancel-appointment-confirm/cancel-appointment-confirm.component';
@@ -12,12 +13,18 @@ import { ConfirmDayOffComponent } from 'src/app/modal-components/confirm-day-off
 import { ConfirmDialogComponent } from 'src/app/modal-components/confirm-dialog/confirm-dialog.component';
 import { ConfirmHoursOffComponent } from 'src/app/modal-components/confirm-hours-off/confirm-hours-off.component';
 import { ConfirmOpenmrsIdComponent } from 'src/app/modal-components/confirm-openmrs-id/confirm-openmrs-id.component';
+import { FileDownloadComponent } from 'src/app/modal-components/file-download/file-download.component';
 import { HelpMenuComponent } from 'src/app/modal-components/help-menu/help-menu.component';
 import { ImageCropComponent } from 'src/app/modal-components/image-crop/image-crop.component';
 import { ImagesPreviewComponent } from 'src/app/modal-components/images-preview/images-preview.component';
+import { ILanguageFieldUpdate, LanguageFieldUpdate } from 'src/app/modal-components/language-fields-update/language-fields-update.component';
 import { NoInternetComponent } from 'src/app/modal-components/no-internet/no-internet.component';
 import { PasswordResetSuccessComponent } from 'src/app/modal-components/password-reset-success/password-reset-success.component';
+import { PasswordResetComponent } from 'src/app/modal-components/password-reset/password-reset.component';
 import { RaiseTicketComponent } from 'src/app/modal-components/raise-ticket/raise-ticket.component';
+import { ReportErrorComponent } from 'src/app/modal-components/report-error/report-error.component';
+import { ReportGeneratorComponent } from 'src/app/modal-components/report-generator/report-generator.component';
+import { ReportSuccessComponent } from 'src/app/modal-components/report-success/report-success.component';
 import { RescheduleAppointmentConfirmComponent } from 'src/app/modal-components/reschedule-appointment-confirm/reschedule-appointment-confirm.component';
 import { RescheduleAppointmentComponent } from 'src/app/modal-components/reschedule-appointment/reschedule-appointment.component';
 import { SearchedPatientsComponent } from 'src/app/modal-components/searched-patients/searched-patients.component';
@@ -300,6 +307,44 @@ export class CoreService {
     return dialogRef;
   }
 
+   /**
+  * Open report generator modal
+  * @param {any} data - Dialog data
+  * @return {MatDialogRef<ReportGeneratorComponent>} - Dialog reference
+  */
+  openGenerateReportDialog(data: { reportId: Number, title: string, field1: string, field2: string, cancelBtnText: string, confirmBtnText: string }): Observable<any> {
+    const dialogRef = this.dialog.open(ReportGeneratorComponent, { panelClass: 'modal-md', data });
+    return dialogRef.afterClosed();
+  }
+
+   /**
+  * Open file download modal
+  * @param {any} data - Dialog data
+  * @return {MatDialogRef<FileDownloadComponent>} - Dialog reference
+  */
+  openFileDownloadDialog(data): Observable<any> {
+    const dialogRef = this.dialog.open(FileDownloadComponent, { panelClass: 'modal-md', data });
+    return dialogRef.afterClosed();
+  }
+
+   /**
+  * Open report success modal
+  * @return {MatDialogRef<ReportSuccessComponent>} - Dialog reference
+  */
+  openReportSuccessDialog(): Observable<any> {
+    const dialogRef = this.dialog.open(ReportSuccessComponent, { panelClass: 'modal-md' });
+    return dialogRef.afterClosed();
+  }
+
+   /**
+  * Open report error modal
+  * @return {MatDialogRef<ImageCropComponent>} - Dialog reference
+  */
+  openReportErrorDialog(): Observable<any> {
+    const dialogRef = this.dialog.open(ReportErrorComponent, { panelClass: 'modal-md' });
+    return dialogRef.afterClosed();
+  }
+  
   /**
   * Convert blob to base64
   * @param {Blob} blob - Blob  file
@@ -311,5 +356,32 @@ export class CoreService {
       reader.onloadend = () => resolve(reader.result);
       reader.readAsDataURL(blob);
     });
+  }
+
+  /**
+  * Open password reset modal
+  * @return {Observable<any>} - Dialog result
+  */
+  openPasswordResetModal(data): Observable<any> {
+    const dialogRef = this.dialog.open(PasswordResetComponent, { panelClass: 'modal-md', hasBackdrop: true, disableClose: true, data });
+    return dialogRef.afterClosed();
+  }
+
+  /**
+  * Open add ticket modal
+  * @return {Observable<any>} - Dialog result
+  */
+  openAddTicketModal(): Observable<any> {
+    const dialogRef = this.dialog.open(AddTicketComponent, { panelClass: 'modal-md', hasBackdrop: true, disableClose: true });
+    return dialogRef.afterClosed();
+  }
+
+  /**
+  * Open language field modal
+  * @return {Observable<any>} - Dialog result
+  */
+  openLanguageFieldModal({ data }: { data: ILanguageFieldUpdate; }): MatDialogRef<LanguageFieldUpdate, any> {
+    const dialogRef = this.dialog.open(LanguageFieldUpdate, { panelClass: 'modal-lg', hasBackdrop: true, disableClose: false, data });
+    return dialogRef;
   }
 }

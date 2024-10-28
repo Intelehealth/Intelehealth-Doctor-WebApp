@@ -52,7 +52,7 @@ export class PwaService {
           }
           const matBottomSheet = this.bottomSheet.open(PwaPromptComponent, { hasBackdrop: false, restoreFocus: true, data: { mobileType, promptEvent: this.promptEvent } });
           matBottomSheet.afterOpened().subscribe(res => {
-            document.getElementById(activeElement.id).focus();
+            document.getElementById(activeElement.id)?.focus();
             if (activeElement.id === 'XXX') {
               activeElement.removeAttribute('id');
             }

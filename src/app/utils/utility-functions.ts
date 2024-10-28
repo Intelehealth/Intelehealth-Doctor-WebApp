@@ -1,5 +1,7 @@
 import { visitTypes } from "src/config/constant";
 import * as moment from 'moment';
+import { ProviderAttributeModel } from "../model/model";
+import { DecimalPipe } from "@angular/common";
 
 export function getCacheData(parse: boolean, key: string) {
   if (parse) {
@@ -65,4 +67,45 @@ export function checkIfDateOldThanOneDay(data: string) {
     }
   }
   return resString.trim();
+}
+/**
+  * Compare data for sorting
+  * @param {number|string} a
+  * @param {number|string} b
+  * @param {boolean} isAsc
+  * @return {number} - Returns order as 1 or -1
+  */
+export function compare(a: number | string, b: number | string, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+
+/**
+* Get speciality
+* @param {ProviderAttributeModel[]} attr - Array of provider attributes
+* @return {string} - Speciality
+*/
+export function getSpecialization(attr: ProviderAttributeModel[] = []): string {
+  let specialization = '';
+  for (const a of attr) {
+    if (a.attributeType.uuid == 'ed1715f5-93e2-404e-b3c9-2a2d9600f062' && !a.voided) {
+      specialization = a.value;
+      break;
+    }
+  }
+  return specialization;
+}
+
+export function calculateBMI(vitals: any, vitalObs: any) {
+  const heightUUID = vitals?.find((v: any) => v.key === 'height_cm')?.uuid;
+  const weightUUID = vitals?.find((v: any) => v.key === 'weight_kg')?.uuid;
+  let height = null, weight = null;
+  if(heightUUID && weightUUID) {
+    height = vitalObs.find((e: { concept: { uuid: any; }; }) => e.concept.uuid === heightUUID)?.value;
+    weight = vitalObs.find((e: { concept: { uuid: any; }; }) => e.concept.uuid === weightUUID)?.value;
+  }
+  if(height && weight) {
+    const decimalPipe = new DecimalPipe('en')
+    return decimalPipe.transform(weight / ((height/100) * (height/100)), "1.2-2")
+  }  
+  return null;
 }

@@ -21,8 +21,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { RaiseTicketComponent } from '../modal-components/raise-ticket/raise-ticket.component';
 import { ProfileService } from '../services/profile.service';
 import { getCacheData } from '../utils/utility-functions';
-import { languages, doctorDetails } from 'src/config/constant';
-import { ApiResponseModel, BreadcrumbModel, PatientModel, ProviderAttributeModel, ProviderModel, SerachPatientApiResponseModel, UserModel } from '../model/model';
+import { languages, doctorDetails, notifications } from 'src/config/constant';
+import { ApiResponseModel, BreadcrumbModel, PatientModel, PatientVisitSummaryConfigModel, ProviderAttributeModel, ProviderModel, SerachPatientApiResponseModel, UserModel } from '../model/model';
+import { AppConfigService } from '../services/app-config.service';
 
 @Component({
   selector: 'app-main-container',
@@ -33,6 +34,7 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
 
   collapsed = false;
   baseUrl: string = environment.baseURL;
+  configPublicUrl: string = environment.configPublicURL;
   baseURLLegacy: string = environment.baseURLLegacy;
   username = '';
   header: PageTitleItem;
@@ -44,6 +46,7 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
   sidebarClosed = false;
   subscription: Subscription;
   subscription1: Subscription;
+  subscription2: Subscription;
   searchForm: FormGroup;
   public breadcrumbs: BreadcrumbModel[];
   @ViewChild('drawer') drawer: MatDrawer;
@@ -51,11 +54,17 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
   dialogRef2: MatDialogRef<RaiseTicketComponent>;
   routeUrl = '';
   adminUnread = 0;
+  drUnread = 0;
   notificationEnabled = false;
-  interval;
+  interval: any;
+  interval2: any;
   snoozed: any = '';
   profilePic: string;
   profilePicSubscription;
+  logoImageURL: string = '';
+  thumbnailLogoURL: string = '';
+  pvs: PatientVisitSummaryConfigModel;
+  sidebarMenus: any;
 
   constructor(
     private cdref: ChangeDetectorRef,
@@ -70,16 +79,21 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
     private socketService: SocketService,
     private _swPush: SwPush,
     private translateService: TranslateService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private appConfigService: AppConfigService
   ) {
     this.searchForm = new FormGroup({
       keyword: new FormControl('', Validators.required)
     });
     this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
     this.routeUrl = this.breadcrumbs[0]?.url;
+    this.pvs = { ...this.appConfigService.patient_visit_summary };
+    this.sidebarMenus = this.appConfigService.sidebar_menus
   }
 
   ngOnInit(): void {
+    this.logoImageURL = this.appConfigService.theme_config.find(obj=>obj.key==='logo')?.value;
+    this.thumbnailLogoURL = this.appConfigService.theme_config.find(obj=>obj.key==='thumbnail_logo')?.value;
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
     this.pageTitleService.title.subscribe((val: PageTitleItem) => {
       this.header = val;
@@ -111,8 +125,23 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
       this.adminUnread = res;
     });
 
-    this.getSubscription();
-    this.getNotificationStatus();
+    this.subscription2 = this.socketService.drUnread.subscribe(res => {
+      this.drUnread = res;
+    });
+
+    if (getCacheData(false, doctorDetails.ROLE) === 'doctor') {
+      setTimeout(() => {
+        this.socketService.emitEvent(notifications.GET_DOCTOR_UNREAD_COUNT, this.user?.uuid);
+      }, 1500);
+      this.interval2 = setInterval(() => {
+        this.socketService.emitEvent(notifications.GET_DOCTOR_UNREAD_COUNT, this.user?.uuid);
+      }, 60000);
+    }
+
+    if(this.appConfigService?.webrtc_section && this.appConfigService?.webrtc?.chat) {
+      this.getSubscription();
+      this.getNotificationStatus();
+    }
 
     this.profilePic = this.baseUrl + '/personimage/' + this.provider?.person.uuid;
     this.profilePicSubscription = this.profileService.profilePicUpdateEvent.subscribe(img => {
@@ -280,11 +309,11 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
         this.searchForm.reset();
       },
         (err) => {
-          if (err.error instanceof Error) {
-            this.toastr.error('Client-side error', null, { timeOut: 2000 });
-          } else {
-            this.toastr.error('Server-side error', null, { timeOut: 2000 });
-          }
+          // if (err.error instanceof Error) {
+          //   this.toastr.error('Client-side error', null, { timeOut: 2000 });
+          // } else {
+          //   this.toastr.error('Server-side error', null, { timeOut: 2000 });
+          // }
         }
       );
     }
@@ -296,7 +325,7 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
   */
   buildBreadCrumb(route: ActivatedRoute, url: string = '', breadcrumbs: BreadcrumbModel[] = []): BreadcrumbModel[] {
     // If no routeConfig is avalailable we are on the root path
-    const label = route.routeConfig && route.routeConfig.data ? route.routeConfig.data.breadcrumb : '';
+    const breadcrumbArr = route.routeConfig && route.routeConfig.data ? route.routeConfig.data.breadcrumb : ''
     let path = route.routeConfig && route.routeConfig.data ? route.routeConfig.path : '';
     // If the route is dynamic route such as ':id', remove it
     const lastRoutePart = path.split('/').pop();
@@ -310,19 +339,46 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
     // In the routeConfig the complete path is not available,
     // so we rebuild it each time
     const nextUrl = path ? `${url}/${path}` : url;
-
+    const label = breadcrumbArr && typeof breadcrumbArr == 'string' ? breadcrumbArr : '';
+    
     const breadcrumb: BreadcrumbModel = {
-        label: label,
-        url: nextUrl,
+      label: label,
+      url: nextUrl,
     };
     // Only adding route with non-empty label
     const newBreadcrumbs = breadcrumb.label ? [ ...breadcrumbs, breadcrumb ] : [ ...breadcrumbs];
+
+    if(breadcrumbArr && typeof breadcrumbArr !== 'string') {
+      this.createBreadcrumFromArr(breadcrumbArr, newBreadcrumbs, rs)
+    }
+    
     if (route.firstChild) {
         // If we are not on our current path yet,
         // there will be more children to look after, to build our breadcumb
         return this.buildBreadCrumb(route.firstChild, nextUrl, newBreadcrumbs);
     }
     return newBreadcrumbs;
+  }
+
+  createBreadcrumFromArr(breadcrumbArr: BreadcrumbModel[], newBreadcrumbs: BreadcrumbModel[], rs: ActivatedRouteSnapshot) {
+    breadcrumbArr.forEach((breadcrumb: any) => {
+      if(!breadcrumb?.label?.trim()) return;
+
+      if (breadcrumb?.url?.startsWith(':id') && !!rs) {
+        const paramName = breadcrumb?.url.split(':')[1];
+        breadcrumb.url = breadcrumb.replace(breadcrumb.url, rs.params[paramName]);
+      }
+      let label = breadcrumb?.label;
+      if (label?.startsWith(':') && !!rs) {
+        label = rs.params[label?.split(':')[1]]
+      }
+      if(!label) return;
+
+      newBreadcrumbs.push({
+        label: label,
+        url: breadcrumb.url,
+      })
+    })
   }
 
   /**
@@ -438,6 +494,7 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
     this.subscription1?.unsubscribe();
+    this.subscription2?.unsubscribe();
     if (this.interval) {
       clearInterval(this.interval);
     }
@@ -447,6 +504,9 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
     }
     if (this.dialogRef2) {
       this.dialogRef2.close();
+    }
+    if (this.interval2) {
+      clearInterval(this.interval);
     }
   }
 }

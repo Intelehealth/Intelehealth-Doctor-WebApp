@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { VisitService } from 'src/app/services/visit.service';
 import { environment } from 'src/environments/environment';
@@ -6,21 +6,25 @@ import * as moment from 'moment';
 import { DiagnosisService } from 'src/app/services/diagnosis.service';
 import { CoreService } from 'src/app/services/core/core.service';
 import { doctorDetails, visitTypes } from 'src/config/constant';
-import { DocImagesModel, EncounterModel, ObsModel, PatientHistoryModel, PatientIdentifierModel, PatientModel, PersonAttributeModel, VisitModel } from 'src/app/model/model';
+import { DocImagesModel, EncounterModel, ObsModel, PatientHistoryModel, PatientIdentifierModel, PatientModel, PersonAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
 import { TranslateService } from '@ngx-translate/core';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 import { visit as visit_logos, logo as main_logo} from "../../utils/base64"
-import { promise } from 'protractor';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { Observable } from 'rxjs';
+import { calculateBMI } from 'src/app/utils/utility-functions';
 
 @Component({
   selector: 'app-view-visit-summary',
   templateUrl: './view-visit-summary.component.html',
   styleUrls: ['./view-visit-summary.component.scss']
 })
-export class ViewVisitSummaryComponent implements OnInit {
-
+export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
+  @Input() isDownloadVisitSummary: boolean = false;
+  @Input() visitId: string;
+  @Input() download: Observable<any>;
   visit: VisitModel;
   patient: PatientModel;
   baseUrl: string = environment.baseURL;
@@ -38,6 +42,12 @@ export class ViewVisitSummaryComponent implements OnInit {
   baseURL = environment.baseURL;
   conceptAdditionlDocument = "07a816ce-ffc0-49b9-ad92-a1bf9bf5e2ba";
   conceptPhysicalExamination = '200b7a45-77bc-4986-b879-cc727f5f7d5b';
+  patientRegFields: string[] = [];
+  vitals: VitalModel[] = [];
+  hasVitalsEnabled: boolean = false;
+  hasPatientOtherEnabled: boolean = false;
+  hasPatientAddressEnabled: boolean = false;
+  eventsSubscription: any;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
@@ -46,10 +56,18 @@ export class ViewVisitSummaryComponent implements OnInit {
     private diagnosisService: DiagnosisService,
     private coreService: CoreService,
     private translateService: TranslateService,
-  ) { }
+    private appConfigService: AppConfigService) {
+      Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
+        this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter(e=>e.is_enabled).map(e=>e.name));
+      });
+      this.vitals = [...this.appConfigService.patient_vitals];
+      this.hasVitalsEnabled = this.appConfigService.patient_vitals_section;
+      this.hasPatientAddressEnabled = this.appConfigService?.patient_reg_address;
+      this.hasPatientOtherEnabled = this.appConfigService?.patient_reg_other;
+    }
 
   ngOnInit(): void {
-    this.getVisit(this.data.uuid);
+    this.getVisit(this.isDownloadVisitSummary ? this.visitId : this.data.uuid);
     pdfMake.fonts = {
       DmSans: {
         normal: `${window.location.origin}${environment.production ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-Regular.ttf`,
@@ -58,6 +76,11 @@ export class ViewVisitSummaryComponent implements OnInit {
         bolditalics: `${window.location.origin}${environment.production ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-BoldItalic.ttf`,
       }
     };
+    this.eventsSubscription = this.download?.subscribe((val) => { if (val) { this.downloadVisitSummary(); } });
+  }
+
+  ngOnDestroy() {
+    this.eventsSubscription?.unsubscribe();
   }
 
   /**
@@ -214,18 +237,17 @@ export class ViewVisitSummaryComponent implements OnInit {
   }
 
   /**
-  * Get observation value for a given observation name
-  * @param {string} obsName - Observation name
+  * Get vital value for a given vital uuid
+  * @param {string} uuid - Vital uuid
   * @return {any} - Obs value
   */
-  getObsValue(obsName: string) {
-    let val = null;
-    this.vitalObs.forEach((obs: ObsModel) => {
-      if (obs.concept.display == obsName) {
-        val = obs.value;
-      }
-    });
-    return val;
+  getObsValue(uuid: string, key?: string): any {
+    const v = this.vitalObs.find(e => e.concept.uuid === uuid);
+    const value = v?.value ? ( typeof v.value == 'object') ? v.value?.display : v.value : null;
+    if(!value && key === 'bmi') {
+      return calculateBMI(this.vitals, this.vitalObs);
+    }
+    return value
   }
 
   /**
@@ -641,6 +663,7 @@ export class ViewVisitSummaryComponent implements OnInit {
               [
                 {
                   colSpan: 4,
+                  sectionName: 'vitals',
                   table: {
                     widths: [30, '*'],
                     headerRows: 1,
@@ -799,6 +822,10 @@ export class ViewVisitSummaryComponent implements OnInit {
         font: 'DmSans'
       }
     };
+    pdfObj.content[0].table.body = pdfObj.content[0].table.body.filter((section:any)=>{
+      if(section[0].sectionName === 'vitals' && !this.hasVitalsEnabled) return false;
+      return true;
+    });
     pdfMake.createPdf(pdfObj).download('e-visit-summary');
   }
 
@@ -930,11 +957,9 @@ export class ViewVisitSummaryComponent implements OnInit {
         }
         break;
       case visitTypes.VITALS:
-        if (this.vitalObs.length) {
-          this.vitalObs.forEach(v => {
-            records.push({text: [{text: `${v.concept.display} : `, bold: true}, `${v.value}`], margin: [0, 5, 0, 5]});
-          });
-        }
+        this.vitals.forEach((v: VitalModel) => {
+          records.push({ text: [{ text: `${v.name} : `, bold: true }, `${this.getObsValue(v.uuid, v.key) ? this.getObsValue(v.uuid, v.key) : `No information`}`], margin: [0, 5, 0, 5] });
+        });
         break;
       
       case 'additionalDocs':
@@ -954,5 +979,9 @@ export class ViewVisitSummaryComponent implements OnInit {
         break;
     }
     return records;
+  }
+
+  checkPatientRegField(fieldName): boolean{
+    return this.patientRegFields.indexOf(fieldName) !== -1;
   }
 }

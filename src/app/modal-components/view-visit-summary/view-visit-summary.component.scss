@@ -45,7 +45,7 @@
   font-family: DM Sans;
 
   .patient-info-section {
-    border-right: 1px solid rgba(178, 175, 190, 0.2);
+    // border-right: 1px solid rgba(178, 175, 190, 0.2);
 
     .patient-img-item {
       display: flex;
@@ -106,17 +106,19 @@
     align-items: center;
     border-bottom: 1px solid rgba(178, 175, 190, 0.2);
     padding: 5px 0px;
-     img {
+
+    img {
       width: 48px;
       margin-right: 10px;
-     }
-     h6 {
+    }
+
+    h6 {
       font-size: 20px;
       line-height: 150%;
       color: var(--color-darkestBlue);
       font-weight: bold;
       margin-bottom: 0px;
-     }
+    }
   }
 }
 
@@ -330,13 +332,14 @@
 
   .data-section {
     .data-section-title {
-       img {
+      img {
         width: 38px;
         margin-right: 10px;
-       }
-       h6 {
+      }
+
+      h6 {
         font-size: 16px;
-       }
+      }
     }
   }
 
@@ -346,19 +349,20 @@
     }
   }
 
-  .btn_download_pdf span{
+  .btn_download_pdf span {
     display: none;
   }
 
-  .desktop-close-btn{
+  .desktop-close-btn {
     display: none !important;
   }
-  .mobile-close-btn{
+
+  .mobile-close-btn {
     display: block !important;
   }
 }
 
-.btn_download_pdf{
+.btn_download_pdf {
   position: absolute;
   color: var(--color-gray);
   border: unset;
@@ -366,9 +370,15 @@
   font-size: 18px;
 }
 
-.mobile-close-btn{
+.mobile-close-btn {
   display: none;
 }
-.dekstop-close-btn{
+
+.dekstop-close-btn {
   display: block;
+}
+
+.rows {
+  display: flex;
+  flex-wrap: wrap;
 }

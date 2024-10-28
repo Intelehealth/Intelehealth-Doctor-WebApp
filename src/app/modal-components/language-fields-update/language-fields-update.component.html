@@ -1,0 +1,38 @@
+<div class="title-con position-relative" mat-dialog-title>
+  <h6 class="mb-0 text-left">{{ fieldName?.charAt(0)?.toUpperCase() + fieldName?.slice(1)?.toLowerCase() | translate}}
+  </h6>
+  <div class="close-btn-con">
+    <button class="modal-close-btn" (click)="handleCancel()" data-test-id="btnClose"><img
+        src="assets/svgs/Close-icon.svg" alt=""></button>
+  </div>
+</div>
+<mat-dialog-content>
+  <div class="main-content">
+    <div class="container-fluid">
+      <form [formGroup]="form" (ngSubmit)="handleSubmit()">
+        <div class="form-row" formArrayName="fields">
+          <div class="form-group col-md-4" *ngFor="let fields of fields.controls; let i = index" [formGroupName]="i">
+            <label for="{{fields.value.language}}">{{fields.value.language | translate}}</label>
+            <input formControlName="value" class="form-control" placeholder="Enter {{ fieldName }} text">
+            <div *ngIf="fields.get('value').invalid && fields.get('value').touched">
+              <small style="color:red">Value is required!</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-md-6">
+            <div class="h-100 d-flex align-items-end">
+              <button mat-button type="submit" class="save-btn mr-2">
+                {{'Save'|translate}}
+              </button>
+              <button mat-button type="button" class="cancel-btn" (click)="handleCancel()">
+                {{'Cancel'|translate}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</mat-dialog-content>

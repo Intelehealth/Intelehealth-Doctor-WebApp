@@ -1,0 +1,244 @@
+.mat-elevation-z8 {
+    box-shadow: none;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.user-manual-link{
+    font-size: 12px;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.section{
+    background: var(--color-offWhite);
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    padding: 20px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    overflow: hidden;
+
+    .section-logo{
+        font-size: 22px;
+        font-weight: bold;
+        color: var(--color-darkBlue);
+    }
+
+    .color-details{
+        margin-top: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+
+        input.form-control{
+            text-transform: uppercase;
+        }
+
+        .colorpicker-parent{
+            width: 30%;
+            margin-left: 10px;
+
+            input{
+                width: 100%;
+                height: 50px;
+                border-radius: 8px;
+                border-color: #B2AFBE20;
+                border-style: solid;
+                box-shadow: none !important;
+                caret-color: transparent;
+                background: #72727207;
+                text-align: center;
+                color: #7F7B92;
+            }
+        }
+    }
+
+    .images-msg{
+        color: #7F7B92;
+    }
+
+    .image-text{
+        margin-top : 10px;
+        margin-bottom : 10px;
+        height: 70px;
+    }
+
+    .btn-delete-slide{
+        height: 100%;
+        padding: 0px 10px;
+        background: #FFE8E8;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .slide-image-row{
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn-save-slides{
+        height: 40px;
+        background: var(--color-darkBlue);
+        border-radius: 8px;
+        font-size: 18px;
+        color: var(--color-white);
+        position: relative;
+        min-width: 80px;
+    }
+
+    .btn-add-slides{
+        height: 40px;
+        background: #FFE8E8;
+        font-size: 16px;
+        position: relative;
+        min-width: 80px;
+        color: #7F7B92;
+        border-radius: 8px;
+        border: dashed 1px;
+        border-color: #2E1E9120;
+    }
+}
+
+::ng-deep.mat-progress-bar{
+    height: 2px !important;
+    width: 97% !important;
+    border-radius: 2px;
+}
+
+::ng-deep .mat-progress-bar-fill::after {
+    background-color: #0FD197;
+}
+
+::ng-deep .mat-progress-bar-buffer {
+    background: #7F7B92;
+}
+
+::-webkit-input-placeholder {
+    text-transform: initial;
+ }
+ 
+ :-moz-placeholder { 
+    text-transform: initial;
+ }
+ 
+ ::-moz-placeholder {  
+    text-transform: initial;
+ }
+ 
+ :-ms-input-placeholder { 
+    text-transform: initial;
+ }
+
+
+ .form-control {
+    padding: 14px 16px;
+    border: 1px solid rgba(178, 175, 190, 0.2);
+    border-radius: 8px;
+    height: 50px;
+    font-size: 16px;
+  }
+  
+  .form-control:focus {
+    box-shadow: none;
+  }
+
+  .intelehealth-card {
+    background: var(--color-white);
+    box-shadow: 0px 4px 24px rgba(31, 28, 58, 0.08);
+    border-radius: 20px;
+    font-family: DM Sans;
+
+    .mat-card-title {
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-lightGray);
+    }
+
+    .intelehealth-card-title {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      h6 {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--color-black);
+      }
+    }
+  }
+
+  .card-header-actions {
+    .btn {
+      height: 50px;
+      background: var(--color-darkBlue);
+      border-radius: 8px;
+      font-size: 18px;
+      color: var(--color-white);
+      position: relative;
+      min-width: 100px;
+      font-weight: bold;
+    }
+  }
+
+  .btn-block {
+    display: none;
+    height: 50px;
+    background: var(--color-darkBlue);
+    border-radius: 8px;
+    font-size: 18px;
+    color: var(--color-white);
+    position: relative;
+    width: 100%;
+    font-weight: bold;
+  }
+
+  .btn:focus{
+    box-shadow: none !important;
+    }
+  @media (max-width: 768px) {
+    .card-header-actions {
+      .btn {
+        display: none;
+      }
+    }
+
+    .btn-block {
+      display: block;
+    }
+
+    .section{
+        padding: 10px !important;
+        overflow: hidden;
+        .pre-upload-image{
+            .upload-msg{
+                font-size: 12px;
+            }
+        }
+        .post-upload-image{
+            .image-details{
+                width: 50%;
+            }
+            .image-preview{
+                display: none;
+            }
+            .upload-msg{
+                padding: 0 !important;
+                width: 100%;
+                .file-name{
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
+            }
+        }
+        .color-details{
+            .colorpicker-parent{
+                width: 50%;
+            }
+        }   
+        .btn-add-slides{
+            margin-bottom: 15px;
+        }   
+    }
+  }

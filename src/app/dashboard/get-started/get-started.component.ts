@@ -21,7 +21,7 @@ export class GetStartedComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private translateService: TranslateService
-    ) { }
+  ) { }
 
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
@@ -38,10 +38,14 @@ export class GetStartedComponent implements OnInit {
     }
 
 
-    if (this.route.snapshot.queryParamMap.get('pc') != null && this.route.snapshot.queryParamMap.get('sc') != null) {
+    if (this.route.snapshot.queryParamMap.get('pc') != null) {
       this.pc = !JSON.parse(this.route.snapshot.queryParamMap.get('pc'));
+    }
+    if (this.route.snapshot.queryParamMap.get('sc') != null) {
       this.sc = !JSON.parse(this.route.snapshot.queryParamMap.get('sc'));
-    } else {
+    }
+
+    if (this.route.snapshot.queryParamMap.get('pc') == null && this.route.snapshot.queryParamMap.get('sc') == null) {
       this.router.navigate(['/dashboard']);
     }
   }

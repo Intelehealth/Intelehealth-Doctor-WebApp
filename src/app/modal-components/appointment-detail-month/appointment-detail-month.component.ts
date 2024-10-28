@@ -17,6 +17,7 @@ export class AppointmentDetailMonthComponent implements OnInit {
   followupCount: number = 0;
   timeList: string[] = [];
   dayOffForm: FormGroup;
+  isFutureDate: boolean = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data,
     private dialogRef: MatDialogRef<AppointmentDetailMonthComponent>,
@@ -30,6 +31,9 @@ export class AppointmentDetailMonthComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    let todayDate = moment(moment().format("YYYY-MM-DD")).unix();
+    let selectedDate = moment(new Date(this.data?.date)).unix();
+    this.isFutureDate = selectedDate >= todayDate;
     this.appointmentCount = this.getCount('Appointment');
     this.followupCount = this.getCount('Follow-up visit');
     this.timeList= this.getHours();

@@ -1,6 +1,8 @@
 export const notifications = {
     ADMIN_UNREAD_COUNT:'adminUnreadCount',
     GET_ADMIN_UNREAD_COUNT:'getAdminUnreadCount',
+    DOCTOR_UNREAD_COUNT:'drUnreadCount',
+    GET_DOCTOR_UNREAD_COUNT:'getDrUnreadCount',
     SUPPORT_MESSAGE:'supportMessage',
     ISREAD_SUPPORT:'isreadSupport',
     UPDATE_MESSAGE:'updateMessage',
@@ -19,6 +21,7 @@ export const visitTypes = {
     PRIORITY_VISIT:'Priority Visit',
     AWAITING_VISIT:'Awaiting Visit',
     PATIENT_INTERACTION:'Patient Interaction',
+    HW_INTERACTION:'HW Interaction',
     GENERAL_PHYSICIAN:'General Physician',
     ADULTINITIAL:'ADULTINITIAL',
     ASSOCIATED_SYMPTOMS:'Associated symptoms',
@@ -57,6 +60,8 @@ export const doctorDetails = {
     WORK_EXPERIENCE:'workExperience',
     WORK_EXPERIENCE_DETAILS:'workExperienceDetails',
     WHATS_APP_NUMBER:'whatsAppNumber',
+    ROLE: 'user_role',
+    USER_NAME: 'username'
 }
 
 export const facility = {

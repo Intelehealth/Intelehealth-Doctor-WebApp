@@ -10,7 +10,7 @@
                 <h6 class="mb-0 ml-2">{{'Appointments' | translate}} ({{appointments.length ? appointments.length : 0}})</h6>
                 <mat-icon aria-hidden="false" aria-label="help icon" matTooltip="{{'Scheduled appointments' | translate}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
                 <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
-                  <input type="text" #searchInput class="form-control" placeholder="Search appointments" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter1($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointment">
+                  <input type="text" #searchInput class="form-control" placeholder="{{ 'Search Appointments' | translate }}" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter1($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointment">
                   <div class="input-group-append">
                     <span class="input-group-text" id="basic-addon1" *ngIf="!dataSource.filter">
                       <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
@@ -59,6 +59,16 @@
               <ng-container matColumnDef="cheif_complaint">
                 <th mat-header-cell *matHeaderCellDef> {{'Chief Complaint' | translate}} </th>
                 <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'apComplaint'+j" [routerLink]="['/dashboard/visit-summary', element?.visitUuid]"> {{element?.cheif_complaint}} </td>
+              </ng-container>
+
+              <!-- Contact Column -->
+              <ng-container matColumnDef="telephone">
+                <th mat-header-cell *matHeaderCellDef> {{'Contact' | translate}} </th>
+                <td mat-cell *matCellDef="let element; let j=index;" 
+                  [attr.data-test-id]="'whatsappCall'+j" class="text-center"> <a *ngIf="element.telephone" href="{{ getWhatsAppLink(element.telephone) }}" target="_blank"
+                  class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp'+j">
+                  <img src="assets/svgs/whatsapp-green.svg" alt="" />
+                </a> </td>
               </ng-container>
 
               <!-- Prescription Sent Column -->

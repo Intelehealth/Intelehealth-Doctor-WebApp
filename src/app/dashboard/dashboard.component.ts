@@ -14,7 +14,12 @@ import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { getCacheData, checkIfDateOldThanOneDay } from '../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from 'src/config/constant';
-import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../model/model';
+import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, PatientVisitSummaryConfigModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../model/model';
+import { AppConfigService } from '../services/app-config.service';
+import { CompletedVisitsComponent } from './completed-visits/completed-visits.component';
+import { FollowupVisitsComponent } from './followup-visits/followup-visits.component';
+import { MindmapService } from '../services/mindmap.service';
+import { NgxRolesService } from 'ngx-permissions';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +29,7 @@ import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsMode
 export class DashboardComponent implements OnInit {
 
   showAll: boolean = true;
-  displayedColumns1: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'actions'];
+  displayedColumns1: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'telephone','actions'];
   displayedColumns2: string[] = ['name', 'age', 'location', 'cheif_complaint', 'visit_created'];
   displayedColumns3: string[] = ['name', 'age', 'location', 'cheif_complaint', 'visit_created'];
   displayedColumns4: string[] = ['name', 'age', 'location', 'cheif_complaint', 'prescription_started'];
@@ -39,11 +44,15 @@ export class DashboardComponent implements OnInit {
   priorityVisits: CustomVisitModel[] = [];
   awaitingVisits: CustomVisitModel[] = [];
   inProgressVisits: CustomVisitModel[] = [];
+  completedVisits: CustomVisitModel[] = [];
+  followUpVisits: CustomVisitModel[] = [];
 
   specialization: string = '';
   priorityVisitsCount: number = 0;
   awaitingVisitsCount: number = 0;
   inprogressVisitsCount: number = 0;
+  completedVisitsCount: number = 0;
+  followUpVisitsCount: number = 0;
 
   @ViewChild(MatAccordion) accordion: MatAccordion;
   @ViewChild('appointmentPaginator') appointmentPaginator: MatPaginator;
@@ -72,14 +81,26 @@ export class DashboardComponent implements OnInit {
   pageIndex4:number = 0;
   pageSize4:number = 5;
 
+  completedRecordsFetched: number = 0;
+  pageEvent5: PageEvent;
+  pageIndex5:number = 0;
+  pageSize5:number = 5;
+
+  patientRegFields: string[] = [];
+  pvs: PatientVisitSummaryConfigModel;
+  isMCCUser: boolean = false;
+
   @ViewChild('tempPaginator1') tempPaginator1: MatPaginator;
   @ViewChild('tempPaginator2') tempPaginator2: MatPaginator;
   @ViewChild('tempPaginator3') tempPaginator3: MatPaginator;
+  
+  @ViewChild('apSearchInput', { static: false }) apSearchElement: ElementRef;
+  @ViewChild('prSearchInput', { static: false }) prSearchElement: ElementRef;
+  @ViewChild('awSearchInput', { static: false }) awSearchElement: ElementRef;
+  @ViewChild('ipSearchInput', { static: false }) ipSearchElement: ElementRef;
 
-  @ViewChild('apSearchInput', { static: true }) apSearchElement: ElementRef;
-  @ViewChild('prSearchInput', { static: true }) prSearchElement: ElementRef;
-  @ViewChild('awSearchInput', { static: true }) awSearchElement: ElementRef;
-  @ViewChild('ipSearchInput', { static: true }) ipSearchElement: ElementRef;
+  @ViewChild(CompletedVisitsComponent) completedVisitsComponent: CompletedVisitsComponent;
+  @ViewChild(FollowupVisitsComponent) followUpVisitsComponent: FollowupVisitsComponent;
 
   constructor(
     private pageTitleService: PageTitleService,
@@ -89,7 +110,21 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private coreService: CoreService,
     private toastr: ToastrService,
-    private translateService: TranslateService) { }
+    private translateService: TranslateService,
+    private mindmapService: MindmapService,
+    private appConfigService: AppConfigService,
+    private rolesService: NgxRolesService) {
+      this.isMCCUser = !!this.rolesService.getRole('ORGANIZATIONAL:MCC');
+      Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
+        this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter((e: { is_enabled: any; })=>e.is_enabled).map((e: { name: any; })=>e.name));
+      });
+      this.pvs = { ...this.appConfigService.patient_visit_summary }; 
+      this.pvs.appointment_button = this.pvs.appointment_button && !this.isMCCUser;
+      this.displayedColumns1 = this.displayedColumns1.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
+      this.displayedColumns2 = this.displayedColumns2.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
+      this.displayedColumns3 = this.displayedColumns3.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
+      this.displayedColumns4 = this.displayedColumns4.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
+    }
 
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
@@ -101,13 +136,102 @@ export class DashboardComponent implements OnInit {
       } else {
         this.router.navigate(['/dashboard/get-started']);
       }
-      this.getAppointments();
+      if (this.pvs.appointment_button && !this.isMCCUser) {
+        this.getAppointments();
+      }
       this.getAwaitingVisits(1);
-      this.getPriorityVisits(1);
+      if (this.pvs.priority_visit_section) {
+        this.getPriorityVisits(1);
+      }
       this.getInProgressVisits(1);
+
+      if (this.pvs?.completed_visit_section)
+        this.getCompletedVisits();
+
+      if (this.pvs?.follow_up_visit_section)
+        this.getFollowUpVisit();
     }
 
     this.socket.initSocket(true);
+  }
+
+  get tempPaginator4() {
+    return this.completedVisitsComponent?.paginator;
+  };
+
+  get tempPaginator5() {
+    return this.followUpVisitsComponent?.paginator;
+  };
+
+  get dataSource5(){
+    return this.completedVisitsComponent?.tblDataSource;
+  }
+
+  get dataSource6(){
+    return this.followUpVisitsComponent?.tblDataSource;
+  }
+
+  /**
+  * Get follow-up visits for a logged-in doctor
+  * @return {void}
+  */
+  getFollowUpVisit(page: number = 1) {
+    this.visitService.getFollowUpVisits(this.specialization).subscribe({
+      next: (res: ApiResponseModel) => {
+        if (res.success) {
+          this.followUpVisitsCount = res.totalCount;
+          this.completedRecordsFetched += this.offset;
+          for (let i = 0; i < res.data.length; i++) {
+            let visit = res.data[i];
+            if (visit?.encounters?.length) {
+              visit.cheif_complaint = this.getCheifComplaint(visit);
+              visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.COMPLETED_VISIT);
+              visit.person.age = this.calculateAge(visit.person.birthdate);
+              visit.completed = this.getEncounterCreated(visit, visitTypes.VISIT_COMPLETE);
+              visit.followUp = this.getEncounterObs(visit.encounters, visitTypes.VISIT_NOTE, 163345/*Follow-up*/)?.value_text;
+              this.followUpVisits.push(visit);
+            }
+          }
+          this.dataSource6.data = [...this.followUpVisits];
+          if (page == 1) {
+            this.dataSource6.paginator = this.tempPaginator5;
+            this.dataSource6.filterPredicate = (data: { patient: { identifier: string; }; patient_name: { given_name: string; middle_name: string; family_name: string; }; }, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          } else {
+            this.tempPaginator5.length = this.followUpVisits.length;
+            this.tempPaginator5.nextPage();
+          }
+        }
+      }
+    });
+    }
+
+  /**
+   * Get completed visits count
+   * @return {void}
+   */
+  getCompletedVisits(page: number = 1) {
+    this.visitService.getEndedVisits(this.specialization, page).subscribe((res: ApiResponseModel) => {
+      if (res.success) {
+        this.completedVisitsCount = res.totalCount;
+        this.completedRecordsFetched += this.offset;
+        for (let i = 0; i < res.data.length; i++) {
+          let visit = res.data[i];
+          visit.cheif_complaint = this.getCheifComplaint(visit);
+          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.COMPLETED_VISIT);
+          visit.person.age = this.calculateAge(visit.person.birthdate);
+          visit.completed = this.getEncounterCreated(visit, visitTypes.VISIT_COMPLETE);
+          this.completedVisits.push(visit);
+        }
+        this.dataSource5.data = [...this.completedVisits];
+        if (page == 1) {
+          this.dataSource5.paginator = this.tempPaginator4;
+          this.dataSource5.filterPredicate = (data: { patient: { identifier: string; }; patient_name: { given_name: string; middle_name: string; family_name: string; }; }, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+        } else {
+          this.tempPaginator4.length = this.completedVisits.length;
+          this.tempPaginator4.nextPage();
+        }
+      }
+    });
   }
 
   /**
@@ -134,7 +258,7 @@ export class DashboardComponent implements OnInit {
         this.dataSource3.data = [...this.awaitingVisits];
         if (page == 1) {
           this.dataSource3.paginator = this.tempPaginator2;
-          this.dataSource3.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          this.dataSource3.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
           this.tempPaginator2.length = this.awaitingVisits.length;
           this.tempPaginator2.nextPage();
@@ -152,7 +276,7 @@ export class DashboardComponent implements OnInit {
     this.pageIndex1 = event.pageIndex;
     this.pageSize1 = event.pageSize;
     if (this.dataSource3.filter) {
-      this.awaitingPaginator.firstPage();
+      this.awaitingPaginator?.firstPage();
     }
     if (((event.pageIndex+1)*this.pageSize1) > this.awatingRecordsFetched) {
       this.getAwaitingVisits((this.awatingRecordsFetched+this.offset)/this.offset);
@@ -190,7 +314,7 @@ export class DashboardComponent implements OnInit {
         this.dataSource2.data = [...this.priorityVisits];
         if (page == 1) {
           this.dataSource2.paginator = this.tempPaginator1;
-          this.dataSource2.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          this.dataSource2.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
           this.tempPaginator1.length = this.priorityVisits.length;
           this.tempPaginator1.nextPage();
@@ -208,7 +332,7 @@ export class DashboardComponent implements OnInit {
     this.pageIndex2 = event.pageIndex;
     this.pageSize2 = event.pageSize;
     if (this.dataSource2.filter) {
-      this.priorityPaginator.firstPage();
+      this.priorityPaginator?.firstPage();
     }
     if (((event.pageIndex+1)*this.pageSize2) > this.priorityRecordsFetched) {
       this.getPriorityVisits((this.priorityRecordsFetched+this.offset)/this.offset);
@@ -247,7 +371,7 @@ export class DashboardComponent implements OnInit {
         this.dataSource4.data = [...this.inProgressVisits];
         if (page == 1) {
           this.dataSource4.paginator = this.tempPaginator3;
-          this.dataSource4.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          this.dataSource4.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
           this.tempPaginator3.length = this.inProgressVisits.length;
           this.tempPaginator3.nextPage();
@@ -265,7 +389,7 @@ export class DashboardComponent implements OnInit {
     this.pageIndex3 = event.pageIndex;
     this.pageSize3 = event.pageSize;
     if (this.dataSource4.filter) {
-      this.inprogressPaginator.firstPage();
+      this.inprogressPaginator?.firstPage();
     }
     if (((event.pageIndex+1)*this.pageSize3) > this.inprogressRecordsFetched) {
       this.getInProgressVisits((this.inprogressRecordsFetched+this.offset)/this.offset);
@@ -293,6 +417,7 @@ export class DashboardComponent implements OnInit {
             if (appointment.visit) {
               appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
               appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
+              appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person)
               this.appointments.push(appointment);
             }
           }
@@ -319,6 +444,23 @@ export class DashboardComponent implements OnInit {
       }
     });
     return created_at;
+  }
+
+
+  /**
+  * Get encounter datetime for a given encounter type
+  * @param {CustomVisitModel} visit - Visit
+  * @param {string} encounterName - Encounter type
+  * @return {string} - Encounter datetime
+  */
+  getEncounterObs(encounters: CustomEncounterModel[] , encounterName: string, conceptId: number) {
+    let obs: CustomObsModel;
+    encounters.forEach((encounter: CustomEncounterModel) => {
+      if (encounter.type?.name === encounterName) {
+        obs = encounter?.obs?.find((o: CustomObsModel) => o.concept_id == conceptId);
+      }
+    });
+    return obs;
   }
 
   /**
@@ -370,9 +512,9 @@ export class DashboardComponent implements OnInit {
       return moment(data).format('DD MMM, YYYY');
     };
     if (hours < 1) {
-      return `${minutes} minutes ago`;
+      return `${minutes} ${this.translateService.instant("Minutes ago")}`;
     }
-    return `${hours} hrs ago`;
+    return `${hours} ${this.translateService.instant("Hours ago")}`;
   }
 
   /**
@@ -416,6 +558,7 @@ export class DashboardComponent implements OnInit {
               this.appointmentService.rescheduleAppointment(appointment).subscribe((res: ApiResponseModel) => {
                 const message = res.message;
                 if (res.status) {
+                  this.mindmapService.notifyHwForRescheduleAppointment(appointment)
                   this.getAppointments();
                   this.toastr.success("The appointment has been rescheduled successfully!", 'Rescheduling successful!');
                 } else {
@@ -473,7 +616,7 @@ export class DashboardComponent implements OnInit {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource2.filter = filterValue.trim().toLowerCase();
     this.tempPaginator1.firstPage();
-    this.priorityPaginator.firstPage();
+    this.priorityPaginator?.firstPage();
   }
 
   /**
@@ -483,8 +626,8 @@ export class DashboardComponent implements OnInit {
   applyFilter3(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource3.filter = filterValue.trim().toLowerCase();
-    this.tempPaginator2.firstPage();
-    this.awaitingPaginator.firstPage();
+    this.tempPaginator2?.firstPage();
+    this.awaitingPaginator?.firstPage();
   }
 
   /**
@@ -495,7 +638,7 @@ export class DashboardComponent implements OnInit {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource4.filter = filterValue.trim().toLowerCase();
     this.tempPaginator3.firstPage();
-    this.inprogressPaginator.firstPage();
+    this.inprogressPaginator?.firstPage();
   }
 
   /**
@@ -526,4 +669,31 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  checkPatientRegField(fieldName: string): boolean{
+    return this.patientRegFields.indexOf(fieldName) !== -1;
+  }
+
+  scrollToPanel(panelId: string) {
+    const element = document.getElementById(panelId);
+    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /**
+  * Get provider uuid from localstorage provider
+  * @return {string} - Provider uuid
+  */
+  get providerId(): string {
+    return getCacheData(true, doctorDetails.PROVIDER).uuid;
+  } 
+  /**
+  * Get whatsapp link
+  * @return {string} - Whatsapp link
+  */
+  getWhatsAppLink(telephoneNumber: string): string {
+    return this.visitService.getWhatsappLink(telephoneNumber);
+  }
+
+  getTelephoneNumber(person: AppointmentModel['visit']['person']): any {
+    return person?.person_attribute.find((v: { person_attribute_type_id: number; }) => v.person_attribute_type_id == 8)?.value;
+  }
 }

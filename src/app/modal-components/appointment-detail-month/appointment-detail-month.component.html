@@ -35,7 +35,7 @@
               </ul>
             </div>
           </div>
-          <div class="col-md-12 p-0 mt-3">
+          <div class="col-md-12 p-0 mt-3" *ngIf="isFutureDate">
             <div class="day-off-form-con">
               <div class="form-group row">
                 <label for="markAS" class="col-4 col-form-label">{{'Mark as'|translate}}</label>
@@ -75,7 +75,7 @@
           <div class="col-md-12 p-0 mt-3">
             <div class="d-flex align-items-center justify-content-center flex-wrap">
               <button class="blue-btn" type="button" (click)="close(false)" data-test-id="btnCancelAppDetailMonth">{{'Cancel'|translate}}</button>
-              <button class="confirm-btn" type="submit" data-test-id="btnSubmitAppDetailMonth">{{'Continue'|translate}}</button>
+              <button class="confirm-btn" *ngIf="isFutureDate" type="submit" data-test-id="btnSubmitAppDetailMonth">{{'Continue'|translate}}</button>
             </div>
           </div>
         </div>

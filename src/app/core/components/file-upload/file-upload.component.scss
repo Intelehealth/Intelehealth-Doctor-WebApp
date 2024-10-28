@@ -1,0 +1,119 @@
+.pre-upload-image{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background: var(--color-white);
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    border: dashed 1px;
+    border-color: #EFE8FF;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+
+    .btn-upload-image{
+        min-height: 48px;
+        min-width: 48px;
+        font-size: 24px;
+        border: solid 1px;
+        background: #EFE8FF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-color: #2E1E9160;
+        max-height: 48px;
+        max-width: 48px;
+    }
+
+    .upload-msg{
+        padding: 0px 10px;
+        color: #7F7B92;
+        display: flex;
+        align-items: center;
+    }
+
+    .file-upload{
+        display: none;
+    }
+}
+
+.post-upload-image{ 
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background: var(--color-white);
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    border: dashed 1px;
+    border-color: #EFE8FF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .uploaded-image{
+        display: flex;
+        padding: 10px;
+        width: 100%;
+        justify-content: space-between;
+
+        .image-details{
+            display: flex;
+
+            .image-preview{
+                min-height: 48px;
+                min-width: 48px;
+                background-image: url("../../../../assets/images/background.png");
+                max-height: 48px;
+                max-width: 48px;
+                background-size: cover;
+            }
+        }
+        
+    }
+
+    .upload-msg{
+        padding: 0px 10px;
+        color: #7F7B92;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .upload-status{
+            font-size: 14px;
+        }
+    }
+    
+    .image-action-item{
+        display: flex;
+
+        .btn-action-item{
+            padding: 5px;
+        }
+    }
+    
+}
+.btn:focus{
+    box-shadow: none !important;
+}
+@media (max-width: 768px) {
+    .pre-upload-image{
+        .upload-msg{
+            font-size: 12px;
+        }
+    }
+    .post-upload-image{
+        .image-details{
+            width: 50%;
+        }
+        .image-preview{
+            display: none;
+        }
+        .upload-msg{
+            padding: 0 !important;
+            width: 100%;
+            .file-name{
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+        }
+    }   
+  }

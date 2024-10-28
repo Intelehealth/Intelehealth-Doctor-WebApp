@@ -11,7 +11,7 @@
         <div class="form-group">
           <label for="username">
             {{'Username'|translate}}
-            <span class="link"><a routerLink="/session/forgot-username" data-test-id="linkForgotUsername">{{'Forgot Username'|translate}} ?</a></span>
+            <!-- <span class="link"><a routerLink="/session/forgot-username" data-test-id="linkForgotUsername">{{'Forgot Username'|translate}} ?</a></span> -->
           </label>
           <input type="text" class="form-control" formControlName="username" placeholder="Enter username" data-test-id="etUsername">
           <div *ngIf="submitted && f.username.errors">
@@ -22,7 +22,7 @@
         <div class="form-group">
           <label for="password">
             {{'Password'|translate}}
-            <span class="link"><a routerLink="/session/forgot-password" data-test-id="linkForgotPassword">{{'Forgot Password'|translate}} ?</a></span>
+            <!-- <span class="link"><a routerLink="/session/forgot-password" data-test-id="linkForgotPassword">{{'Forgot Password'|translate}} ?</a></span> -->
           </label>
           <div class="password-field">
             <input [attr.type]="visible ? 'text' : 'password'" class="form-control" formControlName="password" placeholder="Enter password" data-test-id="etPassword">

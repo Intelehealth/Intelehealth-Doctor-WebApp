@@ -63,6 +63,7 @@
                                 ? '('+(conversation.openMrsId | uppercase)+')'
                                 : ""
                             }}
+                            <span class="badge badge-success" *ngIf="conversation?.count">{{conversation?.count}}</span>
                           </h6> 
                           <p>{{ conversation.message }}</p>
                         </div>
@@ -109,11 +110,12 @@
                       [items]="visits"
                       bindLabel="createdAt"
                       bindValue="visitId"
-                      [(ngModel)]="visitId"
+                      [ngModel]="visitId"
                       [clearable]="false"
                       [searchable]="false"
                       placeholder="Select visit"
                       data-test-id="selectVisit"
+                      (ngModelChange)="onVisitChange($event)"
                     >
                       <ng-template ng-label-tmp let-item="item">
                         {{ item.createdAt | amDateFormat : "DD MMM YYYY" }}
@@ -153,9 +155,13 @@
                             <img src="assets/svgs/read-status.svg" alt="" />
                             <span class="ml-1">{{'Read'|translate}}</span>
                           </ng-container>
-                          <ng-container *ngIf="!item.isRead">
+                          <ng-container *ngIf="!item.isRead && !item.isDelivered">
                             <img src="assets/svgs/sent-status.svg" alt="" />
                             <span class="ml-1">{{'Sent'|translate}}</span>
+                          </ng-container>
+                          <ng-container *ngIf="!item.isRead && item.isDelivered">
+                            <img src="assets/svgs/delivered-status.svg" alt="" />
+                            <span class="ml-1">{{'Delivered'|translate}}</span>
                           </ng-container>
                         </ng-container>
                       </li>

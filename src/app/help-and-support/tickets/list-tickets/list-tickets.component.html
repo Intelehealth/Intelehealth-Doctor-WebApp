@@ -1,0 +1,82 @@
+<div class="container-fluid">
+    <div class="row mt-3">
+      <div class="col-md-12 p-0">
+        <div class="card intel-card">
+            <div class="card-header">
+                <img class="mr-2" src="assets/svgs/ticket-icon.svg" alt="" height="44px">
+                <div>
+                    <h6 class="mb-0">{{'Tickets' | translate}}</h6>
+                    <span class="open-tickets">{{"("+openTicketsCount+" " }}{{'Open Tickets' | translate}} {{")"}}</span>
+                </div>
+                <div class="card-header-actions">
+                  <button type="button" class="btn" (click)="createTicket()" data-test-id="btnAddMindmap">{{'Create Ticket' | translate}}</button>
+                </div>
+            </div>
+          <div class="card-body">
+            <div class="mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource" matTableResponsive matSort>
+                <!-- Position Column -->
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef> {{'Ticket No.' | translate}} </th>
+                  <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+                </ng-container>
+  
+                <!-- Name Column -->
+                <ng-container matColumnDef="title">
+                  <th mat-header-cell *matHeaderCellDef> {{'Title' | translate}} </th>
+                  <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="createdAt">
+                  <th mat-header-cell *matHeaderCellDef class="text-center" mat-sort-header> {{'Created Date' | translate}} </th>
+                  <td mat-cell *matCellDef="let element">{{element.createdAt|date:'dd MMM, yyyy'}}</td>
+                </ng-container>
+  
+                <!-- Last Updated Column -->
+                <ng-container matColumnDef="updatedAt">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> {{'Last Updated' | translate}} </th>
+                  <td mat-cell *matCellDef="let element">{{element.updatedAt|date:'dd MMM, yyyy'}}</td>
+                </ng-container>
+  
+                <!-- Prescription Sent Column -->
+                <ng-container matColumnDef="priority">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> {{'Priority'| translate}} </th>
+                    <td mat-cell *matCellDef="let element;">
+                        <button class="action-btn priority" [ngClass]="element.priority" type="button">{{ element.priority | titlecase | translate}}</button>
+                    </td>
+                </ng-container>
+
+                <!-- Prescription Sent Column -->
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> {{'Status'| translate}} </th>
+                  <td mat-cell *matCellDef="let element;">
+                      <button class="action-btn status" [ngClass]="element.status === 'resolved' && 'low'" type="button">{{statuses[element.status] | translate}}</button>
+                  </td>
+                </ng-container>
+
+                <!-- Prescription Sent Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let element;" class="text-center">
+                      <button class="action-btn view-ticket blue-btn" type="button" routerLink="/help/ticket/{{element.incident_id}}">{{'View Ticket' | translate}}</button>
+                  </td>
+                </ng-container>
+  
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+                    {{'No data to display.' | translate}}
+                  </td>
+                </tr>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </div>
+            <mat-paginator #ticketPaginator hidePageSize [length]="totalData" [pageIndex]="pageIndex" [pageSize]="pageSize" (page)="getTableData($event)" aria-label="Select page of periodic elements"></mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

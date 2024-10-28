@@ -10,9 +10,11 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { doctorDetails, visitTypes } from 'src/config/constant';
-import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel } from 'src/app/model/model';
+import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PatientRegistrationFieldsModel, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 import { precription, logo } from "../../utils/base64"
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { calculateBMI } from 'src/app/utils/utility-functions';
 
 @Component({
   selector: 'app-view-visit-prescription',
@@ -32,6 +34,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   hwPhoneNo: string;
   clinicName: string;
   baseURL = environment.baseURL;
+  configPublicURL = environment.configPublicURL;
   visitNotePresent: EncounterModel;
   spokenWithPatient: string = 'No';
   notes: ObsModel[] = [];
@@ -59,15 +62,32 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   vitalObs: ObsModel[] = [];
   eventsSubscription: Subscription;
 
+  patientRegFields: string[] = [];
+  logoImageURL: string;
+  vitals: VitalModel[] = [];
+  hasVitalsEnabled: boolean = false;
+  hasPatientOtherEnabled: boolean = false;
+  hasPatientAddressEnabled: boolean = false;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
     private dialogRef: MatDialogRef<ViewVisitPrescriptionComponent>,
     private visitService: VisitService,
     private profileService: ProfileService,
     private diagnosisService: DiagnosisService,
-    private translateService: TranslateService) { }
+    private translateService: TranslateService,
+    private appConfigService: AppConfigService) {
+      Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
+        this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter(e=>e.is_enabled).map(e=>e.name));
+      });
+      this.vitals = [...this.appConfigService.patient_vitals]; 
+      this.hasVitalsEnabled = this.appConfigService.patient_vitals_section;
+      this.hasPatientAddressEnabled = this.appConfigService?.patient_reg_address;
+      this.hasPatientOtherEnabled = this.appConfigService?.patient_reg_other;
+    }
 
   ngOnInit(): void {
+    this.logoImageURL = this.appConfigService.theme_config.find(obj=>obj.key==='logo')?.value;
     this.getVisit(this.isDownloadPrescription ? this.visitId : this.data.uuid);
     pdfMake.fonts = {
       DmSans: {
@@ -519,23 +539,23 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   */
   async downloadPrescription() {
     const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
-
-    pdfMake.createPdf({
+    const logo: any = await this.toObjectUrl(`${this.configPublicURL}${this.logoImageURL}`);
+    const pdfObj = {
       pageSize: 'A4',
       pageOrientation: 'portrait',
-      pageMargins: [ 20, 50, 20, 20 ],
+      pageMargins: [ 20, 50, 20, 40 ],
       watermark: { text: 'INTELEHEALTH', color: 'var(--color-gray)', opacity: 0.1, bold: true, italics: false, angle: 0, fontSize: 50 },
       header: {
         columns: [
           { text: ''},
-          { image: 'logo', width: 90, height: 30, alignment: 'right', margin: [0, 10, 10, 0] }
+          { image: (logo && !logo?.includes('application/json')) ? logo : 'logo', width: 90, height: 30, alignment: 'right', margin: [0, 10, 10, 0] }
         ]
       },
       footer: (currentPage, pageCount) => {
         return {
           columns: [
-            { text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [5, 5, 5, 5] },
-            { text: currentPage.toString() + ' of ' + pageCount, fontSize: 8, margin: [5, 5, 5, 5], alignment: 'right'}
+            [ { text: (pageCount === currentPage ? '*The diagnosis and prescription is through telemedicine consultation conducted as per applicable telemedicine guideline\n\n' : '\n\n'),bold: true,fontSize: 9,margin: [10, 0, 0, 0] },{ text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [5, 0, 0, 0]} ],
+            { text: '\n\n'+currentPage.toString() + ' of ' + pageCount, width:"7%", fontSize: 8, margin: [5, 5, 5, 5], alignment: 'right'}
           ]
         };
       },
@@ -559,19 +579,20 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               ],
               [
                 {
+                  colSpan: 4,
                   table: {
                     widths: ['auto', '*'],
                     body: [
                       [
                         {
-                          image: (userImg && !userImg?.includes('application/json')) ? userImg : 'user',
+                          image: (userImg && !userImg?.includes('application/json')) && this.checkPatientRegField('Profile Photo') ? userImg : 'user',
                           width: 30,
                           height: 30,
                           margin: [0, (userImg && !userImg?.includes('application/json')) ? 15 : 5, 0, 5]
                         },
                         [
                           {
-                            text: `${this.patient?.person.display}`,
+                            text: `${this.patient?.person?.preferredName?.givenName?.toUpperCase()}` + (this.checkPatientRegField('Middle Name') && this.patient?.person?.preferredName?.middleName ? ' ' + this.patient?.person?.preferredName?.middleName?.toUpperCase() : '' ) + ` ${this.patient?.person?.preferredName?.familyName?.toUpperCase()}`,
                             bold: true,
                             margin: [10, 10, 0, 5],
                           }
@@ -581,96 +602,97 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                   },
                   layout: 'noBorders'
                 },
-                {
-                  table: {
-                    widths: ['100%'],
-                    body: [
-                      [
-                        [
-                          {text: 'Gender', style: 'subheader'},
-                          `${ (this.patient?.person.gender) === 'M' ? 'Male' : (this.patient?.person.gender) === 'F' ? 'Female' : 'Other'}`,
-                          {text: 'Age', style: 'subheader', margin:[0, 5, 0, 0]},
-                          `${this.patient?.person.birthdate ? this.getAge(this.patient?.person.birthdate) : this.patient?.person.age}`,
-                        ]
-                      ]
-                    ]
-                  },
-                  layout: {
-                    vLineWidth: function (i, node) {
-                      if (i === 0) {
-                        return 1;
-                      }
-                      return 0;
-                    },
-                    hLineWidth: function (i, node) {
-                      return 0;
-                    },
-                    vLineColor: function (i) {
-                      return "lightgray";
-                    },
-                  }
-                },
-                {
-                  table: {
-                    widths: ['100%'],
-                    body: [
-                      [
-                        [
-                          {text: 'Address', style: 'subheader'},
-                          `${this.patient?.person.preferredAddress.cityVillage.replace(':', ' : ')}`,
-
-                          {text: 'Occupation', style: 'subheader'},
-                          `${this.getPersonAttributeValue('occupation')}`,
-                        ]
-                      ]
-                    ]
-                  },
-                  layout: {
-                    vLineWidth: function (i, node) {
-                      if (i === 0) {
-                        return 1;
-                      }
-                      return 0;
-                    },
-                    hLineWidth: function (i, node) {
-                      return 0;
-                    },
-                    vLineColor: function (i) {
-                      return "lightgray";
-                    },
-                  }
-                },
-                {
-                  table: {
-                    widths: ['100%'],
-                    body: [
-                      [ 
-                        [ 
-                          {text: 'National ID', style: 'subheader'},
-                          `${this.getPersonAttributeValue('NationalID')}`,
-
-                          {text: 'Contact no.', style: 'subheader'},
-                          `${this.getPersonAttributeValue('Telephone Number') ? this.getPersonAttributeValue('Telephone Number') : 'NA'}`
-                          , {text: ' ', style: 'subheader'}, {text: ' '}
-                        ]
-                      ],
-                    ]
-                  },
-                  layout: {
-                    vLineWidth: function (i, node) {
-                      if (i === 0) {
-                        return 1;
-                      }
-                      return 0;
-                    },
-                    hLineWidth: function (i, node) {
-                      return 0;
-                    },
-                    vLineColor: function (i) {
-                      return "lightgray";
-                    },
-                  }
-                }
+                // {
+                //   table: {
+                //     widths: ['100%'],
+                //     body: [
+                //       [
+                //         [
+                //           ...this.getPatientRegFieldsForPDF('Gender'),
+                //           ...this.getPatientRegFieldsForPDF('Age'),
+                //         ]
+                //       ]
+                //     ]
+                //   },
+                //   layout: {
+                //     vLineWidth: function (i, node) {
+                //       if (i === 0) {
+                //         return 1;
+                //       }
+                //       return 0;
+                //     },
+                //     hLineWidth: function (i, node) {
+                //       return 0;
+                //     },
+                //     vLineColor: function (i) {
+                //       return "lightgray";
+                //     },
+                //   }
+                // },
+                // {
+                //   table: {
+                //     widths: ['100%'],
+                //     body: [
+                //       [
+                //         [
+                //           ...this.getPatientRegFieldsForPDF('Address'),
+                //           ...this.getPatientRegFieldsForPDF('Occupation')
+                //         ]
+                //       ]
+                //     ]
+                //   },
+                //   layout: {
+                //     vLineWidth: function (i, node) {
+                //       if (i === 0) {
+                //         return 1;
+                //       }
+                //       return 0;
+                //     },
+                //     hLineWidth: function (i, node) {
+                //       return 0;
+                //     },
+                //     vLineColor: function (i) {
+                //       return "lightgray";
+                //     },
+                //   }
+                // },
+                // {
+                //   table: {
+                //     widths: ['100%'],
+                //     body: [
+                //       [ 
+                //         [ 
+                //           ...this.getPatientRegFieldsForPDF('National ID'),
+                //           ...this.getPatientRegFieldsForPDF('Phone Number'),
+                //           , {text: ' ', style: 'subheader'}, {text: ' '}
+                //         ]
+                //       ],
+                //     ]
+                //   },
+                //   layout: {
+                //     vLineWidth: function (i, node) {
+                //       if (i === 0) {
+                //         return 1;
+                //       }
+                //       return 0;
+                //     },
+                //     hLineWidth: function (i, node) {
+                //       return 0;
+                //     },
+                //     vLineColor: function (i) {
+                //       return "lightgray";
+                //     },
+                //   }
+                // }
+              ],
+              [
+                this.getPersonalInfo()
+              ],
+              [
+                this.getAddress()
+              ],
+              [
+                this.getOtherInfo()
               ],
               [
                 {
@@ -701,6 +723,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               [
                 {
                   colSpan: 4,
+                  sectionName:'vitals',
                   table: {
                     widths: [30, '*'],
                     headerRows: 1,
@@ -954,7 +977,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                 '',
                 '',
                 ''
-              ],
+              ]
             ]
           },
           layout: 'noBorders'
@@ -969,9 +992,17 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         },
         subheader: {
           fontSize: 12,
-          bold: false,
-          margin: [0, 5, 0, 5],
-          color: 'var(--color-gray)'
+          bold: true,
+          margin: [0, 2, 0, 2],
+        },
+        subsubheader: {
+          fontSize: 10,
+          bold: true,
+          margin: [0, 2, 0, 2]
+        },
+        pval: {
+          fontSize: 10,
+          margin: [0, 2, 0, 2]
         },
         tableExample: {
           margin: [0, 5, 0, 5],
@@ -986,12 +1017,17 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
           fontSize: 12,
           bold: true,
           margin: [0, 5, 0, 10]
-        },
+        }
       },
       defaultStyle: {
         font: 'DmSans'
       }
-    }).download('e-prescription');
+    };
+    pdfObj.content[0].table.body = pdfObj.content[0].table.body.filter((section:any)=>{
+      if(section[0].sectionName === 'vitals' && !this.hasVitalsEnabled) return false;
+      return true;
+    });
+    pdfMake.createPdf(pdfObj).download('e-prescription');
   }
 
   /**
@@ -1072,25 +1108,9 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         }
         break;
       case visitTypes.VITALS:
-        let weightValue, heightValue, bmi, bp, pulse, temperature, spO2, respRate;
-        heightValue = this.getObsValue('Height (cm)') ? this.getObsValue('Height (cm)') : `No information`;
-        weightValue = this.getObsValue('Weight (kg)') ? this.getObsValue('Weight (kg)') : 'No information';
-        bmi = (this.getObsValue('Height (cm)') && this.getObsValue('Weight (kg)')) ? Number(weightValue / ((heightValue / 100) * (heightValue / 100))).toFixed(2)
-          : `No information`;
-        bp = this.getObsValue('SYSTOLIC BLOOD PRESSURE') ? this.getObsValue('SYSTOLIC BLOOD PRESSURE') + ' / ' + this.getObsValue('DIASTOLIC BLOOD PRESSURE') : 'No information';
-        pulse = this.getObsValue('Pulse') ? this.getObsValue('Pulse') : 'No information';
-        temperature = this.getObsValue('TEMPERATURE (C)') ?
-          Number(this.getObsValue('TEMPERATURE (C)') * 9 / 5 + 32).toFixed(2) : `No information`;
-        spO2 = this.getObsValue('BLOOD OXYGEN SATURATION') ? this.getObsValue('BLOOD OXYGEN SATURATION') : 'No information';
-        respRate = this.getObsValue('Respiratory rate') ? this.getObsValue('Respiratory rate') : 'No information';
-        records.push({ text: [{ text: `Height (cm) : `, bold: true }, `${heightValue}`], margin: [0, 5, 0, 5] });
-        records.push({ text: [{ text: `Weight (kg) : `, bold: true }, `${weightValue}`], margin: [0, 5, 0, 5] });
-        records.push({ text: [{ text: `BMI : `, bold: true }, `${bmi}`], margin: [0, 5, 0, 5] });
-        records.push({ text: [{ text: `BP : `, bold: true }, `${bp}`], margin: [0, 5, 0, 5] });
-        records.push({ text: [{ text: `Pulse : `, bold: true }, `${pulse}`], margin: [0, 5, 0, 5] });
-        records.push({ text: [{ text: `Temperature (F) : `, bold: true }, `${temperature}`], margin: [0, 5, 0, 5] });
-        records.push({ text: [{ text: `SpO2 : `, bold: true }, `${spO2}`], margin: [0, 5, 0, 5] });
-        records.push({ text: [{ text: `Respiratory Rate : `, bold: true }, `${respRate}`], margin: [0, 5, 0, 5]});
+        this.vitals.forEach((v: VitalModel) => {
+          records.push({ text: [{ text: `${v.name} : `, bold: true }, `${this.getObsValue(v.uuid, v.key) ? this.getObsValue(v.uuid, v.key) : `No information`}`], margin: [0, 5, 0, 5] });
+        });
         break;
     }
     return records;
@@ -1121,17 +1141,244 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   }
 
   /**
-  * Get observation value for a given observation name
-  * @param {string} obsName - Observation name
+  * Get vital value for a given vital uuid
+  * @param {string} uuid - Vital uuid
   * @return {any} - Obs value
   */
-  getObsValue(obsName: string) {
-    let val = null;
-    this.vitalObs.forEach((obs: ObsModel) => {
-      if (obs.concept.display == obsName) {
-        val = obs.value;
+  getObsValue(uuid: string, key?: string): any {
+    const v = this.vitalObs.find(e => e.concept.uuid === uuid);
+    const value = v?.value ? ( typeof v.value == 'object') ? v.value?.display : v.value : null;
+    if(!value && key === 'bmi') {
+      return calculateBMI(this.vitals, this.vitalObs);
+    }
+    return value
+  }
+
+  checkPatientRegField(fieldName): boolean{
+    return this.patientRegFields.indexOf(fieldName) !== -1;
+  }
+
+  getPersonalInfo() {
+    const data = {
+      colSpan: 4,
+      layout: 'noBorders',
+      table: {
+        widths: ['*','*','*','*'],
+        body: [
+          [
+            {
+              colSpan: 4,
+              text: `Personal Information`,
+              style: 'subheader'
+            },
+            '',
+            '',
+            ''
+          ]
+        ]
+      }
+    };
+
+    let other = [];
+    this.appConfigService.patient_registration['personal'].forEach((e: PatientRegistrationFieldsModel) => {
+      let value: any;
+      switch (e.name) {
+        case 'Gender':
+          value = this.patient?.person.gender == 'M' ? 'Male' : 'Female';
+          break;
+        case 'Age':
+          value = this.patient?.person.age + ' years';
+          break;
+        case 'Date of Birth':
+          value = new Date(this.patient?.person.birthdate).toDateString();
+          break;
+        case 'Phone Number':
+          value = this.getPersonAttributeValue('Telephone Number');
+          break;
+        case 'Guardian Type':
+          value = this.getPersonAttributeValue('Guardian Type');
+          break;
+        case 'Guardian Name':
+          value = this.getPersonAttributeValue('Guardian Name');
+          break;
+        case 'Emergency Contact Name':
+          value = this.getPersonAttributeValue('Emergency Contact Name');
+          break;
+        case 'Emergency Contact Number':
+          value = this.getPersonAttributeValue('Emergency Contact Number');
+          break;
+        case 'Contact Type':
+          value = this.getPersonAttributeValue('Contact Type');
+          break;
+        default:
+          break;
+      }
+      if (value !== 'NA' && value) {
+        other.push({
+          stack: [
+            { text: e.name, style: 'subsubheader' },
+            { text: value, style: 'pval' }
+          ]
+        });
       }
     });
-    return val;
+    const chunkSize = 4;
+    for (let i = 0; i < other.length; i += chunkSize) {
+      const chunk = other.slice(i, i + chunkSize);
+      if (chunk.length == chunkSize) {
+        data.table.body.push([...chunk]);
+      } else {
+        for (let x = chunk.length; x < chunkSize; x++) {
+          chunk[x] = '';
+        }
+        data.table.body.push([...chunk]);
+      }
+    }
+
+    return data;
+  }
+
+  getAddress() {
+    const data = {
+      colSpan: 4,
+      layout: 'noBorders',
+      table: {
+        widths: ['*','*','*','*'],
+        body: []
+      }
+    };
+    if (this.hasPatientAddressEnabled) {
+      data.table.body.push([
+        {
+          colSpan: 4,
+          text: `Address`,
+          style: 'subheader'
+        },
+        '',
+        '',
+        ''
+      ]);
+      let other = [];
+      this.appConfigService.patient_registration['address'].forEach((e: PatientRegistrationFieldsModel) => {
+        let value: any;
+        switch (e.name) {
+          case 'Corresponding Address 1':
+            value = this.patient?.person?.preferredAddress?.address1;
+            break;
+          case 'Corresponding Address 2':
+            value = this.patient?.person?.preferredAddress?.address2;
+            break;
+          case 'Village/Town/City':
+            value = this.patient?.person.preferredAddress.cityVillage;
+            break;
+          case 'District':
+            value = this.patient?.person.preferredAddress.countyDistrict;
+            break;
+          case 'State':
+            value = this.patient?.person.preferredAddress.stateProvince;
+            break;
+          case 'Country':
+            value = this.patient?.person.preferredAddress.country;
+            break;
+          case 'Postal Code':
+            value = this.patient?.person.preferredAddress.postalCode;
+            break;
+          default:
+            break;
+        }
+        if (value) {
+          other.push({ 
+            stack: [
+              { text: e.name, style: 'subsubheader' },
+              { text: value, style: 'pval' }
+            ] 
+          });
+        }
+      });
+      const chunkSize = 4;
+      for (let i = 0; i < other.length; i += chunkSize) {
+          const chunk = other.slice(i, i + chunkSize);
+          if (chunk.length == chunkSize) {
+            data.table.body.push([...chunk]);
+          } else {
+            for (let x = chunk.length; x < chunkSize; x++) {
+              chunk[x] = '';
+            }
+            data.table.body.push([...chunk]);
+          }
+      }
+    } else {
+      data.table.body.push(['','','','']);
+    }
+    return data;
+  }
+
+  getOtherInfo() {
+    const data = {
+      colSpan: 4,
+      layout: 'noBorders',
+      table: {
+        widths: ['*','*','*','*'],
+        body: []
+      }
+    };
+    if (this.hasPatientOtherEnabled) {
+      data.table.body.push([
+        {
+          colSpan: 4,
+          text: `Other Information`,
+          style: 'subheader'
+        },
+        '',
+        '',
+        ''
+      ]);
+      let other = [];
+      this.appConfigService.patient_registration['other'].forEach((e: PatientRegistrationFieldsModel) => {
+        let value: any;
+        switch (e.name) {
+          case 'Occupation':
+            value = this.getPersonAttributeValue('occupation');
+            break;
+          case 'Education':
+            value = this.getPersonAttributeValue('Education Level');
+            break;
+          case 'National ID':
+            value = this.getPersonAttributeValue('NationalID');
+            break;
+          case 'Economic Category':
+            value = this.getPersonAttributeValue('Economic Status');
+            break;
+          case 'Social Category':
+            value = this.getPersonAttributeValue('Caste');
+            break;
+          default:
+            break;
+        }
+        if (value != 'NA' && value) {
+          other.push({ 
+            stack: [
+              { text: e.name, style: 'subsubheader' },
+              { text: value, style: 'pval' }
+            ] 
+          });
+        }
+      });
+      const chunkSize = 4;
+      for (let i = 0; i < other.length; i += chunkSize) {
+          const chunk = other.slice(i, i + chunkSize);
+          if (chunk.length == chunkSize) {
+            data.table.body.push([...chunk]);
+          } else {
+            for (let x = chunk.length; x < chunkSize; x++) {
+              chunk[x] = '';
+            }
+            data.table.body.push([...chunk]);
+          }
+      }
+    } else {
+      data.table.body.push(['','','','']);
+    }
+    return data;
   }
 }

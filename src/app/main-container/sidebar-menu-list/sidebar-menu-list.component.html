@@ -1,0 +1,111 @@
+<!-- Doctor and MCC user menus -->
+<ng-container *ngIf="menus?.dashboard">
+    <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE']"
+        (click)="toggleSidebar()" data-test-id="listItemDashboard">
+        <a class="nav-item-link" routerLink="/dashboard" routerLinkActive="active" data-test-id="linkDashboard">
+            <img src="assets/svgs/menu-home.svg" alt="">
+            <span>{{'Dashboard' | translate}}</span>
+        </a>
+    </li>
+</ng-container>
+<ng-container *ngIf="menus?.messages">
+    <li class="nav-item"
+        *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE', 'ORGANIZATIONAL:MCC']"
+        (click)="toggleSidebar()" data-test-id="listItemMessages">
+        <a class="nav-item-link" routerLink="/messages" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkMessages">
+            <img src="assets/svgs/menu-message.svg" alt="">
+            <span>{{'Messages' | translate}} <div class="dot" *ngIf="drUnread">{{drUnread}}</div></span>
+        </a>
+    </li>
+</ng-container>
+<ng-container *ngIf="pvs.appointment_button && menus?.appointment">
+    <li class="nav-item"
+        *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE', 'ORGANIZATIONAL:MCC']"
+        (click)="toggleSidebar()" data-test-id="listItemAppointments">
+        <a class="nav-item-link" routerLink="/appointments" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkAppointments">
+            <img src="assets/svgs/menu-video.svg" alt="">
+            <span>{{'Appointment' | translate}}</span>
+        </a>
+    </li>
+</ng-container>
+<ng-container *ngIf="menus?.calendar">
+    <li class="nav-item"
+        *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE', 'ORGANIZATIONAL:MCC']"
+        (click)="toggleSidebar()" data-test-id="listItemCalendar">
+        <a class="nav-item-link" routerLink="/calendar" routerLinkActive="active" data-test-id="linkCalendar">
+            <img src="assets/svgs/menu-calendar.svg" alt="">
+            <span>{{'Calendar' | translate}}</span>
+        </a>
+    </li>
+</ng-container>
+<ng-container *ngIf="menus?.calendar">
+    <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL:MCC']" (click)="toggleSidebar()"
+        data-test-id="listItemCalendar">
+        <a class="nav-item-link" routerLink="/calendar/view-calendar" routerLinkActive="active"
+            data-test-id="linkCalendar">
+            <img src="assets/svgs/menu-calendar.svg" alt="">
+            <span>{{'Calendar' | translate}}</span>
+        </a>
+    </li>
+</ng-container>
+<ng-container *ngIf="menus?.prescription">
+    <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE']"
+        (click)="toggleSidebar()" data-test-id="listItemPrescription">
+        <a class="nav-item-link" routerLink="/prescription" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkPrescription">
+            <img src="assets/svgs/menu-treatment.svg" alt="">
+            <span>{{'Prescription' | translate}}</span>
+        </a>
+    </li>
+</ng-container>
+<ng-container *ngIf="menus?.my_profile">
+    <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: NURSE']" (click)="toggleSidebar()"
+        data-test-id="listItemProfile">
+        <a class="nav-item-link" routerLink="/dashboard/hw-profile" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkProfile">
+            <img src="assets/svgs/menu-home.svg" alt="">
+            <span>{{'My Profile'| translate}}</span>
+        </a>
+    </li>
+</ng-container>
+
+<ng-container *ngIf="menus?.help_support">
+    <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()"
+        data-test-id="listItemHelp">
+        <a class="nav-item-link" routerLink="/help" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkHelp">
+            <img src="assets/svgs/menu-info.svg" alt="">
+            <span>{{'Help & Support' | translate}}</span>
+        </a>
+    </li>
+</ng-container>
+
+<!-- End Doctor and MCC user menus -->
+
+
+<!-- Admin Menu --->
+<li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()"
+    data-test-id="listItemAdminAction">
+    <a class="nav-item-link" routerLink="/admin/actions" routerLinkActive="active" data-test-id="listAdminAction">
+        <img src="assets/svgs/add-user-male.svg" alt="">
+        <span>{{'Admin Actions' | translate}}</span>
+    </a>
+</li>
+<li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()"
+    data-test-id="listItemSupport">
+    <a class="nav-item-link" routerLink="/admin/support" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkSupport">
+        <img src="assets/svgs/menu-info.svg" alt="">
+        <span>{{'Support' | translate}} <div class="dot" *ngIf="adminUnread">{{adminUnread}}</div> </span>
+    </a>
+</li>
+<li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()"
+    data-test-id="listItemReport">
+    <a class="nav-item-link" routerLink="/admin/report" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkReport">
+        <img src="assets/svgs/report.svg" alt="">
+        <span>{{'Report' | translate}}</span>
+    </a>
+</li>

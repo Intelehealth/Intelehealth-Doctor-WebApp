@@ -1,0 +1,63 @@
+.chip-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 7rem;
+    width: 100%;
+    border-radius: 12px;
+    align-items: center;
+    padding: 16px;
+    background: #FAF9FF;
+    border: 1px solid #EFE8FF;
+  
+    .chip-img {
+      width: 40px;
+    }
+  
+    .chip-info {
+        font-family: 'DM Sans';
+        font-style: normal;
+        color: var(--color-black);
+        padding: 0 0 0 3%;
+    }
+
+    .chip-body{
+        display: flex;
+        align-items: flex-start;
+        width: 100%;
+    }
+  
+    .chip-info h6 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+  
+    .chip-info span {
+      font-size: 16px;
+      color: var(--color-gray);
+    }
+
+    .chip-action {
+        height: 100%;
+        align-items: center;
+        display: flex;
+
+        button{
+            height: 40px;
+            background: var(--color-darkBlue);
+            border-radius: 8px;
+            font-size: 16px;
+            color: var(--color-white);  
+            position: relative;
+            min-width: 80px;
+        }
+    }
+
+  }
+
+  @media (max-width: 768px) {
+    .chip-item{
+      height: unset;
+    }
+  }

@@ -1,0 +1,223 @@
+.chip-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    height: 86px;
+    width: 100%;
+    border-radius: 12px;
+    align-items: center;
+    padding: 16px;
+    background: red;
+    cursor: pointer;
+  
+    .chip-img {
+      width: 44px;
+    }
+  
+    .chip-info {
+      font-family: 'DM Sans';
+      font-style: normal;
+      color: var(--color-black);
+      padding: 3%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  
+    .chip-info h6 {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      margin-top: 8px;
+    }
+  
+    .chip-info span {
+      font-size: 16px;
+      color: var(--color-gray);
+    }
+  }
+  
+  .chip-item-blue {
+    background: var(--color-lightGray);
+  }
+  
+  .chip-item-green {
+    background: #E6FFF3;
+  }
+  
+  .chip-item-red {
+    background: var(--color-lightPink);
+  }
+  
+  .mat-elevation-z8 {
+    box-shadow: none;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    font-family: DM Sans;
+  }
+  
+  th.mat-header-cell {
+    border: none;
+    font-size: 14px !important;
+    font-weight: 700;
+    color: var(--color-gray);
+    height: 21px;
+  }
+  
+  th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+    border: none;
+    min-width: 60px;
+    white-space: nowrap;
+    padding-right: 24px;
+  
+    span.alert-danger {
+      color: var(--color-red);
+      font-weight: bold;
+      background: transparent;
+      border: none;
+    }
+  
+    span.alert-success {
+      color: var(--color-green);
+      font-weight: bold;
+      background: transparent;
+      border: none;
+    }
+  }
+  
+  td.mat-cell {
+    font-size: 16px;
+  }
+  
+  tr.mat-row, tr.mat-footer-row {
+    height: 88px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  tr.mat-row.upcoming {
+    background: #E6FFF3 !important;
+  }
+  
+  tr.mat-row:nth-child(odd){
+    background: #F7F7FA;
+  }
+  
+  td:first-child,
+  th:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+  
+  // Set border-radius on the top-right and bottom-right of the last table data on the table row
+  td:last-child,
+  th:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+  
+  .red-pill {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: var(--color-lightPink);
+    border-radius: 4px;
+    height: 32px;
+    color: var(--color-lightRed);
+    padding: 4px 6px;
+    width: fit-content;
+  }
+  
+  .actions-btn-wrap {
+    .action-btn {
+      outline: none;
+      border: none;
+      height: 36px;
+      min-width: 102px;
+      padding: 6px 8px;
+      background: white;
+      border-radius: 4px;
+      color: var(--color-black);
+      font-family: DM Sans;
+      font-size: 16px;
+    }
+  
+    .blue-btn {
+      background: var(--color-lightGray);
+      color: var(--color-darkBlue);
+    }
+  
+    .pink-btn {
+      background: var(--color-lightPink);
+      color: var(--color-red);
+    }
+  }
+  
+  .intel-accordion-con .mat-expansion-panel .mat-expansion-panel-header.mat-expanded {
+    .input-group {
+      display: flex;
+    }
+  }
+  
+  .input-group {
+    background: var(--color-white);
+    border: 1px solid rgba(127, 123, 146, 0.5);
+    border-radius: 6px;
+    height: 46px;
+    align-items: center;
+    max-width: 60vw;
+    width: 300px;
+    display: none;
+  
+    .input-group-text {
+      background: none;
+      border: none;
+      cursor: default;
+    }
+  
+    .form-control {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
+      line-height: 150%;
+      padding-left: 16px;
+    }
+  
+    .form-control:focus {
+      box-shadow: none;
+    }
+  }
+  
+  .anchor-con {
+    position: absolute;
+    top: -120px;
+    left: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .input-group {
+      width: 100%;
+      max-width: 100%;
+      margin: 10px 0px;
+    }
+  
+    .intel-accordion-con .mat-expansion-panel .mat-expansion-panel-header {
+      height: fit-content;
+    }
+  
+    .intel-accordion-con .mat-expansion-panel .mat-expansion-panel-header.mat-expanded {
+      height: fit-content;
+    }
+  
+    .info-icon{
+      display: none;
+    }
+  
+    .anchor-con {
+      top: -100px;
+    }  
+  }
+  

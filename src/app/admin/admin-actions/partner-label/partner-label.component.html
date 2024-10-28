@@ -1,0 +1,98 @@
+<div class="container-fluid">
+    <div class="row mt-3">
+      <div class="col-md-12 p-0">
+        <div class="card intel-card">
+          <div class="card-header">
+            <img class="mr-2" src="assets/svgs/partner-label.svg" alt="" height="44px">
+            <div>
+                <h6 class="mb-0">{{'Partner White Labelling' | translate}}</h6>
+                <a class="user-manual-link">{{'View User Manual' | translate}}</a>
+            </div>
+            <div class="card-header-actions">
+              <button type="button" class="btn" (click)="onPublish()" data-test-id="btnAddMindmap">{{'Publish' | translate}}</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="mat-elevation-z8 section">
+                <h6 class="section-logo mb-4">{{'Logo' | translate}}</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <span><b>{{'Upload Logo' | translate}}</b></span>
+                        <app-file-upload [options]="logoUploadImageOptions" [filePath]="themeConfigData.logo" (onFileupload)="onLogoUpload($event)" (onFileRemove)="onLogoFileDelete('logo')"></app-file-upload>
+                    </div>
+                    <div class="col-md-6">
+                        <span><b>{{'Upload Thumbnail Logo' | translate}}</b></span>
+                        <app-file-upload [options]="thumbnailLogoUploadImageOptions" [filePath]="themeConfigData.thumbnail_logo" (onFileupload)="onThumbnailLogoUpload($event)" (onFileRemove)="onLogoFileDelete('thumbnail_logo')"></app-file-upload>
+                    </div>
+                </div>
+            </div>
+            <div class="mat-elevation-z8 section">
+                <h6 class="section-logo mb-4">{{'Color' | translate}}</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <span><b>{{'Primary Color' | translate}}</b></span>
+                        <div class="color-details">
+                            <input type="text" maxlength="7" [(ngModel)]="themeConfigData.primary_color" (change)="onColorChange($event.target?.value,'primary_color')" class="form-control" placeholder="{{'Enter HEX code for'|translate}} {{'Primary Color' | translate}}">
+                            <span class="colorpicker-parent">
+                                <input 
+                                    (change)="onColorChange($event.target?.value,'primary_color')"
+                                    type="color"
+                                    class="click"
+                                    [(ngModel)]="themeConfigData.primary_color"
+                                >
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <span><b>{{'Secondary Color' | translate}}</b></span>
+                        <div class="color-details">
+                            <input type="text" [(ngModel)]="themeConfigData.secondary_color" (change)="onColorChange($event.target?.value,'secondary_color')" maxlength="7" class="form-control" placeholder="{{'Enter HEX code for'|translate}} {{'Secondary Color' | translate}}">
+                            <span class="colorpicker-parent">
+                                <input 
+                                    (change)="onColorChange($event.target?.value,'secondary_color')"
+                                    type="color"
+                                    class="click"
+                                    [(ngModel)]="themeConfigData.secondary_color"
+                                >
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mat-elevation-z8 section">
+                <div class="mb-4">
+                    <h6 class="section-logo mb-2">{{'Images and Text' | translate}}</h6>
+                    <span class="images-msg">*{{'Minimum of one and a maximum of three images and texts allowed.' | translate}}</span>
+                </div>
+                
+                <div class="row" *ngFor="let item of themeConfigData.images_with_text; index as i;">
+                    <div class="col-md-6">
+                        <div><span><b>{{'Upload Image ' + (i+1) | translate}}*</b></span></div>
+                        <app-file-upload [options]="slideImageUploadOptions" [filePath]="item.image" (onFileupload)="onSlideUploadImage($event,item)" (onFileRemove)="onSlideImageDelete($event,item)"></app-file-upload>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="slide-image-row">
+                            <span><b>{{'Text ' + (i+1) | translate}}</b></span>
+                        </div>
+                        <input type="text" [(ngModel)]="item.text" maxlength="150" class="form-control image-text" placeholder="{{'Enter Text'|translate}} {{(i+1)}}">
+                    </div>
+                    <div class="col-md-12 text-right">
+                        <button type="button" class="btn btn-delete-slide" *ngIf="i!==0" (click)="onDeleteSlides(i)"><img class="mr-1 h-75" src="assets/svgs/delete-icon.svg">{{'Delete' | translate}}</button>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6 text-left">
+                        <button type="button" *ngIf="themeConfigData.images_with_text.length < 3" class="btn btn-add-slides w-100 text-left" (click)="addSlides()"><span class="">+</span>{{'  Add Image and Text Section' | translate}}</button>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <button type="button" class="btn btn-save-slides" [disabled]="!validateSildesData()" (click)="saveSlides()">{{'Save' | translate}}</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn-block mt-3" (click)="onPublish()" data-test-id="btnAddMindmap">{{'Publish' | translate}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

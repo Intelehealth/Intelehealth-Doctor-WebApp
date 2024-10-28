@@ -30,8 +30,7 @@
               <div class="patient-img-item mb-2">
                 <div class="patient-img">
                   <img
-                    src="{{ baseURL + '/personimage/' + patient?.person.uuid }}"
-
+                    src="{{ checkPatientRegField('Profile Photo') ? baseURL + '/personimage/' + patient?.person.uuid : ''}}"
                     alt=""
                     width="100%"
                     height="100%"
@@ -40,68 +39,198 @@
                 </div>
                 <div class="ml-3">
                   <h6 data-test-id="etPatientName">
-                    {{ patient?.person.display }} ({{ (patient?.person.gender | translate) }})
+                    <span>{{ patient?.person?.preferredName?.givenName }}</span>
+                    <span *ngIf="checkPatientRegField('Middle Name') && patient?.person?.preferredName?.middleName">{{ ' ' + patient?.person?.preferredName?.middleName }}</span>
+                    <span>{{ ' ' + patient?.person?.preferredName?.familyName }}</span>
+                    <span *ngIf="checkPatientRegField('Gender')">{{ " (" + (patient?.person.gender | translate) + ") "}}</span>
                   </h6>
                   <p data-test-id="etPatienOpenMRSId">{{ getPatientIdentifier("OpenMRS ID") }}</p>
                 </div>
               </div>
+            </div>
 
-            </div>
-            <div class="col-md-3 patient-info-section p-3">
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Age') && patient?.person.age">
               <div class="patient-info-item mb-3">
-                <h6 data-test-id="etPatienAge">{{'Age'|translate}}</h6>
-                <p data-test-id="etPatient">
-                  {{
-                    patient?.person.birthdate
-                      ? getAge(patient?.person.birthdate)
-                      : patient?.person.age
-                  }}
-                </p>
-              </div>
-              <div class="patient-info-item">
-                <h6 data-test-id="etPatient">{{'Address'|translate}}</h6>
-                <p data-test-id="etPatient">{{ patient?.person.preferredAddress.cityVillage.replace(':',' : ') }}</p>
-                <p data-test-id="etPatient">{{ patient?.person?.preferredAddress?.address1 ?? ''}} {{ patient?.person?.preferredAddress?.address2 ? ', ' + patient?.person?.preferredAddress?.address2 : ''}}</p>
+                <h6 data-test-id="etPatientAge">{{'Age'|translate}}</h6>
+                <p data-test-id="etPatient">{{ patient?.person.birthdate ? getAge(patient?.person.birthdate) : patient?.person.age + ' years'  }}</p>
               </div>
             </div>
-            <div class="col-md-3 patient-info-section p-3">
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Date of Birth') && patient?.person.birthdate !== 'NA'">
               <div class="patient-info-item mb-3">
-                <h6 data-test-id="etPatient">{{'Occupation'|translate}}</h6>
-                <p data-test-id="etPatient">{{ getPersonAttributeValue("occupation") }}</p>
-              </div>
-              <div class="patient-info-item">
-                <h6 data-test-id="etPatient">{{'National ID'|translate}}</h6>
-                <p data-test-id="etPatient">{{ getPersonAttributeValue("NationalID") }}</p>
+                <h6 data-test-id="etPatientAge">{{'Date of birth'|translate}}</h6>
+                <p data-test-id="etPatient">{{ patient?.person.birthdate | date : "dd MMM, yyyy" }}</p>
               </div>
             </div>
-            <div class="col-md-3 patient-info-section p-3">
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Phone Number') && getPersonAttributeValue('Telephone Number') !== 'NA'">
               <div class="patient-info-item">
                 <h6 data-test-id="etPatient">{{'Contact no.'| translate}}</h6>
-                <p data-test-id="etWhatsApp" *ngIf="getPersonAttributeValue('Telephone Number') === 'NA'">
-                   {{ getPersonAttributeValue("Telephone Number") }}
-                </p>
-                <p data-test-id="etPhoneNumber" *ngIf="getPersonAttributeValue('Telephone Number') !== 'NA'">
-                  {{ getPersonAttributeValue("Telephone Number") }}
-                  <a
-                    href="tel:{{ getPersonAttributeValue('Telephone Number') }}"
-                    target="_blank"
-                    class="icon-btn"
-                    data-test-id="linkPhoneNumber"
-                  >
-                    <img src="assets/svgs/phone-circle.svg" alt="" />
-                  </a>
-                  <a
-                    href="{{ getWhatsAppLink() }}"
-                    target="_blank"
-                    class="icon-btn"
-                    data-test-id="linkWhatsApp"
-                  >
-                    <img src="assets/svgs/whatsapp-icon.svg" alt="" />
-                  </a>
-                </p>
+                <div class="contact-info">
+                  <p data-test-id="etPhoneNumber">
+                    {{ getPersonAttributeValue("Telephone Number") }}
+                    <a
+                      href="{{ getWhatsAppLink() }}"
+                      target="_blank"
+                      class="icon-btn"
+                      data-test-id="linkWhatsApp"
+                    >
+                      <img src="assets/svgs/whatsapp-icon.svg" alt="" />
+                    </a>
+                  </p>
+                  <p data-test-id="etWhatsApp">
+                    {{ getPersonAttributeValue("Telephone Number") }}
+                    <a
+                      href="tel:{{ getPersonAttributeValue('Telephone Number') }}"
+                      target="_blank"
+                      class="icon-btn"
+                      data-test-id="linkPhoneNumber"
+                    >
+                      <img src="assets/svgs/phone-circle.svg" alt="" />
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Guardian Type') && getPersonAttributeValue('Guardian Type') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Guardian Type' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Guardian Type') }}</p>
+              </div>
+            </div>
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Guardian Name') && getPersonAttributeValue('Guardian Name') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Guardian Name' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Guardian Name') }}</p>
+              </div>
+            </div>
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Emergency Contact Name') && getPersonAttributeValue('Emergency Contact Name') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Emergency Contact Name' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Emergency Contact Name') }}</p>
+              </div>
+            </div>
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Emergency Contact Number') && getPersonAttributeValue('Emergency Contact Number') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Emergency Contact Number' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Emergency Contact Number') }}</p>
+              </div>
+            </div>
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Contact Type') && getPersonAttributeValue('Contact Type') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Contact Type' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Emergency Contact Type') }}</p>
               </div>
             </div>
           </div>
+
+          <button (click)="collapsedButton()" class="btn">
+            <img [src]="getUrl()" alt="">
+          </button>
+
+          <mat-tab-group class="patient-tab-group" mat-align-tabs="start" *ngIf="collapsed">
+            <mat-tab label="{{'Address'| translate}}" *ngIf="hasPatientAddressEnabled">
+              <div class="rows patient-info-wrapper">
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Corresponding Address 1') && patient?.person?.preferredAddress?.address1">
+                  <div class="patient-info-item">
+                    <h6 data-test-id="etPatient">{{'Corresponding address 1' | translate}}</h6>
+                    <p data-test-id="etPatient">
+                      {{ patient?.person?.preferredAddress?.address1 }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Corresponding Address 2') && patient?.person?.preferredAddress?.address2">
+                  <div class="patient-info-item">
+                    <h6 data-test-id="etPatient">{{'Corresponding address 2' | translate}}</h6>
+                    <p data-test-id="etPatient">
+                      {{ patient?.person?.preferredAddress?.address2 }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Village/Town/City') && patient?.person?.preferredAddress?.cityVillage">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Village/Town/City' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ patient?.person.preferredAddress.cityVillage }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('District') && patient?.person?.preferredAddress?.countyDistrict">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'District' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ patient?.person.preferredAddress.countyDistrict }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('State') && patient?.person?.preferredAddress?.stateProvince">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'State' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ patient?.person.preferredAddress.stateProvince }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Country') && patient?.person?.preferredAddress?.country">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Country' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ patient?.person?.preferredAddress?.country }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Postal Code') && patient?.person?.preferredAddress?.postalCode">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Postal Code' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ patient?.person?.preferredAddress?.postalCode }}</p>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+
+            <mat-tab label="{{'Other' | translate}}" *ngIf="hasPatientOtherEnabled">
+              <div class="rows patient-info-wrapper">
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Occupation') && getPersonAttributeValue('occupation') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Occupation' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('occupation') }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Education') && getPersonAttributeValue('Education Level') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Education' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('Education Level') }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('National ID') && getPersonAttributeValue('NationalID') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'National ID' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('NationalID') }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Economic Category') && getPersonAttributeValue('Economic Status') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Economic Category' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('Economic Status') }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Social Category') && getPersonAttributeValue('Caste') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Social Category' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('Caste') }}</p>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
         </div>
       </div>
     </div>
@@ -234,7 +363,7 @@
                 </ul>
               </mat-expansion-panel>
 
-              <mat-expansion-panel [expanded]="true" class="bg-gray" data-test-id="matExpVitals">
+              <mat-expansion-panel [expanded]="true" class="bg-gray" data-test-id="matExpVitals" *ngIf="hasVitalsEnabled">
                 <mat-expansion-panel-header data-test-id="matExpHeaderVitals">
                   <mat-panel-title>
                     <div class="intel-accordion-title">
@@ -245,143 +374,17 @@
                 </mat-expansion-panel-header>
 
                 <ul class="items-list">
-                  <li>
+                  <li *ngFor="let v of vitals;">
                     <div class="list-item">
-                      <label class="border-0" data-test-id="etHeightVitals">{{'Height (cm)'|translate}}</label>
+                      <label class="border-0" [attr.data-test-id]="v.key">{{v.name|translate}}</label>
                       <div
                         class="list-item-content"
-                        [class.text-muted]="!getObsValue('Height (cm)')"
+                        [class.text-muted]="!getObsValue(v.uuid, v.key)"
                         data-test-id="etHeightDataVitals"
                       >
                         {{
-                          getObsValue("Height (cm)")
-                            ? getObsValue("Height (cm)")
-                            : ('No information'|translate)
-                        }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etWeightVitals">{{'Weight (kg)'|translate}}</label>
-                      <div
-                        class="list-item-content"
-                        [class.text-muted]="!getObsValue('Weight (kg)')"
-                        data-test-id="etWeightDataVitals"
-                      >
-                        {{
-                          getObsValue("Weight (kg)")
-                            ? getObsValue("Weight (kg)")
-                            : ('No information'|translate)
-                        }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etBMIVitals">{{'BMI'|translate}}</label>
-                      <div
-                        class="list-item-content"
-                        data-test-id="etBMIDataVitals"
-                        [class.text-muted]="
-                          !getObsValue('Height (cm)') ||
-                          !getObsValue('Weight (kg)')
-                        "
-                      >
-                        {{
-                          getObsValue("Height (cm)") &&
-                          getObsValue("Weight (kg)")
-                            ? (getObsValue("Weight (kg)") /
-                                ((getObsValue("Height (cm)") / 100) *
-                                  (getObsValue("Height (cm)") / 100))
-                              | number : "1.2-2")
-                            : ('No information'|translate)
-                        }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etBPVitals">{{'BP'|translate}}</label>
-                      <div
-                        class="list-item-content"
-                        data-test-id="etBPDataVitals"
-                        [class.text-muted]="
-                          !getObsValue('SYSTOLIC BLOOD PRESSURE')
-                        "
-                      >
-                        {{
-                          getObsValue("SYSTOLIC BLOOD PRESSURE")
-                            ? getObsValue("SYSTOLIC BLOOD PRESSURE") +
-                              " / " +
-                              getObsValue("DIASTOLIC BLOOD PRESSURE")
-                            : ('No information'|translate)
-                        }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etPulseVitals">{{'Pulse'|translate}}</label>
-                      <div
-                        class="list-item-content"
-                        data-test-id="etPulseDataVitals"
-                        [class.text-muted]="!getObsValue('Pulse')"
-                      >
-                        {{
-                          getObsValue("Pulse")
-                            ? getObsValue("Pulse")
-                            : ('No information'|translate)
-                        }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etTempVitals">{{'Temperature (F)'|translate}}</label>
-                      <div
-                        class="list-item-content"
-                        data-test-id="etTempDataVitals"
-                        [class.text-muted]="!getObsValue('TEMPERATURE (C)')"
-                      >
-                        {{
-                          getObsValue("TEMPERATURE (C)")
-                            ? ((getObsValue("TEMPERATURE (C)") * 9) / 5 + 32
-                              | number : "0.2-2")
-                            : ('No information'|translate)
-                        }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etSpO2Vitals">{{'SpO2'|translate}} (%)</label>
-                      <div
-                        class="list-item-content"
-                        data-test-id="etSpO2DataVitals"
-                        [class.text-muted]="
-                          !getObsValue('BLOOD OXYGEN SATURATION')
-                        "
-                      >
-                        {{
-                          getObsValue("BLOOD OXYGEN SATURATION")
-                            ? getObsValue("BLOOD OXYGEN SATURATION")
-                            : ('No information'|translate)
-                        }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etRespRateVitals">{{'Respiratory Rate'|translate}}</label>
-                      <div
-                        class="list-item-content"
-                        data-test-id="etRespRateDataVitals"
-                        [class.text-muted]="!getObsValue('Respiratory rate')"
-                      >
-                        {{
-                          getObsValue("Respiratory rate")
-                            ? getObsValue("Respiratory rate")
+                          getObsValue(v.uuid, v.key)
+                            ? getObsValue(v.uuid, v.key)
                             : ('No information'|translate)
                         }}
                       </div>
@@ -584,7 +587,7 @@
                 </ng-container>
               </mat-expansion-panel>
 
-              <mat-expansion-panel [expanded]="true" class="bg-gray" data-test-id="matExpAdditionalNotes">
+              <mat-expansion-panel [expanded]="true" class="bg-gray" data-test-id="matExpAdditionalNotes" *ngIf="patientVisitSummary.notes_section">
                 <mat-expansion-panel-header data-test-id="matExpHeaderAdditionalNotes">
                   <mat-panel-title>
                     <div class="intel-accordion-title">
@@ -606,7 +609,7 @@
                 </ul>
               </mat-expansion-panel>
 
-              <mat-expansion-panel [expanded]="true" data-test-id="matExpAdditionalDoc">
+              <mat-expansion-panel [expanded]="true" data-test-id="matExpAdditionalDoc" *ngIf="patientVisitSummary.attachment_section">
                 <mat-expansion-panel-header data-test-id="matExpHeaderAdditionalDoc">
                   <mat-panel-title>
                     <div class="intel-accordion-title">
@@ -758,7 +761,7 @@
                     >
                       <img
                         src="{{
-                          baseUrl +
+                          baseURL +
                             '/personimage/' +
                             element?.doctor?.person_uuid
                         }}"
@@ -866,7 +869,7 @@
     </div>
 
     <div class="col-md-12 p-0 py-2 mb-5 text-center" *ngIf="!visitNotePresent && !visitCompleted && !visitEnded && selectedTabIndex == 0">
-      <button type="button" class="blue-btn" (click)="startVisitNote()" data-test-id="btnStartVisitNote">
+      <button type="button" class="blue-btn" (click)="startVisitNote()" data-test-id="btnStartVisitNote" *ngxPermissionsExcept="['ORGANIZATIONAL:MCC']" >
         {{'Start visit note'|translate}}
       </button>
     </div>
@@ -971,13 +974,59 @@
                       </div>
                     </div>
                   </li>
+
+                  <li *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction">
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label"
+                        >{{'Have you spoken with the healthcare worker directly?'|translate}}*</label
+                      >
+                      <div class="col-sm-9 d-flex align-items-center">
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{'Yes' | translate}}"
+                            formControlName="hwSpoken"
+                            data-test-id="hwRadioSpokenYes"
+                          />
+                          <div class="state p-success">
+                            <label>{{'Yes'|translate}}</label>
+                          </div>
+                        </div>
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{'No' | translate}}"
+                            formControlName="hwSpoken"
+                            data-test-id="hwRadioSpokenNo"
+                          />
+                          <div class="state p-success">
+                            <label>{{'No'|translate}}</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
                 </ul>
+                <div *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction" class="form-group">
+                  <label for="note"
+                    ><b>{{'Comment'|translate}}*&nbsp;</b>
+                    </label
+                  >
+                  <textarea
+                    class="form-control"
+                    rows="3"
+                    placeholder="{{'Type here'|translate}}"
+                    formControlName="comment"
+                    data-test-id="hwComment"
+                  ></textarea>
+                </div>
                 <div
                   class="form-group mb-0 mt-3"
                   *ngIf="
                     isVisitNoteProvider &&
                     !visitEnded &&
-                    !patientInteractionForm.value.present
+                    (!patientInteractionForm.value.present ||
+                    (!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction))
                   "
                 >
                   <button
@@ -989,7 +1038,7 @@
                     {{'Save'|translate}}
                   </button>
                 </div>
-                <div class="table-responsive" *ngIf="patientInteractionForm.value.present">
+                <div class="table-responsive" *ngIf="patientInteractionForm.value.present || patientInteractionForm.value.hwPresent">
                   <table class="table" aria-describedby="">
                     <thead>
                       <tr>
@@ -999,7 +1048,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
+                      <tr *ngIf="patientInteractionForm.value.present">
                         <td>{{'Spoken with the patient directly?'|translate}}</td>
                         <td>{{ patientInteractionForm.value.spoken }}</td>
                         <td class="pr-0">
@@ -1010,6 +1059,22 @@
                             *ngIf="isVisitNoteProvider && !visitEnded"
                             (click)="deletePatientInteraction()"
                             data-test-id="btnDeletePatientInteraction"
+                          >
+                            <img src="assets/svgs/delete-icon.svg" alt="" />
+                          </button>
+                        </td>
+                      </tr>
+                      <tr *ngIf="patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction">
+                        <td>{{'Spoken with the healthcare worker directly?'|translate}}</td>
+                        <td>{{ patientInteractionForm.value.hwSpoken }}</td>
+                        <td class="pr-0">
+                          <button
+                            type="button"
+                            mat-icon-button
+                            class="float-right"
+                            *ngIf="isVisitNoteProvider && !visitEnded"
+                            (click)="deleteHWInteraction()"
+                            data-test-id="btnDeleteHWtInteraction"
                           >
                             <img src="assets/svgs/delete-icon.svg" alt="" />
                           </button>
@@ -1103,6 +1168,7 @@
                         >
                         <div class="col-sm-3">
                           <ng-select
+                            appendTo=".visit-summary-tab-group"
                             class="visit-select custom"
                             formControlName="diagnosisName"
                             (search)="onKeyUp($event)"
@@ -1403,7 +1469,7 @@
                           </td>
                           <td>
                             <ng-select
-                              appendTo=".medication-con"
+                              appendTo=".visit-summary-tab-group"
                               formControlName="timing"
                               class="visit-select custom"
                               [items]="timingList"
@@ -2073,7 +2139,7 @@
         *ngIf="visitNotePresent && !visitEnded && isVisitNoteProvider"
         data-test-id="btnSharePrescription"
       >
-        {{ visitCompleted ? ('Update'|translate): ('Share'|translate) }} {{'prescription'|translate}}
+        {{ visitCompleted ? ('Update'|translate): ('Share'|translate) }} {{'Prescription'|translate}}
       </button>
       <button
         type="button"
@@ -2082,13 +2148,13 @@
         *ngIf="visitNotePresent && visitCompleted"
         data-test-id="btnViewPrescription"
         >
-        {{'View prescription'|translate}}
+        {{'View Prescription'|translate}}
       </button>
     </div>
   </div>
 </div>
 
-<div class="webrtc-controls" *ngIf="isVisitNoteProvider && !visitEnded && !isCalling">
-  <img class="img shadow" alt="" src="assets/svgs/video-frame.svg" (click)="startCall()" data-test-id="imgStartVideoCall"/>
-  <img class="img shadow" alt="" src="assets/svgs/chat-icon-blue-circle.svg" (click)="startChat()" data-test-id="imgStartChat"/>
+<div class="webrtc-controls" *ngIf="isVisitNoteProvider && !visitEnded && !isCalling && hasWebRTCEnabled">
+  <img class="img shadow" alt="" src="assets/svgs/video-frame.svg" (click)="startCall()" data-test-id="imgStartVideoCall" *ngIf="hasVideoEnabled"/>
+  <img class="img shadow" alt="" src="assets/svgs/chat-icon-blue-circle.svg" (click)="startChat()" data-test-id="imgStartChat" *ngIf="hasChatEnabled"/>
 </div>

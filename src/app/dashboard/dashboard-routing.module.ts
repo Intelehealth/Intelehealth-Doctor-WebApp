@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterModule, RouterStateSnapshot, Routes } from '@angular/router';
 import { DashboardGuard } from '../core/guards/dashboard.guard';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { DashboardComponent } from './dashboard.component';
@@ -10,11 +10,25 @@ import { HwProfileComponent } from './hw-profile/hw-profile.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { OpenChatComponent } from './open-chat/open-chat.component';
 
+export function redirectToFunc(rejectedPermissionName: string, activateRouteSnapshot: ActivatedRouteSnapshot, routerStateSnapshot: RouterStateSnapshot) {
+  if (rejectedPermissionName == 'ORGANIZATIONAL: SYSTEM ADMINISTRATOR') {
+    return 'admin';
+  } else {
+    return 'dashboard/hw-profile'
+  }
+}
+
 const routes: Routes = [
   {
     path: '',
-    canActivate: [DashboardGuard],
-    component: DashboardComponent
+    canActivate: [DashboardGuard, NgxPermissionsGuard],
+    component: DashboardComponent,
+    data: {
+      permissions: {
+        except: ['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE'],
+        redirectTo: redirectToFunc
+      }
+    },
   },
   {
     path: 'profile',

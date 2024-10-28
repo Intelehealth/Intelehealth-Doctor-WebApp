@@ -14,6 +14,8 @@ import { Subject } from 'rxjs';
 import { getCacheData } from '../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from 'src/config/constant';
 import { ApiResponseModel, AppointmentDetailResponseModel, AppointmentModel, CustomEncounterModel, EncounterModel, FollowUpModel, HwModel, ProviderAttributeModel, ProviderModel, RescheduleAppointmentModalResponseModel, ScheduleModel, ScheduleSlotModel, UserModel } from '../model/model';
+import { MindmapService } from '../services/mindmap.service';
+import { NgxRolesService } from 'ngx-permissions';
 
 @Component({
   selector: 'app-calendar',
@@ -43,7 +45,9 @@ export class CalendarComponent implements OnInit {
     private coreService: CoreService,
     private router: Router,
     private toastr: ToastrService,
-    private translateService:TranslateService
+    private mindmapService: MindmapService,
+    private translateService:TranslateService,
+    private roleService: NgxRolesService
   ) { }
 
   ngOnInit(): void {
@@ -81,7 +85,8 @@ export class CalendarComponent implements OnInit {
   * @return {void}
   */
   getAppointments(from: string, to: string) {
-    this.appointmentService.getUserSlots(getCacheData(true, doctorDetails.USER).uuid, from, to)
+    const isMCCUser = !!this.roleService.getRole('ORGANIZATIONAL:MCC');
+    this.appointmentService.getUserSlots(getCacheData(true, doctorDetails.USER).uuid, from, to, isMCCUser ? this.getSpeciality(): null )
       .subscribe((res: ApiResponseModel) => {
         let appointmentsdata: AppointmentModel[] = res.data;
         appointmentsdata.forEach((appointment: AppointmentModel) => {
@@ -265,7 +270,7 @@ export class CalendarComponent implements OnInit {
 
   /**
   * Get doctor speciality from localstorage provider
-  * @return {string} - Doctor specialty
+  * @return {string} - Doctor Speciality
   */
   private getSpeciality(): string {
     return getCacheData(true, doctorDetails.PROVIDER).attributes.find((a: ProviderAttributeModel) =>
@@ -481,6 +486,7 @@ export class CalendarComponent implements OnInit {
                 const message = res.message;
                 if (res.status) {
                   this.events.splice(this.events.findIndex((o: CalendarEvent) => o.id == appointment.visitUuid && o.title == 'Appointment' && o.meta?.id == appointment.id), 1);
+                  this.mindmapService.notifyHwForRescheduleAppointment(appointment)
                   this.events.push({
                     id: appointment.visitUuid,
                     title: 'Appointment',

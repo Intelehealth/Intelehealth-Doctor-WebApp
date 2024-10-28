@@ -1,0 +1,22 @@
+<div *ngIf="!filePath" class="pre-upload-image">
+    <button type="button" class="btn btn-upload-image" (click)="fileUpload.click()">+</button>
+    <input type="file" class="file-upload" (change)="onFileSelected($event)" #fileUpload>
+    <span class="upload-msg">{{options.uploadMsg | translate}}</span>
+</div>
+<div *ngIf="filePath" class="post-upload-image">
+    <div class="uploaded-image">
+        <div class="image-details">
+            <img class="image-preview" src="{{fileURL}}" onerror="this.src='assets/images/no-image.jpg';"/>
+            <div class="upload-msg">
+                <span class="file-name">{{fileName}}</span>
+                <span class="text-danger upload-status" *ngIf="isUploadFailed">{{'Failed' | translate}}</span>
+            </div>
+        </div>
+        <div class="image-action-item">
+            <button type="button" class="btn btn-action-item" (click)="refreshUpload()" *ngIf="isUploadFailed && options.operations.indexOf('refresh') !== -1"><img src="assets/svgs/refresh-red.svg"/></button>
+            <button type="button" class="btn btn-action-item" (click)="downloadFile()" *ngIf="options.operations.indexOf('download') !== -1"><img src="assets/svgs/download.svg" /></button>
+            <button type="button" class="btn btn-action-item" (click)="removeFile()" *ngIf="!isUploadFailed && options.operations.indexOf('remove') !== -1"><img src="assets/svgs/close-gray.svg" /></button>
+        </div>
+    </div>
+    <mat-progress-bar *ngIf="(uploadProgress>0 && uploadProgress<100)" mode="determinate" value="{{uploadProgress}}"></mat-progress-bar>
+</div>

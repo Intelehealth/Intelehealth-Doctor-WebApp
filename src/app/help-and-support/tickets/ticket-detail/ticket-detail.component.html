@@ -1,0 +1,39 @@
+<div class="container-fluid">
+  <div class="row mt-3">
+    <div class="col-md-12 p-0">
+      <div class="card intel-card">
+        <div class="card-header">
+            <div class="grid-title">
+              <span>{{ticketData?.jira_ticket_id ?? ticketData?.external_references?.[0]?.external_id}}</span>
+              <h6 class="mb-0">{{ticketData?.title | translate}}</h6>
+            </div>
+            <div class="card-header-actions">
+              <button type="button" class="btn" (click)="onReopenTicket()" *ngIf="ticketData?.status == 'resolved'">{{'Reopen Ticket' | translate}}</button>
+            </div>
+        </div>
+        <div class="card-body">
+          <div class="created_at">{{ticketData?.created_at | date:'d MMM, y'}}</div>
+          <div class="key-value">
+            <div class="key">{{'Description'| translate}}</div>
+            <div class="value">{{ticketData?.description ?? 'N/A'}}</div>
+          </div>
+          <div class="key-value">
+            <div class="key">{{'Last Updated' | translate }}:</div>
+            <div class="value">{{ticketData?.updated_at |  date:'d MMM, y'}}</div>
+          </div>
+
+          <div class="key-value">
+            <div class="key">{{'Priority' | translate}}</div>
+            <div class="value"><span class="status-label priority" [ngClass]="ticketData?.priority">{{
+                ticketData?.priority | translate | titlecase}}</span></div>
+          </div>
+          <div class="key-value">
+            <div class="key">{{'Status'| translate}}</div>
+            <div class="value"><span class="status-label status" [ngClass]="ticketData?.status">{{
+                statuses[ticketData?.status] | translate | titlecase}}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

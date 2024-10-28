@@ -53,6 +53,10 @@
               <div class="info-label">{{'Chief Complaint'|translate}}</div>
               <div class="info-con">{{data?.meta.cheif_complaint}}</div>
             </div>
+            <div class="info-row" [ngxPermissionsOnly]="['ORGANIZATIONAL:MCC']">
+              <div class="info-label">{{'Doctor'|translate}}</div>
+              <div class="info-con">{{data?.meta.drName}}</div>
+            </div>
           </div>
         </div>
         <div class="col-md-12 p-0 mt-3">

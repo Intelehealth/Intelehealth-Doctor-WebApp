@@ -17,14 +17,14 @@ export class ErrorInterceptor implements HttpInterceptor {
 
       if ([404].indexOf(err.status) != -1) {
         this.toastr.error('Not found', '404 Not Found');
-        return throwError(err.error.message || err.statusText);
+        return throwError(err.error.message || err.error.error.message || err.statusText  || err.error.error);
       }
 
-      const error = err.error.message || err.statusText;
+      const error = err.error.message || err.error.error.message  || err.error.error || err.statusText;
       if (request.method == 'DELETE' && request.url.includes('session')) {
-        return throwError(error);
+        return throwError(error); 
       }
-      if (error == 'OK') {
+      if (error == 'OK' || err?.url.includes('/abha/')) {
         return throwError(error);
       }
       this.toastr.error(error);

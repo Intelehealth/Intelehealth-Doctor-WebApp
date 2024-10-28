@@ -92,7 +92,8 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
         break;
 
       case 'presctiption-verification':
-        this.verifyPrescription();
+      case 'visit-summary-verification':
+        this.verifyPrescription(this.verificationFor);
         break;
 
       default:
@@ -189,10 +190,10 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   * Verify prescription otp
   * @return {void}
   */
-  verifyPrescription() {
+  verifyPrescription(type:string) {
     this.linkSvc.verifyPresctionOtp(this.hash, this.otpVerificationForm.value.otp).subscribe((res: VerifyOtpResponseModel) => {
       if (res.success) {
-        this.router.navigate(['/i', this.hash], { state: { visitId: this.visitId, accessToken: btoa(this.otpVerificationForm.value.otp) } });
+        this.router.navigate(['/i', this.hash], { state: { visitId: this.visitId, accessToken: btoa(this.otpVerificationForm.value.otp), linkType : type} });
       } else {
         this.translationService.getTranslation(res.message, "Error",false);
       }
@@ -262,6 +263,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
         break;
 
       case 'presctiption-verification':
+      case 'visit-summary-verification':
         this.router.navigate(['/i', this.hash]);
         break;
 

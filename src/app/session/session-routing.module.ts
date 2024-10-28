@@ -23,26 +23,26 @@ const routes: Routes = [
         path: 'login',
         component: LoginComponent
       },
-      {
-        path: 'verification',
-        component: VerificationMethodComponent
-      },
+      // {
+      //   path: 'verification',
+      //   component: VerificationMethodComponent
+      // },
       {
         path: 'verify-otp',
         component: OtpVerificationComponent
       },
-      {
-        path: 'forgot-password',
-        component: ForgotPasswordComponent
-      },
-      {
-        path: 'forgot-username',
-        component: ForgotUsernameComponent
-      },
-      {
-        path: 'setup-password',
-        component: SetupNewPasswordComponent
-      }
+      // {
+      //   path: 'forgot-password',
+      //   component: ForgotPasswordComponent
+      // },
+      // {
+      //   path: 'forgot-username',
+      //   component: ForgotUsernameComponent
+      // },
+      // {
+      //   path: 'setup-password',
+      //   component: SetupNewPasswordComponent
+      // }
     ]
   },
   {

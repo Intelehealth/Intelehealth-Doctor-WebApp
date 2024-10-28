@@ -1,0 +1,104 @@
+.create-report-modal {
+  font-family: DM Sans;
+
+  .modal-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    width: 489px;
+    max-width: 100%;
+    height: 70px;
+    background-color: #EFE8FF;
+
+    h6 {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .modal-close-btn {
+      border: none;
+      background: transparent;
+      outline: none;
+    }
+  }
+
+  .modal-body {
+    padding: 24px;
+
+    .report-form {
+      width: 100%;
+
+      .input-field-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 24px;
+
+        label {
+          font-size: 16px;
+          font-weight: bold;
+          line-height: 150%;
+        }
+
+        input {
+          padding: 14px 16px;
+          width: 100%;
+          height: 48px;
+          background: #B2AFBE33;
+          border: 1px solid rgba(178, 175, 190, 0.2);
+          border-radius: 8px;
+          outline: none;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          content: url(../../../assets/svgs/calendar-date.svg);
+          border: none;
+          background: transparent;
+          cursor: pointer;
+        }
+      }
+
+      .cancel-btn {
+        padding: 8px 24px;
+        min-width: 119px;
+        height: 48px;
+        background: #FFFFFF;
+        border: 1px solid #EFE8FF;
+        border-radius: 8px;
+        font-size: 18px;
+        line-height: 150%;
+        color: #2E1E91;
+        font-weight: bold;
+        outline: none;
+      }
+
+      .confirm-btn {
+        padding: 8px 24px;
+        min-width: 119px;
+        height: 48px;
+        background: #2E1E91;
+        border: 1px solid #2E1E91;
+        border-radius: 8px;
+        font-size: 18px;
+        line-height: 150%;
+        color: #FFFFFF;
+        font-weight: bold;
+        outline: none;
+      }
+    }
+  }
+
+  .text-danger {
+    color: #dc3545 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .create-report-modal .modal-title {
+    height: 80px;
+  }
+  .create-report-modal .modal-body .report-form .confirm-btn {
+    font-size: 17px;
+  }
+}

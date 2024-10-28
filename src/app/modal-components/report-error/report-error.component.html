@@ -1,0 +1,14 @@
+<div class="intel-con-modal">
+    <div class="close-btn-con">
+      <button class="modal-close-btn" (click)="close(false)" data-test-id="btnClose"><img src="assets/svgs/CloseX.svg" alt=""></button>
+    </div>
+    <div class="modal-con mt-4">
+      <img src="assets/svgs/warning-circle.svg" alt="" width="80px" height="80px">
+      <h6 class="mt-3">Error!</h6>
+      <p class="mt-2 text-center">Unable to generate the report. Please try again later or contact system administrator.</p>
+    </div>
+    <div class="modal-action-btn-con">
+      <button class="modal-btn white-btn mr-3" type="button" (click)="close('view')" data-test-id="btnView">Go Back</button>
+      <button class="modal-btn blue-btn" type="button" (click)="close('dashboard')" data-test-id="btnSubmit">Try Again</button>
+    </div>
+  </div>

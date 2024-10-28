@@ -20,4 +20,15 @@ export class ProviderAttributeValidator {
       );
     };
   }
+
+  static usernameValidator(authService: AuthService): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors> => {
+      return timer(1000).pipe(
+        switchMap(() => authService.validateUser(control.value)),
+        map((res: any) =>
+          res.userExist ? { alreadyExists: true } : null
+        )
+      );
+    };
+  }
 }

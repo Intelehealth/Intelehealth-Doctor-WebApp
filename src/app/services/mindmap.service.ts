@@ -92,4 +92,27 @@ export class MindmapService {
   notifyApp(hwUuid: any, payload: any) : Observable<any>{
     return this.http.post(`${environment.mindmapURL}/mindmap/notify-app/${hwUuid}`, payload)
   }
+
+
+  /**
+  * Send notification to health worker for available prescription
+  * @returns {void}
+  */
+  notifyHwForRescheduleAppointment(appointment): void {
+    const hwUuid = appointment?.hwUUID;
+    const openMRSID = appointment?.openMrsId;
+    const payload = {
+      title: `Appointment rescheduled for ${appointment?.patientName || 'Patient'}`,
+      body: "Click notification to see!",
+      type: "appointment",
+      data: {
+        patientFirstName: appointment?.patientName ?? '',
+        patientUuid: appointment?.patientId,
+        patientOpenMrsId: openMRSID,
+        visitUuid: appointment?.visitUuid,
+        slotDateTime: appointment?.slotJsDate
+      }
+    }
+    this.notifyApp(hwUuid, payload).subscribe();
+  }
 }

@@ -45,7 +45,7 @@
   font-family: DM Sans;
 
   .patient-info-section {
-    border-right: 1px solid rgba(178, 175, 190, 0.2);
+    // border-right: 1px solid rgba(178, 175, 190, 0.2);
 
     .patient-img-item {
       display: flex;
@@ -267,7 +267,6 @@
 }
 
 .signature {
-  height: 50px;
   width: 150px;
 }
 
@@ -292,4 +291,13 @@
   margin-bottom: 0px;
   font-weight: bold;
   color: var(--color-darkestBlue);
+}
+
+.prescription-disclaimer{
+  font-size: 12px !important;
+}
+
+.rows {
+  display: flex;
+  flex-wrap: wrap;
 }

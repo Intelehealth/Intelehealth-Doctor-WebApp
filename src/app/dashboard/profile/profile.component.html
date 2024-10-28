@@ -40,10 +40,10 @@
                   </div>
                 </div>
                 <div class="form-group col-md-4">
-                  <label for="middleName">{{'Middle name' | translate}} *</label>
+                  <label for="middleName">{{'Middle name' | translate}}</label>
                   <input type="text" maxlength="20" class="form-control" formControlName="middleName" placeholder="{{'Enter middle name' | translate}}" data-test-id="etMiddleName">
                   <div *ngIf="submitted && f1.middleName.errors">
-                    <small class="error-msg" *ngIf="f1.middleName.errors.required">{{'Enter middle name' | translate}}</small>
+                    <!-- <small class="error-msg" *ngIf="f1.middleName.errors.required">{{'Enter middle name' | translate}}</small> -->
                     <small class="error-msg" *ngIf="f1.middleName.errors.pattern">{{'Enter alphabates only' | translate}}</small>
                   </div>
                 </div>
@@ -323,20 +323,18 @@
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="workExperience">{{'Work Experience'|translate}}*</label>
-                  <ng-select class="profile-select" bindLabel="name" bindValue="name" [clearable]="false" [searchable]="false" formControlName="workExperience" placeholder="{{'Eg. General Physician'|translate}}" data-test-id="selWorkExperience">
-                    <ng-option *ngFor="let specialization of specializations" [value]="specialization.name">
-                      {{ (specialization.name) |translate }}
-                </ng-option>
-                  </ng-select>
+                  <input type="text" class="form-control" formControlName="workExperience" placeholder="{{'Enter work experience'| translate}}" data-test-id="selWorkExperience" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))">
                   <div *ngIf="submitted && f2.workExperience.errors">
-                    <small class="error-msg" *ngIf="f2.workExperience.errors.required">{{'Select work experience as'|translate}}</small>
+                    <small class="error-msg" *ngIf="f2.workExperience.errors.required">{{'Enter work experience'| translate }}</small>
+                    <small class="error-msg" *ngIf="f2.workExperience.errors.pattern">{{'Enter numeric value only' | translate}}</small>
                   </div>
                 </div>
                 <div class="form-group col-md-6">
                   <label for="researchExperience">{{'Research Experience'|translate}} *</label>
-                  <input type="text" class="form-control" formControlName="researchExperience" placeholder="{{'Enter research experience'|translate}}" data-test-id="etExperience">
+                  <input type="text" class="form-control" formControlName="researchExperience" placeholder="{{'Enter research experience'|translate}}" data-test-id="etExperience" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))">
                   <div *ngIf="submitted && f2.researchExperience.errors">
                     <small class="error-msg" *ngIf="f2.researchExperience.errors.required">{{'Enter research experience'|translate}}</small>
+                    <small class="error-msg" *ngIf="f2.researchExperience.errors.pattern">{{'Enter numeric value only' | translate}}</small>
                   </div>
                 </div>
               </div>

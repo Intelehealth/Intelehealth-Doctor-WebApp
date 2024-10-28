@@ -8,7 +8,7 @@
         </div>
       </div>
     </div>
-    <div class="col p-0 pb-2">
+    <div class="col p-0 pb-2" *ngxPermissionsExcept="['ORGANIZATIONAL:MCC']">
       <button mat-button class="view-btn" routerLink="/calendar/setup-calendar" data-test-id="btnManageCal">{{'Manage calendar'|translate}}</button>
     </div>
   </div>

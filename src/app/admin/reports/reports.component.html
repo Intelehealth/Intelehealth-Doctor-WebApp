@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="row">
+      <div class="col-md-12 p-0">
+        <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs nav-pills">
+          <li [ngbNavItem]="1">
+            <a ngbNavLink data-test-id="navSent">
+              <div class="chip-item chip-item-blue">
+                <img class="chip-img" src="assets/svgs/reports.svg" alt="" />
+                <div class="chip-info">
+                  <span>{{ 'Report' | translate }}</span>
+                </div>
+              </div>
+            </a>
+            <ng-template ngbNavContent>
+                <app-report-list></app-report-list>
+            </ng-template>
+          </li>
+          <!-- <li [ngbNavItem]="2">
+            <a ngbNavLink data-test-id="navCompleted">
+              <div class="chip-item chip-item-blue">
+                <img class="chip-img" src="assets/svgs/report-history.svg" alt="" />
+                <div class="chip-info">
+                  <span>Report History</span>
+                </div>
+              </div>
+            </a>
+            <ng-template ngbNavContent>
+              <ng-container>
+              </ng-container>
+            </ng-template>
+          </li> -->
+        </ul>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+      </div>
+    </div>
+  </div>

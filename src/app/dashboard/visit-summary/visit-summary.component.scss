@@ -41,7 +41,7 @@
   font-family: DM Sans;
 
   .patient-info-section {
-    border-right: 1px solid rgba(178, 175, 190, 0.2);
+    // border-right: 1px solid rgba(178, 175, 190, 0.2);
 
     .patient-img-item {
       display: flex;
@@ -822,6 +822,15 @@ th.mat-header-cell:last-child {
   .cheif-complaint-wrapper {
     padding: 5px 0px 0px !important;
   }
+
+  .btn{
+    right: 4px !important;
+    top: 30px !important;
+  }
+
+  .contact-info{
+    display: unset !important;
+  }
 }
 
 .webrtc-controls {
@@ -837,6 +846,7 @@ th.mat-header-cell:last-child {
     cursor: pointer;
     border-radius: 25px;
     margin-bottom: 10px;
+    background-color: var(--color-darkBlue);
   }
 }
 
@@ -845,4 +855,24 @@ th.mat-header-cell:last-child {
   overflow-y: auto;
   overflow-x: auto;
   max-width: 100%;
+}
+
+.btn{
+  position: absolute;
+  right: 50px;
+  top: 60px;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+
+.rows{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
 }

@@ -10,6 +10,10 @@ const routes: Routes = [
     path: '',
     component: PrescriptionDownloadComponent
   },
+  {
+    path: ':id',
+    component: PrescriptionDownloadComponent
+  },
 ];
 
 

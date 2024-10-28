@@ -90,7 +90,7 @@ export class HwProfileComponent implements OnInit, OnDestroy {
 
       this.personalInfoForm = new FormGroup({
         givenName: new FormControl('', [Validators.required, Validators.pattern(/^[A-Za-z]*$/)]),
-        middleName: new FormControl('', [Validators.required, Validators.pattern(/^[A-Za-z]*$/)]),
+        middleName: new FormControl('', [Validators.pattern(/^[A-Za-z]*$/)]),
         familyName: new FormControl('', [Validators.required, Validators.pattern(/^[A-Za-z]*$/)]),
         gender: new FormControl('M', [Validators.required]),
         birthdate: new FormControl('', [Validators.required]),

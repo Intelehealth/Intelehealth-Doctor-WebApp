@@ -113,6 +113,7 @@ export class SetupCalendarComponent implements OnInit {
   filteredDays=[];
   @ViewChild('picker3', { static: true }) _picker: MatDatepicker<Date>;
   submitted: boolean = false;
+  timeslotError: string = "";
 
   constructor(
     private appointmentService: AppointmentService,
@@ -311,10 +312,7 @@ export class SetupCalendarComponent implements OnInit {
     this.daysOffSelected = [];
     this.filteredDays = [];
     this.days.forEach((element, i) => {
-      let index = schedule.slotSchedule.filter((slot) => element.name == slot.day);
-      if (index.length === 0) {
       this.filteredDays.push(element);
-     }
     });
   }
 
@@ -372,6 +370,12 @@ export class SetupCalendarComponent implements OnInit {
     }
     let flag = 0;
     let ts = [...this.ft.getRawValue()];
+    this.timeslotError = "";
+    const validTimeSlot:any = this.validateDuplicateTimeSlot(ts);
+    if(validTimeSlot?.invalid){
+      this.timeslotError = validTimeSlot.error;
+      return false;
+    }
     for (let i = 0; i < ts.length; i++) {
       if (this.validateTimeSlot({ startTime: `${ts[i].startTime} ${ts[i].startMeridiem}`, endTime: `${ts[i].endTime} ${ts[i].endMeridiem}` })) {
         let newSlots = this.createSlots(ts[i].days, `${ts[i].startTime} ${ts[i].startMeridiem}`, `${ts[i].endTime} ${ts[i].endMeridiem}`);
@@ -768,7 +772,7 @@ export class SetupCalendarComponent implements OnInit {
 
   /**
   * Get doctor speciality from localstorage provider
-  * @return {string} - Doctor specialty
+  * @return {string} - Doctor Speciality
   */
   private getSpeciality() {
     return getCacheData(true, doctorDetails.PROVIDER).attributes.find((a: ProviderAttributeModel) =>
@@ -861,5 +865,64 @@ export class SetupCalendarComponent implements OnInit {
       },
     });
   }
+
+  validateDuplicateTimeSlot(timeSlots){
+    if(timeSlots){
+      const lastIndex = (timeSlots.length-1);
+      const lastSlot = timeSlots[lastIndex];
+      const startdate = moment(this.addSlotsForm.value.startDate);
+      const enddate = moment(this.addSlotsForm.value.endDate);
+
+      if(enddate.diff(startdate,"days") < 7){
+        let WeekDays = ["Sun", "Mon", "Tue", "Wed","Thu", "Fri","Sat"];
+        let WeekFullDays = ["Sunday", "Monday", "Tuesday", "Wednesday","Thursday", "Friday","Saturday"]
+        let missingDays = [];
+        lastSlot.days.forEach(day=>{
+          let isValidDays = false;
+          let currDate = moment(new Date(startdate.toString()));
+          while(currDate.unix() <= enddate.unix()){
+            if(WeekDays.indexOf(day) === currDate.weekday()) isValidDays = true;
+            currDate.add(1,'d');
+          };
+          if(!isValidDays) missingDays.push(WeekFullDays[WeekDays.indexOf(day)]);
+        });
+        if(missingDays.length > 0){
+          let error = "not present in current date range";
+          if(missingDays.length > 1) error = missingDays.join(", ")+" are " + error;
+          else error = missingDays.join(", ")+" is " + error;
+          return {invalid: true, error: error};
+        }
+      }
+      
+      if (timeSlots.length < 2) return {invalid: false, error: ""};
+      // compare each slot to every other slot
+      const start1 = moment([lastSlot.startTime,lastSlot.startMeridiem].join(" ") , ["h:mm A"]);
+      const end1 = moment([lastSlot.endTime,lastSlot.endMeridiem].join(" "), ["h:mm A"]);
+      let countSameDay = 1;
+      for (let i = 0; i < lastIndex; i++) {
+        // prevent comparision of slot with itself
+        const currSlot = timeSlots[i];
+        const isUniqueDay = (currSlot.days.filter(day => lastSlot.days.includes(day)).length === 0);
+        
+        if (isUniqueDay) continue;
+        else countSameDay++;
+
+        if (countSameDay > 3) return {invalid: true, error: "Maximum 3 slots allowed for a day"};
+
+        const start2 = moment([currSlot.startTime,currSlot.startMeridiem].join(" "), ["h:mm A"]);
+        const end2 = moment([currSlot.endTime,currSlot.endMeridiem].join(" "), ["h:mm A"]);
+
+        if (
+          (start2.isBetween(start1, end1, undefined, "[]") ||
+          end2.isBetween(start1, end1, undefined, "[]")) 
+        ) {
+          return {invalid: true, error: "This time slot is already selected for the day"};
+        }
+      }
+    }
+    
+    // All time slots are are valid
+    return {invalid: false, error: ""};
+  };
 
 }

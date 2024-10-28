@@ -26,12 +26,14 @@ export class PrescriptionDownloadComponent implements OnInit, OnDestroy {
     jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
   };
   visitId: string = null;
+  linkType: string = null;
   hash: string = null;
   accessToken: string = null;
   visit: VisitModel;
   prescriptionVerified = false;
   patient: PatientModel;
   eventsSubject: Subject<any> = new Subject<any>();
+  facilityContactNo: string = "";
 
   constructor(
     private route: ActivatedRoute,
@@ -46,15 +48,29 @@ export class PrescriptionDownloadComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.hash = this.route.snapshot.paramMap.get('hash');
-
-    const { accessToken, visitId } = window.history.state;
+    const facilityContactId = this.route.snapshot.paramMap.get('id');
+    const { accessToken, visitId, linkType } = window.history.state;
     if (accessToken) {
       this.accessToken = accessToken;
       this.visitId = visitId;
+      this.linkType = linkType;
     }
 
     if (!this.accessToken) {
-      this.getVisitFromHash();
+      if(facilityContactId){
+        this.linkSvc.getFacilityContact(facilityContactId).subscribe(res=>{
+          if(res.success && res.data && res.data.contact_no){
+            this.facilityContactNo = res.data.contact_no;
+            this.getVisitFromHash();
+          } else {
+            this.router.navigate(['/']);
+          }
+        },err=>{
+          this.router.navigate(['/'])
+        })
+      } else {
+        this.getVisitFromHash();
+      }
     } else {
       this.prescriptionVerified = true;
       this.meta.updateTag({ name: 'viewport', content: 'width=1024' });
@@ -79,6 +95,7 @@ export class PrescriptionDownloadComponent implements OnInit, OnDestroy {
       next: (res: ApiResponseModel) => {
         if (res.success) {
           this.visitId = res.data.link.replace('/i/', '');
+          this.linkType = res.data.type;
           this.fetchVisitPatient();
         } else {
           this.router.navigate(['/']);
@@ -102,15 +119,16 @@ export class PrescriptionDownloadComponent implements OnInit, OnDestroy {
           this.patient = visit.patient;
           const attrs = Array.isArray(this.patient?.attributes) ? this.patient?.attributes : [];
           const patientPhoneNumber = attrs.find((attr: PersonAttributeModel) => attr?.attributeType?.display === doctorDetails.TELEPHONE_NUMBER);
-          if (patientPhoneNumber && patientPhoneNumber?.value.length > 3) {
-            this.linkSvc.requestPresctionOtp(this.hash, patientPhoneNumber?.value).subscribe((res: ApiResponseModel) => {
+          const phoneNumber = this.facilityContactNo ? this.facilityContactNo : patientPhoneNumber.value;
+          if (phoneNumber && phoneNumber.length > 3) {
+            this.linkSvc.requestPresctionOtp(this.hash, phoneNumber).subscribe((res: ApiResponseModel) => {
               if (res.success) {
-                this.toastr.success(`OTP sent on ${this.authService.replaceWithStar(patientPhoneNumber?.value, 'phone')} successfully!`, 'OTP Sent');
+                this.toastr.success(`OTP sent on ${this.authService.replaceWithStar(phoneNumber, 'phone')} successfully!`, 'OTP Sent');
                 this.router.navigate(['/session/verify-otp'], {
                   state: {
-                    verificationFor: 'presctiption-verification',
+                    verificationFor: this.linkType,
                     via: 'phone',
-                    val: patientPhoneNumber?.value,
+                    val: phoneNumber,
                     visitId: this.visitId
                   },
                   queryParams: {

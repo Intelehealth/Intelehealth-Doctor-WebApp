@@ -56,6 +56,9 @@ const environmentFileContent = `
     baseURLCoreApp: '${process.env.BASE_URL_CORD_APP}',
     baseURLLegacy: '${process.env.BASE_URL_LEGACY}',
     mindmapURL: '${process.env.MIND_MAP_URL}',
+    pagerdutyURL: '${process.env.PAGERDUTY_URL}',
+    configURL: '${process.env.CONFIG_URL}',
+    abhaURL: '${process.env.ABHA_URL}',
     notificationURL: '${process.env.NOTIFICATION_URL}',
     socketURL: '${process.env.SOCKET_URL}',
     captchaSiteKey: '${process.env.CAPTCHA_SITE_KEY}',
@@ -74,7 +77,9 @@ const environmentFileContent = `
     vapidPublicKey: '${process.env.VAPID_PUBLIC_KEY}',
     authGatwayURL: '${process.env.AUTH_GATE_WAY_URL}',
     showCaptcha: ${showCaptcha},
-    recordsPerPage: 1000
+    recordsPerPage: 1000,
+    abhaEnabled: ${process.env.ABHA_ENABLED},
+    configPublicURL: '${process.env.CONFIG_PUBLIC_URL}'
   };
 `;
 

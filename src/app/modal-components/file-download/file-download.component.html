@@ -1,0 +1,11 @@
+<div class="intel-con-modal">
+    <button class="download-btn" data-test-id="btnDownload"><img src="assets/svgs/file-download.svg" alt=""></button>
+    <div class="modal-con mt-4">
+        <div>
+            <h6>Generating Report..</h6>
+            <div style="width: 100%;">
+                <mat-progress-bar mode="determinate" [value]="value"></mat-progress-bar>
+            </div>
+            <h6 style="color: #7F7B92;"> {{value}}%</h6>
+        </div>
+    </div>

@@ -1,0 +1,56 @@
+@media (max-width: 768px) {
+    .mat-table[matTableResponsive] {
+      .mat-header-row {
+        display: none;
+      }
+  
+      .mat-row {
+        height: auto;
+        display: grid;
+        
+        td.mat-cell:not(.mat-column-actions) {
+          display: grid;
+          grid-template-columns: 50% 50%;
+          padding: 0.7rem;
+          text-align: right !important;
+          word-break: break-word;
+          white-space: wrap !important;
+  
+          & > * {
+            grid-column: 2;
+          }
+  
+          &:before {
+            content: attr(data-column-name);
+            text-align: left;
+            color: var(--color-gray);
+            min-height: 21px;
+            display: flex;
+            align-items: center;
+          }
+        }
+  
+        td.mat-column-actions {
+          display: flex;
+          justify-content: center;
+          padding: 0 0.5rem;
+  
+          & > button {
+            margin: 0.5rem 0;
+          }
+        }
+  
+        &:last-of-type td:last-of-type {
+          border: none;
+        }
+      }
+    }
+  
+    .mat-card,
+    .mat-expansion-panel {
+      .mat-table[matTableResponsive] {
+        border: 0.5rem solid #fafafa;
+      }
+    }
+  }
+  

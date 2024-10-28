@@ -1,0 +1,28 @@
+<div class="create-report-modal">
+  <div class="modal-title">
+    <h6 class="mb-0">{{ data.title }}</h6>
+    <button class="modal-close-btn" (click)="close()"><img src="assets/svgs/Close.svg" alt=""
+        data-test-id="btnClose"></button>
+  </div>
+  <div class="modal-body">
+    <form class="report-form" [formGroup]="reportForm" (ngSubmit)="generateReport()">
+      <div class="input-field-group">
+        <label>{{data.field1}}</label>
+        <input type="date" [max]="today" formControlName="field1" data-test-id="field1">
+        <small class="text-danger" *ngIf="submitted && f.field1.errors">*Required</small>
+      </div>
+      <div class="input-field-group">
+        <label>{{data.field2}}</label>
+        <input type="date" [max]="today" formControlName="field2" data-test-id="field2">
+        <small class="text-danger" *ngIf="submitted && f.field2.errors">*Required</small>
+        <small class="text-danger" *ngIf="isDatesValid">Start date should not be greater than end date</small>
+      </div>
+      <div class="d-flex justify-content-center">
+        <button class="cancel-btn mr-3" type="button" (click)="close()" data-test-id="btnCancel">{{ data.cancelBtnText
+          }}</button>
+        <button class="confirm-btn" type="submit" data-test-id="btnSubmit" [disabled]="isDatesValid">{{
+          data.confirmBtnText }}</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -34,6 +34,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
   pdfDefaultImage: string = 'assets/images/pdf-icon.png';
   subscription1: Subscription;
   subscription2: Subscription;
+  subscription3: Subscription;
 
   constructor(
     private pageTitleService: PageTitleService,
@@ -49,12 +50,23 @@ export class MessagesComponent implements OnInit, OnDestroy {
     this.getPatientsList(this.chatSvc?.user?.uuid);
     this.socketSvc.initSocket(true);
     this.subscription1 = this.socketSvc.onEvent(notifications.UPDATE_MESSAGE).subscribe((data) => {
-      this.readMessages(data.id);
-      this.messageList = data.allMessages.sort((a: MessageModel, b: MessageModel) => new Date(b.createdAt) < new Date(a.createdAt) ? -1 : 1);
-      this.messageList = data.allMessages.sort((a: MessageModel, b: MessageModel) => new Date(b.createdAt) < new Date(a.createdAt) ? -1 : 1);
+      let isChatOpened = this.selectedConversation.patientId == data.patientId;
+      if(isChatOpened){
+        this.readMessages(data.id);
+      }
+      this.conversations.forEach(con=>{
+        if(data.patientId === con.patientId){
+          if(!isChatOpened) con.count++;
+          con.message = data.message;
+        }
+      });
     });
 
     this.subscription2 = this.socketSvc.onEvent('isread').subscribe((data) => {
+      this.getMessages();
+    });
+
+    this.subscription3 = this.socketSvc.onEvent('msg_delivered').subscribe((data) => {
       this.getMessages();
     });
   }
@@ -94,10 +106,12 @@ export class MessagesComponent implements OnInit, OnDestroy {
   conversationSelected(conversation: ConversationModel) {
     this.selectedConversation = conversation;
     this.visitId = this.selectedConversation?.visitId;
-    this.getMessages();
     if (this.selectedConversation?.fromUser !== this.fromUser) {
       this.readMessages(this.selectedConversation?.id);
+    } else {
+      this.getMessages();
     }
+    this.selectedConversation.count = 0;
   }
 
   /**
@@ -133,7 +147,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
         next: (res: ApiResponseModel) => {
           this.messageList = res?.data;
           this.getPatientsVisits(this.selectedConversation?.patientId);
-          this.conversations[this.conversations.findIndex(c => c.id === this.selectedConversation.id)].message = this.messageList[0].message
+          this.conversations[this.conversations.findIndex(c => c?.id === this.selectedConversation.id)].message = this.messageList[0].message
         },
       });
   }
@@ -177,7 +191,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
       this.chatSvc
         .sendMessage(
-          this.selectedConversation?.toUser,
+          (this.selectedConversation?.toUser === this.fromUser ? this.selectedConversation?.fromUser : this.selectedConversation?.toUser),
           this.selectedConversation?.patientId,
           this.message,
           payload
@@ -242,6 +256,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription1?.unsubscribe();
     this.subscription2?.unsubscribe();
+    this.subscription3?.unsubscribe();
   }
 
 }

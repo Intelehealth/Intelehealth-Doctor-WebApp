@@ -15,6 +15,7 @@ import { ToastrService } from "ngx-toastr";
 import { doctorDetails } from "src/config/constant";
 import { CoreService } from "./core/core.service";
 import { SocketUserModel } from "../model/model";
+import { notifications } from 'src/config/constant';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,8 @@ export class SocketService {
   private baseURL = environment.socketURL;
   private adminUnreadSubject: BehaviorSubject<any>;
   public adminUnread: Observable<any>;
+  private drUnreadSubject: BehaviorSubject<any>;
+  public drUnread: Observable<any>;
 
   constructor(
     private http: HttpClient,
@@ -43,10 +46,16 @@ export class SocketService {
   ) {
     this.adminUnreadSubject = new BehaviorSubject<any>(0);
     this.adminUnread = this.adminUnreadSubject.asObservable();
+    this.drUnreadSubject = new BehaviorSubject<any>(0);
+    this.drUnread = this.drUnreadSubject.asObservable();
   }
 
   addCount(count: number) {
     this.adminUnreadSubject.next(count);
+  }
+
+  addDoctorCount(count: number) {
+    this.drUnreadSubject.next(count);
   }
 
   message(roomId, clientId, message): Observable<any> {
@@ -97,10 +106,14 @@ export class SocketService {
     this.onEvent("updateMessage").subscribe((data) => {
       this.emitEvent('ack_msg_received', { messageId: data.id });
     });
+
+    this.onEvent(notifications.DOCTOR_UNREAD_COUNT).subscribe((data) => {
+      this.addDoctorCount(data);
+    });
   }
 
   public emitEvent(action, data) {
-    this.socket.emit(action, data);
+    this.socket?.emit(action, data);
   }
 
   public onEvent(action) {

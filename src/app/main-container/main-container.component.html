@@ -7,82 +7,17 @@
             <img [src]="getUrl()" alt="">
           </button>
         </div>
-        <img src="assets/images/Intelehealth-logo-white.png" alt="" width="100%" *ngIf="!collapsed">
-        <img src="assets/images/Intelehealth-logo-white2.png" alt="" width="100%" *ngIf="collapsed">
+        <img src="{{ configPublicUrl + logoImageURL }}" alt="" width="100%" *ngIf="!collapsed">
+        <img src="{{ configPublicUrl + thumbnailLogoURL }}" alt="" width="100%" *ngIf="collapsed">
       </div>
       <ul class="admin-nav">
-        <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE']" (click)="toggleSidebar()" data-test-id="listItemDashboard">
-          <a class="nav-item-link" routerLink="/dashboard" routerLinkActive="active" data-test-id="linkDashboard">
-            <img src="assets/svgs/menu-home.svg" alt="">
-            <span>{{'Dashboard' | translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE']" (click)="toggleSidebar()" data-test-id="listItemMessages">
-          <a class="nav-item-link" routerLink="/messages" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkMessages">
-            <img src="assets/svgs/menu-message.svg" alt="">
-            <span>{{'Messages' | translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE']" (click)="toggleSidebar()" data-test-id="listItemAppointments">
-          <a class="nav-item-link" routerLink="/appointments" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkAppointments">
-            <img src="assets/svgs/menu-video.svg" alt="">
-            <span>{{'Appointment' | translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE']" (click)="toggleSidebar()" data-test-id="listItemCalendar">
-          <a class="nav-item-link" routerLink="/calendar" routerLinkActive="active" data-test-id="linkCalendar">
-            <img src="assets/svgs/menu-calendar.svg" alt="">
-            <span>{{'Calendar' | translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE']" (click)="toggleSidebar()" data-test-id="listItemPrescription">
-          <a class="nav-item-link" routerLink="/prescription" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkPrescription">
-            <img src="assets/svgs/menu-treatment.svg" alt="">
-            <span>{{'Prescription' | translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: NURSE']" (click)="toggleSidebar()" data-test-id="listItemProfile">
-          <a class="nav-item-link" routerLink="/dashboard/hw-profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkProfile">
-            <img src="assets/svgs/menu-home.svg" alt="">
-            <span>{{'My Profile'| translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="listItemHelp">
-          <a class="nav-item-link" routerLink="/help" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkHelp">
-            <img src="assets/svgs/menu-info.svg" alt="">
-            <span>{{'Help & Support' | translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="listItemAyu">
-          <a class="nav-item-link" routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkAyu">
-            <img src="assets/svgs/warning.svg" alt="">
-            <span>{{'Ayu'| translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="listItemSupport">
-          <a class="nav-item-link" routerLink="/admin/support" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkSupport">
-            <img src="assets/svgs/menu-info.svg" alt="">
-            <span>{{'Support' | translate}} <div class="dot" *ngIf="adminUnread">{{adminUnread}}</div> </span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="listItemSystem">
-          <a class="nav-item-link" href="{{ baseURLLegacy }}/admin/index.htm" target="_blank" data-test-id="linkSystem">
-            <img src="assets/svgs/user-settings.svg" alt="">
-            <span>{{'System Admin' | translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="listItemUser">
-          <a class="nav-item-link" href="{{ baseURLLegacy }}/admin/users/users.list" target="_blank" data-test-id="linkUser">
-            <img src="assets/svgs/add-user.svg" alt="">
-            <span>{{'User Creation' | translate}}</span>
-          </a>
-        </li>
-        <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="listItemReport">
-          <a class="nav-item-link"  href="{{ baseURLLegacy }}/reportingui/reportsapp/home.page" target="_blank" data-test-id="linkReport">
-            <img src="assets/svgs/report.svg" alt="">
-            <span>{{'Report' | translate}}</span>
-          </a>
-        </li>
+        <app-sidebar-menu-list 
+        (toggleSidebar)="toggleSidebar()" 
+        [drUnread]="drUnread" 
+        [pvs]="pvs" 
+        [menus]="sidebarMenus" 
+        [adminUnread]="adminUnread">
+          </app-sidebar-menu-list>
         <li class="nav-item" (click)="toggleSidebar()" data-test-id="listItemLogout">
           <mat-divider class="mb-2"></mat-divider>
           <a class="nav-item-link" href="javascript:void(0)" (click)="logout()" data-test-id="linkLogout">
@@ -98,27 +33,32 @@
     <div class="header-main">
       <nav class="navbar navbar-expand-lg navbar-light" aria-label="Header menu">
         <a class="navbar-brand">
-          <button class="mr-2" mat-icon-button (click)="drawer.toggle()" *ngIf="isMobile" data-test-id="btnToggleDrawer">
+          <button class="mr-2" mat-icon-button (click)="drawer.toggle()" *ngIf="isMobile"
+            data-test-id="btnToggleDrawer">
             <mat-icon>menu</mat-icon>
           </button>
           <div class="header-title d-flex justify-content-between align-items-center" *ngIf="header?.title">
             <ng-container *ngIf="header.title != 'Dashboard'">
               <img src="{{header?.imgUrl}}" alt="" width="44px">
-              <h6 class="mb-0 ml-2">{{header?.title |  translate}}</h6>
+              <h6 class="mb-0 ml-2">{{header?.title | translate}}</h6>
               <mat-icon *ngIf="header?.info" aria-hidden="false" aria-label="help icon">help_outline</mat-icon>
             </ng-container>
             <ng-container *ngIf="header.title == 'Dashboard'">
               <form [formGroup]="searchForm">
                 <div class="input-group">
-                    <input type="text" class="form-control" formControlName="keyword" placeholder="{{'Search patient'| translate}}" aria-label="Username" aria-describedby="basic-addon1" (keyup.enter)="search()" data-test-id="etSearchPatient">
-                    <div class="input-group-append">
-                      <span class="input-group-text click p-0" id="basic-addon1" *ngIf="searchForm.value.keyword" (click)="resetSearch()" data-test-id="spanResetSearchPatient">
-                        <mat-icon class="ml-0" style="line-height: normal;">close</mat-icon>
-                      </span>
-                      <span class="input-group-text click" id="basic-addon2" (click)="search()" data-test-id="spanSearchPatient">
-                        <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
-                      </span>
-                    </div>
+                  <input type="text" class="form-control" formControlName="keyword"
+                    placeholder="{{'Search patient'| translate}}" aria-label="Username" aria-describedby="basic-addon1"
+                    (keyup.enter)="search()" data-test-id="etSearchPatient">
+                  <div class="input-group-append">
+                    <span class="input-group-text click p-0" id="basic-addon1" *ngIf="searchForm.value.keyword"
+                      (click)="resetSearch()" data-test-id="spanResetSearchPatient">
+                      <mat-icon class="ml-0" style="line-height: normal;">close</mat-icon>
+                    </span>
+                    <span class="input-group-text click" id="basic-addon2" (click)="search()"
+                      data-test-id="spanSearchPatient">
+                      <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
+                    </span>
+                  </div>
                 </div>
               </form>
             </ng-container>
@@ -127,7 +67,8 @@
             <ol class="breadcrumb">
               <ng-container *ngFor="let breadcrumb of breadcrumbs;let x=index; let last=last;">
                 <li class="breadcrumb-item" *ngIf="!last">
-                  <a [routerLink]="breadcrumb.url" data-test-id="{{'breadcrumb'+x}}">{{ breadcrumb.label | translate}}</a>
+                  <a [routerLink]="breadcrumb.url" data-test-id="{{'breadcrumb'+x}}">{{ breadcrumb.label |
+                    translate}}</a>
                 </li>
                 <li class="breadcrumb-item" aria-current="page" *ngIf="last">
                   {{ breadcrumb.label | translate }}
@@ -136,7 +77,9 @@
             </ol>
           </nav>
         </a>
-        <button class="navbar-toggler" type="button" mat-icon-button data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" data-test-id="btnToggleNavbar">
+        <button class="navbar-toggler" type="button" mat-icon-button data-toggle="collapse"
+          data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+          aria-label="Toggle navigation" data-test-id="btnToggleNavbar">
           <mat-icon>keyboard_arrow_down</mat-icon>
         </button>
 
@@ -144,7 +87,8 @@
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
               <div class="d-flex align-items-center justify-content-end">
-                <button mat-button class="notification-button mr-1" (click)="openHelpMenu()" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" data-test-id="btnHelpMenu">
+                <button mat-button class="notification-button mr-1" (click)="openHelpMenu()"
+                  *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" data-test-id="btnHelpMenu">
                   <mat-icon>help_outline</mat-icon>
                 </button>
                 <button mat-button [matMenuTriggerFor]="notificationmenu" class="notification-button mr-3">
@@ -154,30 +98,35 @@
                 </button>
                 <mat-menu #notificationmenu="matMenu" class="notification-menu">
                   <ng-container *ngIf="notificationEnabled && !snoozed">
-                    <button mat-menu-item (click)="snoozeNotification('30m')">Snooze for 30 Minutes</button>
-                    <button mat-menu-item (click)="snoozeNotification('1h')">Snooze for 1 Hour</button>
-                    <button mat-menu-item (click)="snoozeNotification('2h')">Snooze for 2 Hours</button>
-                    <button mat-menu-item (click)="toggleNotification()">Turn Off</button>
+                    <button mat-menu-item (click)="snoozeNotification('30m')">{{ "Snooze for 30 Minutes" | translate }}</button>
+                    <button mat-menu-item (click)="snoozeNotification('1h')">{{ "Snooze for 1 Hour" | translate }}</button>
+                    <button mat-menu-item (click)="snoozeNotification('2h')">{{ "Snooze for 2 Hours" | translate }}</button>
+                    <button mat-menu-item (click)="toggleNotification()">{{ "Turn Off" | translate }}</button>
                   </ng-container>
                   <ng-container *ngIf="notificationEnabled && snoozed">
-                    <button mat-menu-item (click)="snoozeNotification('off')">Awake notification</button>
-                    <button mat-menu-item (click)="toggleNotification()">Turn Off</button>
+                    <button mat-menu-item (click)="snoozeNotification('off')">{{ "Awake notification" | translate }}</button>
+                    <button mat-menu-item (click)="toggleNotification()">{{ "Turn Off" | translate }}</button>
                   </ng-container>
                   <ng-container *ngIf="!notificationEnabled">
-                    <button mat-menu-item (click)="toggleNotification()">Turn On</button>
+                    <button mat-menu-item (click)="toggleNotification()">{{ "Turn On" | translate }}</button>
                   </ng-container>
                 </mat-menu>
                 <div class="user-info-wrap mr-3" routerLink="/dashboard/profile" data-test-id="navProfile">
                   <img class="user-img mr-3" src="{{profilePic}}" alt="">
-                  <h6 class="user-title mb-0">{{'Hello' |translate}}, {{ (user)? user?.person?.display : ('User'|translate) }} <img src="assets/images/Waving-Hand-Emoji.png" alt="" height="100%"></h6>
+                  <h6 class="user-title mb-0">{{'Hello' |translate}}, {{ (user)? user?.person?.display :
+                    ('User'|translate) }} <img src="assets/images/Waving-Hand-Emoji.png" alt="" height="100%"></h6>
                 </div>
-                <button mat-icon-button [matMenuTriggerFor]="beforeMenu" aria-label="Example icon button with a vertical three dot icon" data-test-id="btnProfileDropdown">
+                <button mat-icon-button [matMenuTriggerFor]="beforeMenu"
+                  aria-label="Example icon button with a vertical three dot icon" data-test-id="btnProfileDropdown">
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #beforeMenu="matMenu" xPosition="before" class="profile-dropdown">
-                  <button mat-menu-item (click)="changePassword()" data-test-id="btnChangePasswordMain">{{'Change Password' | translate}}</button>
-                  <button mat-menu-item (click)="selectLanguage()" data-test-id="btnSelectLanguageMain">{{'Change Language' | translate}}</button>
-                  <button mat-menu-item routerLink="/dashboard/profile" data-test-id="btnProfileMain">{{'Profile' | translate}}</button>
+                  <button mat-menu-item (click)="changePassword()" data-test-id="btnChangePasswordMain">{{'Change
+                    Password' | translate}}</button>
+                  <button mat-menu-item (click)="selectLanguage()" data-test-id="btnSelectLanguageMain">{{'Change
+                    Language' | translate}}</button>
+                  <button mat-menu-item routerLink="/dashboard/profile" data-test-id="btnProfileMain">{{'Profile' |
+                    translate}}</button>
                 </mat-menu>
               </div>
             </li>
@@ -187,7 +136,7 @@
     </div>
     <div class="main-container" [class.pb-0]="this.routeUrl?.includes('messages')||this.routeUrl?.includes('support')">
       <router-outlet></router-outlet>
-      <div class="help-menu-container d-flex flex-column" *ngIf="routeUrl.includes('/help') && !dialogRef && !dialogRef2">
+      <!-- <div class="help-menu-container d-flex flex-column" *ngIf="routeUrl.includes('/help') && !dialogRef && !dialogRef2">
         <div class="menu-item">
           <span>{{'Raise a Ticket'| translate}}</span>
           <button class="help-btn-2 mr-1" type="button" (click)="openRaiseTicketModal()" data-test-id="btnToggleTicket">
@@ -200,7 +149,7 @@
             <img src="assets/svgs/send_circle_icon.svg" alt="" width="45px" height="45px">
           </button>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </mat-drawer-container>

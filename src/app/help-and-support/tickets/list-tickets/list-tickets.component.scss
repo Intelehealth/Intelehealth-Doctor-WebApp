@@ -1,0 +1,193 @@
+.mat-elevation-z8 {
+    box-shadow: none;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    font-family: DM Sans;
+  }
+
+  th.mat-header-cell {
+    border: none;
+    font-size: 14px !important;
+    font-weight: 700;
+    color: var(--color-gray);
+    height: 21px;
+  }
+
+  th.mat-header-cell,
+  td.mat-cell,
+  td.mat-footer-cell {
+    border: none;
+    min-width: 60px;
+    padding-right: 24px;
+    white-space: nowrap;
+  }
+
+  td.mat-cell {
+    font-size: 16px;
+    button.priority{
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: default;
+    }
+    button.low{
+      background: #E5FFF3;
+      color: #0FD197;
+    }
+    button.medium{
+      background: #FFF9E8;
+      color: #FF9153;
+    }
+    button.high{
+      background: #FFF0E8;
+      color: #EA315B;
+    }
+    button.status{
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      background: #EFE8FF;
+      color: var(--color-darkBlue);
+      cursor: default;
+    }
+    button.view-ticket{
+      border: 1px solid;
+      border-color: lightblue;
+      border-radius: 5px;
+      padding: 5px 10px;
+      background: transparent;
+      color: var(--color-darkBlue);
+    }
+  }
+
+  tr.mat-row,
+  tr.mat-footer-row {
+    height: 75px;
+    border-radius: 8px;
+  }
+
+  tr.mat-row:nth-child(odd) {
+    background: #F7F7FA;
+  }
+
+  tr.mat-row.selected {
+    background: #E6FFF3;
+  }
+
+  td:first-child,
+  th:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+
+  // Set border-radius on the top-right and bottom-right of the last table data on the table row
+  td:last-child,
+  th:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+
+  .intelehealth-card {
+    background: var(--color-white);
+    box-shadow: 0px 4px 24px rgba(31, 28, 58, 0.08);
+    border-radius: 20px;
+    font-family: DM Sans;
+
+    .mat-card-title {
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-lightGray);
+    }
+
+    .intelehealth-card-title {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      h6 {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--color-black);
+      }
+    }
+  }
+
+  .card-header-actions {
+    .btn {
+      height: 50px;
+      background: var(--color-darkBlue);
+      border-radius: 8px;
+      font-size: 18px;
+      color: var(--color-white);
+      position: relative;
+      min-width: 100px;
+    }
+
+    .bulk-action-btn{
+      background: var(--color-white);
+      border: 1.33px solid var(--color-lightGray);
+      border-radius: 8px;
+      color: var(--color-darkBlue);
+    }
+  }
+
+  .btn-block {
+    display: none;
+    height: 50px;
+    background: var(--color-darkBlue);
+    border-radius: 8px;
+    font-size: 18px;
+    color: var(--color-white);
+    position: relative;
+    width: 100%;
+    font-weight: bold;
+  }
+
+  .input-group {
+    background: var(--color-white);
+    border: 1px solid rgba(127, 123, 146, 0.5);
+    border-radius: 6px;
+    height: 46px;
+    align-items: center;
+    max-width: 60vw;
+    width: 300px;
+    display: flex;
+  
+    .input-group-text {
+      background: none;
+      border: none;
+      cursor: default;
+    }
+  
+    .form-control {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
+      line-height: 150%;
+      padding-left: 16px;
+    }
+  
+    .form-control:focus {
+      box-shadow: none;
+    }
+  }
+
+  .grid-title{
+    font-size: 18px;
+    line-height: 150%;
+    font-weight: bold;
+  }
+
+  .open-tickets{
+    font-size: 14px;
+    color: grey;
+    font-weight: normal;
+  }
+
+  @media (max-width: 768px) {
+    .btn-block {
+      display: block;
+    }
+  }
