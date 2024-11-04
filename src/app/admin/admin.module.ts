@@ -25,6 +25,11 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MatPaginationIntlService } from '../services/mat-pagination.service';
 import { SharedModule } from '../shared.module';
+import { VideoCategoryComponent } from './video-category/video-category.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSortModule } from '@angular/material/sort';
+import { VideosComponent } from './videos/videos.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -43,6 +48,14 @@ const routes: Routes = [
       {
         path: 'support',
         component: SupportComponent
+      },
+      {
+        path: 'video-library',
+        component: VideoCategoryComponent,
+      },
+      {
+        path: 'manage-videos/:categoryId',
+        component: VideosComponent
       }
     ]
   }
@@ -52,7 +65,9 @@ const routes: Routes = [
   declarations: [
     AdminComponent,
     AyuComponent,
-    SupportComponent
+    SupportComponent,
+    VideoCategoryComponent,
+    VideosComponent
   ],
   imports: [
     CommonModule,
@@ -63,6 +78,9 @@ const routes: Routes = [
     MatButtonModule,
     NgSelectModule,
     FormsModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatPaginatorModule,
     MatCardModule,
     MatTableModule,

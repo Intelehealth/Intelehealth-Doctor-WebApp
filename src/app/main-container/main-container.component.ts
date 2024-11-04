@@ -262,7 +262,7 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
   * @return {void}
   */
   logout() {
-    this.coreService.openConfirmationDialog({ confirmationMsg: 'Are you sure you want to logout?', cancelBtnText: 'No', confirmBtnText: 'Yes' }).afterClosed().subscribe(res => {
+    this.coreService.openConfirmationDialog({ confirm:"Confirm", confirmationMsg: 'Are you sure you want to logout?', cancelBtnText: 'No', confirmBtnText: 'Yes' }).afterClosed().subscribe(res => {
       if (res) {
         this.authService.logOut();
         this.createUpdateStatus("inactive");

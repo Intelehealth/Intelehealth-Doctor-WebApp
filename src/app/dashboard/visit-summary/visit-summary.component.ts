@@ -719,7 +719,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       this.toastr.warning(this.translateService.instant('Can\'t refer, visit note already exists for this visit!'), this.translateService.instant('Can\'t refer'));
       return;
     }
-    this.coreService.openConfirmationDialog({ confirmationMsg: 'Are you sure to re-assign this visit to another doctor?', cancelBtnText: 'Cancel', confirmBtnText: 'Confirm' })
+    this.coreService.openConfirmationDialog({ confirm:"Confirm", confirmationMsg: 'Are you sure to re-assign this visit to another doctor?', cancelBtnText: 'Cancel', confirmBtnText: 'Confirm' })
       .afterClosed().subscribe((res: boolean) => {
         if (res) {
           const attr = this.visitSummaryService.checkIfAttributeExists(this.visit.attributes);

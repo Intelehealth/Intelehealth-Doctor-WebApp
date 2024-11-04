@@ -455,7 +455,7 @@ export class SetupCalendarComponent implements OnInit {
   * @return {void}
   */
   deleteSlot(index: number) {
-    this.coreService.openConfirmationDialog({ confirmationMsg: 'Do you really want to delete this timing slot?', cancelBtnText: 'Cancel', confirmBtnText: 'Confirm' }).afterClosed().subscribe(res => {
+    this.coreService.openConfirmationDialog({ confirm:"Confirm", confirmationMsg: 'Do you really want to delete this timing slot?', cancelBtnText: 'Cancel', confirmBtnText: 'Confirm' }).afterClosed().subscribe(res => {
       if (res) {
         this.fs.clear();
         if (moment(this.addSlotsForm.value.startDate) > moment(this.addSlotsForm.value.endDate)) {
@@ -637,7 +637,7 @@ export class SetupCalendarComponent implements OnInit {
       return;
     }
 
-    this.coreService.openConfirmationDialog({ confirmationMsg: 'Do you really want to save these days off ?', cancelBtnText: 'Cancel', confirmBtnText: 'Confirm' }).afterClosed().subscribe(res => {
+    this.coreService.openConfirmationDialog({ confirm:"Confirm", confirmationMsg: 'Do you really want to save these days off ?', cancelBtnText: 'Cancel', confirmBtnText: 'Confirm' }).afterClosed().subscribe(res => {
       if (res) {
         let finalDaysOff = [...new Set([...this.fd.value].concat(this.daysOffSelected))].map((val: string)=> {
           return moment(val, "YYYY-MM-DD HH:mm:ss").format('DD/MM/YYYY');
@@ -702,7 +702,7 @@ export class SetupCalendarComponent implements OnInit {
   * @return {void}
   */
   removeDaysOff(index: number) {
-    this.coreService.openConfirmationDialog({ confirmationMsg: 'Do you really want to remove this day off ?', cancelBtnText: 'Cancel', confirmBtnText: 'Confirm' }).afterClosed().subscribe(res => {
+    this.coreService.openConfirmationDialog({ confirm:"Confirm", confirmationMsg: 'Do you really want to remove this day off ?', cancelBtnText: 'Cancel', confirmBtnText: 'Confirm' }).afterClosed().subscribe(res => {
       if (res) {
         let finalDaysOff = [...this.fd.value];
         finalDaysOff.splice(index, 1);

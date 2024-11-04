@@ -83,6 +83,12 @@
             <span>{{'Report' | translate}}</span>
           </a>
         </li>
+        <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="linkVideoLibrary">
+          <a class="nav-item-link" routerLink="/admin/video-library" data-test-id="linkVideoLibrary">
+            <img src="assets/svgs/report.svg" alt="">
+            <span>{{'Video Library' | translate}}</span>
+          </a>
+        </li>
         <li class="nav-item" (click)="toggleSidebar()" data-test-id="listItemLogout">
           <mat-divider class="mb-2"></mat-divider>
           <a class="nav-item-link" href="javascript:void(0)" (click)="logout()" data-test-id="linkLogout">

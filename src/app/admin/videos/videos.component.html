@@ -1,0 +1,118 @@
+<div class="container">
+  <mat-card>
+    <span class="float-left">
+      <button
+        [routerLink]="['/videoLibrary']"
+        mat-raised-button
+        color="primary"
+      >
+        Back
+      </button>
+    </span>
+    <div>
+      <div>
+        <span class="float-right">
+          <button (click)="addVideo()" mat-raised-button color="primary">
+            Add Video
+          </button>
+        </span>
+      </div>
+      <br />
+      <mat-form-field style="margin-top: 15px" class="col-12 search-text">
+        <input
+          matInput
+          (keyup)="applyFilter($event.target.value)"
+          placeholder="Search"
+        />
+      </mat-form-field>
+
+      <div class="mat-elevation-z8">
+        <table
+          class="table-responsive"
+          mat-table
+          [dataSource]="dataSource"
+          #sortCol4="matSort"
+          matSort
+        >
+          <ng-container matColumnDef="video">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Video-Preview
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <iframe
+                style="margin-left: -26px"
+                [src]="row.videoURL"
+                width="250"
+                height="150"
+                frameborder="0"
+                allowfullscreen
+              ></iframe>
+            </td>
+          </ng-container>
+          <!-- ID Column -->
+          <ng-container matColumnDef="VideoId">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Video ID</th>
+            <td mat-cell *matCellDef="let row; let i = index">
+              {{ row.videoId }}
+            </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="Title">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+            <td mat-cell *matCellDef="let row">{{ row.title }}</td>
+          </ng-container>
+
+          <!-- Project Id Column -->
+          <ng-container matColumnDef="CreatedBy">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>CreatedBy</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.createdBy }}
+            </td>
+          </ng-container>
+
+          <!-- Last Updated Column -->
+          <ng-container matColumnDef="lastUpdate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Last Update
+            </th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.updatedAt | date : "dd-MMM-yyyy" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+            <td mat-cell *matCellDef="let row; let i = index">
+              <i
+                (click)="updateVideo(row)"
+                class="material-icons"
+                style="color: #343a40; cursor: pointer; margin-left: -10px"
+                >edit</i
+              >
+              <i
+                (click)="delete(row.id)"
+                class="material-icons"
+                style="
+                  color: rgb(235, 30, 30);
+                  cursor: pointer;
+                  margin-right: 3px;
+                "
+                >delete</i
+              >
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="displayColumns"
+            id="columns-sorting"
+          ></tr>
+          <tr mat-row *matRowDef="let row; columns: displayColumns"></tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+      </div>
+    </div>
+  </mat-card>
+</div>

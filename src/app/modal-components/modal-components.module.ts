@@ -42,6 +42,7 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 import { ImageCropComponent } from './image-crop/image-crop.component';
 import { VcallOverlayComponent } from './vcall-overlay/vcall-overlay.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { VideoLibraryComponent } from './video-library/video-library.component';
 
 @NgModule({
     declarations: [
@@ -72,7 +73,8 @@ import { MatTabsModule } from '@angular/material/tabs';
         ConfirmOpenmrsIdComponent,
         RaiseTicketComponent,
         ImageCropComponent,
-        VcallOverlayComponent
+        VcallOverlayComponent,
+        VideoLibraryComponent
     ],
     imports: [
         CommonModule,

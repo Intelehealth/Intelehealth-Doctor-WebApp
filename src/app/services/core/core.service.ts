@@ -28,6 +28,7 @@ import { SharePrescriptionComponent } from 'src/app/modal-components/share-presc
 import { UploadMindmapJsonComponent } from 'src/app/modal-components/upload-mindmap-json/upload-mindmap-json.component';
 import { VcallOverlayComponent } from 'src/app/modal-components/vcall-overlay/vcall-overlay.component';
 import { VideoCallComponent } from 'src/app/modal-components/video-call/video-call.component';
+import { VideoLibraryComponent } from 'src/app/modal-components/video-library/video-library.component';
 import { ViewVisitPrescriptionComponent } from 'src/app/modal-components/view-visit-prescription/view-visit-prescription.component';
 import { ViewVisitSummaryComponent } from 'src/app/modal-components/view-visit-summary/view-visit-summary.component';
 
@@ -43,7 +44,7 @@ export class CoreService {
   * @param {{ confirmationMsg: string, cancelBtnText: string, confirmBtnText: string }} data - Dialog data
   * @return {MatDialogRef<ConfirmDialogComponent>} - Dialog reference
   */
-  openConfirmationDialog(data: { confirmationMsg: string, cancelBtnText: string, confirmBtnText: string }): MatDialogRef<ConfirmDialogComponent> {
+  openConfirmationDialog(data: {confirm:string, confirmationMsg: string, cancelBtnText: string, confirmBtnText: string }): MatDialogRef<ConfirmDialogComponent> {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, { panelClass: 'modal-md', data, hasBackdrop: true, disableClose: true });
     return dialogRef;
   }
@@ -312,4 +313,14 @@ export class CoreService {
       reader.readAsDataURL(blob);
     });
   }
+
+    /**
+  * Open add license modal
+  * @param {any} data - Dialog data
+  * @return {Observable<any>} - Dialog result
+  */
+    openVideoLibraryModal(data: any): Observable<any> {
+      const dialogRef = this.dialog.open(VideoLibraryComponent, { panelClass: 'modal-md', data, hasBackdrop: true, disableClose: true });
+      return dialogRef.afterClosed();
+    }
 }

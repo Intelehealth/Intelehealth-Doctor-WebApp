@@ -1,0 +1,38 @@
+<div class="container">
+      <div class="row mt-3">
+        <div class="col-md-12 p-0">
+          <div class="card intel-card">
+            <div class="card-header">
+              <img class="mr-2" src="assets/svgs/videocategory.svg" alt="" height="44px">
+              <h6 class="mb-0">{{'Video Categories' | translate}}</h6>
+              <div class="card-header-actions">
+                <input type="text" class="search-input mr-2" placeholder="{{'Search'| translate}}" (keyup)="applyFilter($event)" data-test-id="etSearchMindmap">
+                <button type="button" class="action-btn bg-blue float-right" data-test-id="btnAddCategory" (click)="openVideoLibraryModal('add')">
+                   {{'Add Category' | translate}}</button>
+              </div>
+            </div>
+            <div class="card-body">
+                <mat-card class="cardStyle" *ngFor="let category of categories">
+                    <mat-card-header>
+                      <div class="row">
+                          <h4 class="name truncate-cell"> {{category.name}} </h4>
+                          <div style="margin-left: 100px;"><button type="button" class="delete-btn" (click)="delete(category)" data-test-id="btnDeleteCategory">
+                            <img src="assets/svgs/delete-icon.svg" alt="">
+                          </button>
+                          </div>
+                      </div>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <h6 class="name1">{{'Last Update' | translate}}</h6>
+                      <h4 class="date1"> {{category.updatedAt|date:'dd MMM, yyyy'}} </h4>
+                    </mat-card-content>
+                    <div class="d-flex btns">
+                      <button class="cancel-btn mr-3 click" type="button" (click)="openVideoLibraryModal('edit', category)" data-test-id="btnEditCategory">{{'Edit' | translate}}</button>
+                      <button class="confirm-btn click" type="button"     [routerLink]="['/admin/manage-videos', category.id]" data-test-id="btnViewCategory">{{ 'View'|translate }}</button>
+                    </div>
+                </mat-card>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
