@@ -166,6 +166,17 @@ export class ConfigService {
   }
 
   /**
+  * Update help tour config
+  * @param {string} url - api URL
+  * @param {string} config - help tour config in string
+  * @return {Observable<any>}
+  */
+  updateHelpTour(help_tour_config: string): Observable<any> {
+    const url = `${this.baseURL}/theme_config/updateHelpTour`;
+    return this.http.put(url, {help_tour_config});
+  }
+
+  /**
   * Get patient vitals
   * @return {Observable<any>}
   */
@@ -184,6 +195,18 @@ export class ConfigService {
     const url = `${this.baseURL}/vitals/updateIsEnabled/${id}`;
     return this.http.put(url, { is_enabled });
   }
+
+  /**
+  * Update patient vital name
+  * @param {boolean} id - id of vital
+  * @param {any} lang - update vital name
+  * @return {Observable<any>}
+  */
+  updateVitalName(id: number, lang: any): Observable<any> {
+    const url = `${this.baseURL}/vitals/updateVitalName/${id}`;
+    return this.http.put(url, { lang });
+  }
+
 
   /**
   * Update patient vital enabled status
@@ -330,15 +353,38 @@ export class ConfigService {
 
   
   /**
-  * Update Patient Visit Sections
+  * Update Patient Visit Sections Name
   * @param {boolean} id - id of section
-  * @param {any} name - update name
+  * @param {any} lang - update lang
   * @return {Observable<any>}
   */
-  updatePVSName(id: number, name: any): Observable<any> {
+  updatePVSName(id: number, lang: any): Observable<any> {
     const url = `${this.baseURL}/patient-visit-sections/updateName/${id}`;
-    return this.http.put(url, { name });
+    return this.http.put(url, { lang });
   }
+
+   /**
+  * Update Patient Visit Sections Order
+  * @param {any} newOrder - update newOrder
+  * @return {Observable<any>}
+  */
+   updatePVSOrder(newOrder: any): Observable<any> {
+    const url = `${this.baseURL}/patient-visit-sections/update-order`;
+    return this.http.put(url, { order: newOrder });
+  }
+
+  /**
+  * Update Patient Visit Sub Sections status
+  * @param {boolean} id - id of section
+  * @param {string} sub_section - sub section name
+  * @param {boolean} is_enabled - enabled status true/false
+  * @return {Observable<any>}
+  */
+  updatePVSSEnabledStatus(id: number, sub_section: string, is_enabled: boolean): Observable<any> {
+    const url = `${this.baseURL}/patient-visit-sections/updateSubSectionIsEnabled/${id}`;
+    return this.http.put(url, { sub_section, is_enabled });
+  }
+  
 }
 
 

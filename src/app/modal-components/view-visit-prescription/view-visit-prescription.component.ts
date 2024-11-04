@@ -10,11 +10,12 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { doctorDetails, visitTypes } from 'src/config/constant';
-import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PatientRegistrationFieldsModel, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
+import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PatientRegistrationFieldsModel, PatientVisitSection, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
-import { precription, logo } from "../../utils/base64"
+import { precription } from "../../utils/base64"
 import { AppConfigService } from 'src/app/services/app-config.service';
-import { calculateBMI } from 'src/app/utils/utility-functions';
+import { calculateBMI, getFieldValueByLanguage } from 'src/app/utils/utility-functions';
+import { checkIsEnabled, VISIT_SECTIONS } from 'src/app/utils/visit-sections';
 
 @Component({
   selector: 'app-view-visit-prescription',
@@ -69,6 +70,9 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   hasPatientOtherEnabled: boolean = false;
   hasPatientAddressEnabled: boolean = false;
 
+  pvsConfigs: PatientVisitSection[] = [];
+  pvsConstant = VISIT_SECTIONS;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
     private dialogRef: MatDialogRef<ViewVisitPrescriptionComponent>,
@@ -78,12 +82,17 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private appConfigService: AppConfigService) {
       Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
-        this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter(e=>e.is_enabled).map(e=>e.name));
+        this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter((e: { is_enabled: any; })=>e.is_enabled).map((e: { name: any; })=>e.name));
       });
       this.vitals = [...this.appConfigService.patient_vitals]; 
       this.hasVitalsEnabled = this.appConfigService.patient_vitals_section;
       this.hasPatientAddressEnabled = this.appConfigService?.patient_reg_address;
       this.hasPatientOtherEnabled = this.appConfigService?.patient_reg_other;
+      this.pvsConfigs = this.appConfigService.patient_visit_sections?.filter((pvs: { key: string; }) => [
+        this.pvsConstant['vitals'].key,
+        this.pvsConstant['consultation_details'].key,
+        this.pvsConstant['check_up_reason'].key
+      ].includes(pvs.key));
     }
 
   ngOnInit(): void {
@@ -328,7 +337,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     this.diagnosisService.getObs(this.visit.patient.uuid, this.conceptFollow).subscribe((response: ObsApiResponseModel) => {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this.visit.uuid) {
-          let followUpDate, followUpTime, followUpReason,wantFollowUp;
+          let followUpDate: string, followUpTime: any, followUpReason: any,wantFollowUp: string;
           if(obs.value.includes('Time:')) {
              followUpDate = (obs.value.includes('Time:')) ? moment(obs.value.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.value.split(', Remark: ')[0]).format('YYYY-MM-DD');
              followUpTime = (obs.value.includes('Time:')) ? obs.value.split(', Time: ')[1].split(', Remark: ')[0] : null;
@@ -487,18 +496,18 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
 
   /**
   * Getter for signature type
-  * @return {string} - Signature type
+  * @return {any} - Signature type
   */
-  get signatureType() {
-    return this.attributes.find(a => a?.attributeType?.display === doctorDetails.SIGNATURE_TYPE);
+  get signatureType(): any {
+    return this.attributes.find((a: { attributeType: { display: string; }; }) => a?.attributeType?.display === doctorDetails.SIGNATURE_TYPE);
   }
 
   /**
   * Getter for signature
-  * @return {string} - Signature
+  * @return {any} - Signature
   */
-  get signature() {
-    return this.attributes.find(a => a?.attributeType?.display === doctorDetails.SIGNATURE);
+  get signature(): any {
+    return this.attributes.find((a: { attributeType: { display: string; }; }) => a?.attributeType?.display === doctorDetails.SIGNATURE);
   }
 
   /**
@@ -506,7 +515,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   * @param {string} b64 - Base64 url
   * @return {string} - MIME type
   */
-  detectMimeType(b64: string) {
+  detectMimeType(b64: string): string {
     return this.profileService.detectMimeType(b64);
   }
 
@@ -516,16 +525,16 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   * @param {string} signatureType - Signature type
   * @return {void}
   */
-  setSignature(signature, signatureType) {
+  setSignature(signature: RequestInfo, signatureType: any): void {
     switch (signatureType) {
       case 'Draw':
       case 'Generate':
       case 'Upload':
-        this.signaturePicUrl = signature;
+        this.signaturePicUrl = signature as string;
         fetch(signature)
           .then(res => res.blob())
           .then(blob => {
-            this.signatureFile = new File([blob], 'intelehealth', { type: this.detectMimeType(signature.split(',')[0]) });
+            this.signatureFile = new File([blob], 'intelehealth', { type: this.detectMimeType(this.signaturePicUrl.split(',')[0]) });
           });
         break;
       default:
@@ -534,12 +543,15 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   }
 
   /**
-  * Download prescription
-  * @return {void}
-  */
-  async downloadPrescription() {
+    * Download prescription
+    * @return {Promise<void>}
+    */
+  async downloadPrescription(): Promise<void> {
     const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
     const logo: any = await this.toObjectUrl(`${this.configPublicURL}${this.logoImageURL}`);
+    const checkUpReasonConfig = this.pvsConfigs.find((v) => v.key === this.pvsConstant['check_up_reason'].key);
+    
+    const vitalsConfig = this.pvsConfigs.find((v) => v.key === this.pvsConstant['vitals'].key); 
     const pdfObj = {
       pageSize: 'A4',
       pageOrientation: 'portrait',
@@ -551,7 +563,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
           { image: (logo && !logo?.includes('application/json')) ? logo : 'logo', width: 90, height: 30, alignment: 'right', margin: [0, 10, 10, 0] }
         ]
       },
-      footer: (currentPage, pageCount) => {
+      footer: (currentPage: { toString: () => string; }, pageCount: string) => {
         return {
           columns: [
             [ { text: (pageCount === currentPage ? '*The diagnosis and prescription is through telemedicine consultation conducted as per applicable telemedicine guideline\n\n' : '\n\n'),bold: true,fontSize: 9,margin: [10, 0, 0, 0] },{ text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [5, 0, 0, 0]} ],
@@ -697,11 +709,12 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               [
                 {
                   colSpan: 4,
+                  sectionName:'cheifComplaint',
                   table: {
                     widths: [30, '*'],
                     headerRows: 1,
                     body: [
-                      [ {image: 'cheifComplaint', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Chief complaint', style: 'sectionheader', border: [false, false, false, true] }],
+                      [ {image: 'cheifComplaint', width: 25, height: 25, border: [false, false, false, true] }, {text: this.getLanguageValue(checkUpReasonConfig), style: 'sectionheader', border: [false, false, false, true] }],
                       [
                         {
                           colSpan: 2,
@@ -728,7 +741,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                     widths: [30, '*'],
                     headerRows: 1,
                     body: [
-                      [ {image: 'vitals', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Vitals', style: 'sectionheader', border: [false, false, false, true] }],
+                      [ {image: 'vitals', width: 25, height: 25, border: [false, false, false, true] }, {text: this.getLanguageValue(vitalsConfig), style: 'sectionheader', border: [false, false, false, true] }],
                       [
                         {
                           colSpan: 2,
@@ -1024,7 +1037,8 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       }
     };
     pdfObj.content[0].table.body = pdfObj.content[0].table.body.filter((section:any)=>{
-      if(section[0].sectionName === 'vitals' && !this.hasVitalsEnabled) return false;
+      if(section[0].sectionName === 'vitals' && (!this.hasVitalsEnabled || !vitalsConfig?.is_enabled )) return false;
+      if(section[0].sectionName === 'cheifComplaint' && !checkUpReasonConfig?.is_enabled) return false;
       return true;
     });
     pdfMake.createPdf(pdfObj).download('e-prescription');
@@ -1109,8 +1123,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         break;
       case visitTypes.VITALS:
         this.vitals.forEach((v: VitalModel) => {
-          records.push({ text: [{ text: `${v.name} : `, bold: true }, `${this.getObsValue(v.uuid, v.key) ? this.getObsValue(v.uuid, v.key) : `No information`}`], margin: [0, 5, 0, 5] });
-        });
+          records.push({ text: [{ text: `${v.lang !== null ? this.getLanguageValue(v) : v.name } : `, bold: true }, `${this.getObsValue(v.uuid, v.key) ? this.getObsValue(v.uuid, v.key) : `No information`}`], margin: [0, 5, 0, 5] });        });
         break;
     }
     return records;
@@ -1149,12 +1162,12 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     const v = this.vitalObs.find(e => e.concept.uuid === uuid);
     const value = v?.value ? ( typeof v.value == 'object') ? v.value?.display : v.value : null;
     if(!value && key === 'bmi') {
-      return calculateBMI(this.vitals, this.vitalObs);
+     return calculateBMI(this.vitals, this.vitalObs);
     }
     return value
   }
 
-  checkPatientRegField(fieldName): boolean{
+  checkPatientRegField(fieldName: string): boolean{
     return this.patientRegFields.indexOf(fieldName) !== -1;
   }
 
@@ -1381,4 +1394,23 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     }
     return data;
   }
+
+  checkIsVisibleSection(pvsConfig: { key: string; is_enabled: boolean; }) {
+    return checkIsEnabled(pvsConfig.key, 
+      pvsConfig.is_enabled, {
+      visitNotePresent: this.visitNotePresent,
+      hasVitalsEnabled: this.hasVitalsEnabled
+    })
+  }
+
+  /**
+    * Retrieve the appropriate language value from an element.
+    * @param {any} element - An object containing `lang` and `name`.
+    * @return {string} - The value in the selected language or the first available one.
+    * Defaults to `element.name` if no language value is found.
+    */
+  getLanguageValue(element: any): string {
+    return getFieldValueByLanguage(element)
+  }
+
 }

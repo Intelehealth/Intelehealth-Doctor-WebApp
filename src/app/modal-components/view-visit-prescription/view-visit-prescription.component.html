@@ -61,7 +61,7 @@
 
         <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Phone Number') && getPersonAttributeValue('Telephone Number') !== 'NA'">
           <div class="patient-info-item">
-            <h6 data-test-id="etPatient">{{'Contact no:'| translate}}</h6>
+            <h6 data-test-id="etPatient">{{'Phone Number:'| translate}}</h6>
             <div class="contact-info">
               <p>
                 <img src="assets/svgs/phone-black.svg" alt="" />
@@ -208,144 +208,149 @@
     </div>
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-12 px-3 mb-3">
-          <div class="data-section">
-            <div class="data-section-title">
-              <img src="assets/svgs/consultation-details-blue.svg" alt="" />
-              <h6>{{'Consultation details'|translate}}</h6>
-            </div>
-            <div class="data-section-content consultation-details">
-              <ul *ngIf="isDownloadPrescription" class="items-list">
-                <li>
-                  <div class="list-item">
-                    <label>{{'Patient Id'|translate}}</label>
-                    <div class="list-item-content">
-                      {{patient?.identifiers?.[0]?.identifier}}
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-item">
-                    <label>{{'Date of Consultation'|translate}}</label>
-                    <div class="list-item-content">
-                      {{
-                      completedEncounter?.encounterDatetime
-                      | date : "dd MMM, yyyy"
-                      }}
-                    </div>
-                  </div>
-                </li>
-              </ul>
+        <ng-container *ngFor="let pvsConfig of pvsConfigs; let pvsI = index;">
+          <ng-container *ngIf="checkIsVisibleSection(pvsConfig) as checkVisibleSectionConfig">
+            <div class="col-md-12 px-3 mb-3" *ngIf="checkVisibleSectionConfig.is_enabled">
+              <div class="data-section">
+                <div class="data-section-title">
+                  <img
+                    *ngIf="pvsConstant[pvsConfig.key]?.logo"
+                    src="{{ pvsConstant[pvsConfig.key]?.logo }}"
+                    alt=""
+                  />
+                  <h6>{{ getLanguageValue(pvsConfig) | translate}}</h6>
+                </div>
 
-              <ul *ngIf="!isDownloadPrescription" class="items-list">
-                <li>
-                  <div class="list-item">
-                    <label class="border-0">{{'Visit ID'|translate}}</label>
-                    <div class="list-item-content">
-                      {{
-                        visit?.uuid
-                          ? (replaceWithStar(visit?.uuid) | uppercase)
-                          : ""
-                      }}
+                <ng-container [ngSwitch]="pvsConfig.key">
+
+                  <!-- Consultation details -->
+                    <div class="data-section-content consultation-details" *ngSwitchCase="pvsConstant['consultation_details'].key">
+                      <ul *ngIf="isDownloadPrescription" class="items-list">
+                        <li>
+                          <div class="list-item">
+                            <label>{{'Patient Id'|translate}}</label>
+                            <div class="list-item-content">
+                              {{patient?.identifiers?.[0]?.identifier}}
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="list-item">
+                            <label>{{'Date of Consultation'|translate}}</label>
+                            <div class="list-item-content">
+                              {{
+                              completedEncounter?.encounterDatetime
+                              | date : "dd MMM, yyyy"
+                              }}
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+    
+                      <ul *ngIf="!isDownloadPrescription" class="items-list">
+                        <li>
+                          <div class="list-item">
+                            <label class="border-0">{{'Visit ID'|translate}}</label>
+                            <div class="list-item-content">
+                              {{
+                                visit?.uuid
+                                  ? (replaceWithStar(visit?.uuid) | uppercase)
+                                  : ""
+                              }}
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="list-item">
+                            <label>{{'Visit Created'|translate}}</label>
+                            <div class="list-item-content">
+                              {{ visit?.startDatetime | date : "dd MMM, yyyy" }}
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="list-item">
+                            <label>{{'Appointment on'|translate}}</label>
+                            <div class="list-item-content">
+                              <span class="text-muted">{{'No appointment'|translate}}</span>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="list-item">
+                            <label>{{'Status'|translate}}</label>
+                            <div class="list-item-content">
+                              <span
+                                [ngClass]="{
+                                  'text-important-red': visitStatus == 'Priority Visit',
+                                  'text-important-green':
+                                    [
+                                      'Awaiting Visit',
+                                      'In-progress Visit',
+                                      'Completed Visit',
+                                      'Ended Visit'
+                                    ].indexOf(visitStatus) != -1
+                                }"
+                                >{{ (visitStatus)|translate }}</span
+                              >
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="list-item">
+                            <label>{{'Location'|translate}}</label>
+                            <div class="list-item-content">
+                              {{ clinicName | titlecase }}
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="list-item">
+                            <label>{{'Provided by'|translate}}</label>
+                            <div class="list-item-content">
+                              <div class="visit-provider-con">
+                                <span>{{ providerName }}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
                     </div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-item">
-                    <label>{{'Visit Created'|translate}}</label>
-                    <div class="list-item-content">
-                      {{ visit?.startDatetime | date : "dd MMM, yyyy" }}
+                  <!-- END Consultation details  -->
+                  
+                  <!-- Vitals -->
+                    <div class="data-section-content" *ngSwitchCase="pvsConstant['vitals'].key">
+                      <ul class="items-list">
+                        <li *ngFor="let v of vitals;">
+                          <div class="list-item">
+                            <label>{{getLanguageValue(v) | translate}}</label>
+                            <div class="list-item-content" [class.text-muted]="!getObsValue(v.uuid, v.key)">
+                              {{(getObsValue(v.uuid, v.key))?getObsValue(v.uuid, v.key):'No information' | translate}}
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
                     </div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-item">
-                    <label>{{'Appointment on'|translate}}</label>
-                    <div class="list-item-content">
-                      <span class="text-muted">{{'No appointment'|translate}}</span>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-item">
-                    <label>{{'Status'|translate}}</label>
-                    <div class="list-item-content">
-                      <span
-                        [ngClass]="{
-                          'text-important-red': visitStatus == 'Priority Visit',
-                          'text-important-green':
-                            [
-                              'Awaiting Visit',
-                              'In-progress Visit',
-                              'Completed Visit',
-                              'Ended Visit'
-                            ].indexOf(visitStatus) != -1
-                        }"
-                        >{{ (visitStatus)|translate }}</span
-                      >
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-item">
-                    <label>{{'Location'|translate}}</label>
-                    <div class="list-item-content">
-                      {{ clinicName | titlecase }}
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-item">
-                    <label>{{'Provided by'|translate}}</label>
-                    <div class="list-item-content">
-                      <div class="visit-provider-con">
-                        <span>{{ providerName }}</span>
+                  <!-- END Vitals -->
+                      
+                  <!-- Checkup Reasons -->
+                    <div class="data-section-content">
+                      <div class="cheif-complaint-wrapper">
+                        <h6>{{'Chief complaint'|translate}}</h6>
+                        <div class="complaint-chips">
+                          <div class="chip-item" *ngFor="let c of cheifComplaints;">
+                            {{c}}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-12 px-3 mb-3" *ngIf="hasVitalsEnabled">
-          <div class="data-section">
-            <div class="data-section-title">
-              <img src="assets/svgs/vitals.svg" alt="">
-              <h6>{{'Vitals'|translate}}</h6>
-            </div>
-            <div class="data-section-content">
-              <ul class="items-list">
-                <li *ngFor="let v of vitals;">
-                  <div class="list-item">
-                    <label>{{v.name|translate}}</label>
-                    <div class="list-item-content" [class.text-muted]="!getObsValue(v.uuid, v.key)">
-                      {{(getObsValue(v.uuid, v.key))?getObsValue(v.uuid, v.key):'No information' | translate}}
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-12 px-3 mb-3">
-          <div class="data-section">
-            <div class="data-section-title">
-              <img src="assets/svgs/check-up-reason.svg" alt="">
-              <h6>{{'Check-up reason'|translate}}</h6>
-            </div>
-            <div class="data-section-content">
-              <div class="cheif-complaint-wrapper">
-                <h6>{{'Chief complaint'|translate}}</h6>
-                <div class="complaint-chips">
-                  <div class="chip-item" *ngFor="let c of cheifComplaints;">
-                    {{c}}
-                  </div>
-                </div>
+                  <!-- END Checkup Reasons -->
+                </ng-container>
               </div>
             </div>
-          </div>
-        </div>
+            </ng-container>
+          </ng-container>
+      
         <div *ngIf="!isDownloadPrescription" class="col-md-12 px-3 mb-3">
           <div class="data-section">
             <div class="data-section-title">
@@ -626,7 +631,7 @@
                         <td> {{ followUp.wantFollowUp }}</td>
                         <td> {{ followUp.followUpDate ? (followUp.followUpDate|date : "mediumDate") : '-' }}</td>
                         <td> {{ followUp.followUpTime ? followUp.followUpTime : '-' }}</td>
-                        <td> {{ followUp.followUpReason ?  followUp.followUpReason : '-' }}</td>
+                        <td> {{ followUp.followUpReason ? followUp.followUpReason : '-' }}</td>
                       </tr>
                     </ng-container>
                     <ng-template #noFollowUp>
@@ -640,9 +645,9 @@
                 </table>
               </div>
             </div>
-            </div>
-            </div>
+          </div>
         </div>
+      </div>
 
       <div *ngIf="isDownloadPrescription" class="signature w-100">
         <div class="text-right my-4">

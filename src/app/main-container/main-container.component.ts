@@ -80,7 +80,7 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
     private _swPush: SwPush,
     private translateService: TranslateService,
     private profileService: ProfileService,
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
   ) {
     this.searchForm = new FormGroup({
       keyword: new FormControl('', Validators.required)

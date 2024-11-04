@@ -634,7 +634,8 @@ export interface VitalModel {
   name: string,
   key: string,
   uuid: string,
-  is_mandatory: boolean
+  is_mandatory: boolean,
+  lang: object;
 }
 
 export interface FeatureModel extends BaseModel {}
@@ -709,7 +710,10 @@ export interface PatientVisitSection {
   is_locked: boolean;
   is_editable: boolean;
   name: string;
+  lang: string;
   key: string;
+  order: number;
+  sub_sections?: any;
   updatedAt?: string;
   createdAt?: string
 }

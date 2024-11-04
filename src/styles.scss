@@ -8,6 +8,7 @@ $breadcrumb-divider: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0
 @import 'bootstrap/scss/bootstrap.scss';
 @import "angular-calendar/css/angular-calendar.css";
 @import "./app/core/directives/mat-table-responsive.directive.scss";
+@import "@sjmc11/tourguidejs/src/scss/tour.scss";
 
 @font-face {
   font-family: arty;
@@ -1071,4 +1072,8 @@ body.font-lato td {
 .custom-tooltip {
   background: #7F7B92 !important;
   color: white;
+}
+
+.help-tour-backdrop {
+  z-index: 1070;
 }

@@ -36,7 +36,12 @@
                             <!-- Name Column -->
                             <ng-container matColumnDef="name">
                                 <th mat-header-cell *matHeaderCellDef> {{'Vital' | translate}} </th>
-                                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                                <td mat-cell *matCellDef="let element">
+                                    <span>{{ element.lang !== null ? getLanguageValue(element) : element.name }}</span>
+                                    <button mat-icon-button *ngIf="!element.is_editable" aria-label="Edit sections" (click)="openDialog(element)">
+                                        <mat-icon class="ml-0" style="line-height: normal;">edit</mat-icon>
+                                    </button>
+                                </td>
                             </ng-container>
 
                             <!-- Last Updated Column -->

@@ -52,7 +52,11 @@ export class LanguageFieldUpdate implements OnInit {
   getAllLanguage(): void {
     this.configService.getAppLanguages().subscribe(({ languages }: { languages: LanguageModel[] }): void => {
       this.languages = languages;
-      this.initFields()
+
+      // Defer form initialization to the next change detection cycle
+      setTimeout(() => {
+        this.initFields();
+      }, 10);
     }, (error) => {
 
     });
@@ -61,7 +65,7 @@ export class LanguageFieldUpdate implements OnInit {
   // Initialize dynamic fields for each language
   initFields() {
     const controlArray = this.form.get('fields') as FormArray;
-    const fieldValues = this.data?.fieldValue
+    const fieldValues = this.data?.fieldValue || {};
     this.languages.forEach((language: LanguageModel): void => {
       controlArray.push(this.fb.group({
         language: [language?.name], // language name (static)

@@ -79,6 +79,9 @@ export class LoginComponent implements OnInit {
             if (provider.results.length) {
               setCacheData(doctorDetails.PROVIDER, JSON.stringify(provider.results[0]));
               setCacheData(doctorDetails.DOCTOR_NAME, provider.results[0].person.display);
+              if(provider?.results?.[0]?.attributes?.length === 0) {
+                setCacheData(doctorDetails.IS_NEW_DOCTOR, res.user.uuid);
+              }
               this.loginSuccess();
             } else {
               this.translationService.getTranslation('Couldn\'t find provider.', 'Login Failed!', false);

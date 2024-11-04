@@ -1,1 +1,19 @@
-@import 'src/app/dashboard/common-table.scss';
+@import "src/app/dashboard/common-table.scss";
+
+.chip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 4px;
+  height: 32px;
+  padding: 4px 6px;
+  width: -moz-fit-content;
+  width: fit-content;
+
+  &.green{
+    color: #0FD197;
+  }
+  &.blue{
+    color: #2E1E91;
+  }
+}

@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { CoreService } from '../services/core/core.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
-import { getCacheData, checkIfDateOldThanOneDay } from '../utils/utility-functions';
+import { getCacheData, checkIfDateOldThanOneDay, deleteCacheData } from '../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from 'src/config/constant';
 import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, PatientVisitSummaryConfigModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../model/model';
 import { AppConfigService } from '../services/app-config.service';
@@ -20,6 +20,7 @@ import { CompletedVisitsComponent } from './completed-visits/completed-visits.co
 import { FollowupVisitsComponent } from './followup-visits/followup-visits.component';
 import { MindmapService } from '../services/mindmap.service';
 import { NgxRolesService } from 'ngx-permissions';
+import { HelpTourService } from '../services/help-tour.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,7 +32,7 @@ export class DashboardComponent implements OnInit {
   showAll: boolean = true;
   displayedColumns1: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'telephone','actions'];
   displayedColumns2: string[] = ['name', 'age', 'location', 'cheif_complaint', 'visit_created'];
-  displayedColumns3: string[] = ['name', 'age', 'location', 'cheif_complaint', 'visit_created'];
+  displayedColumns3: string[] = ['name', 'age', 'location', 'cheif_complaint', 'patient_type', 'visit_created'];
   displayedColumns4: string[] = ['name', 'age', 'location', 'cheif_complaint', 'prescription_started'];
 
   dataSource1 = new MatTableDataSource<any>();
@@ -113,6 +114,7 @@ export class DashboardComponent implements OnInit {
     private translateService: TranslateService,
     private mindmapService: MindmapService,
     private appConfigService: AppConfigService,
+    public tourSvc: HelpTourService,
     private rolesService: NgxRolesService) {
       this.isMCCUser = !!this.rolesService.getRole('ORGANIZATIONAL:MCC');
       Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
@@ -153,6 +155,22 @@ export class DashboardComponent implements OnInit {
     }
 
     this.socket.initSocket(true);
+    this.initHelpTour();
+  }
+
+  initHelpTour(){
+    if(getCacheData(false,doctorDetails.IS_NEW_DOCTOR) === getCacheData(true, doctorDetails.USER)?.uuid && !this.isGettingStarted) {
+      const tour = this.tourSvc.initHelpTour();
+      if(tour){
+        tour.onFinish(() => {
+          deleteCacheData(doctorDetails.IS_NEW_DOCTOR);
+        });
+      }
+    }
+  }
+
+  get isGettingStarted(){
+    return location.hash.includes('dashboard/get-started'); 
   }
 
   get tempPaginator4() {
@@ -179,11 +197,12 @@ export class DashboardComponent implements OnInit {
     this.visitService.getFollowUpVisits(this.specialization).subscribe({
       next: (res: ApiResponseModel) => {
         if (res.success) {
-          this.followUpVisitsCount = res.totalCount;
+          this.followUpVisitsCount = 0;
           this.completedRecordsFetched += this.offset;
           for (let i = 0; i < res.data.length; i++) {
             let visit = res.data[i];
             if (visit?.encounters?.length) {
+              this.followUpVisitsCount += 1;
               visit.cheif_complaint = this.getCheifComplaint(visit);
               visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.COMPLETED_VISIT);
               visit.person.age = this.calculateAge(visit.person.birthdate);
@@ -253,6 +272,7 @@ export class DashboardComponent implements OnInit {
           visit.cheif_complaint = this.getCheifComplaint(visit);
           visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z','+0530')) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
           visit.person.age = this.calculateAge(visit.person.birthdate);
+          visit.patient_type = this.getDemarcation(visit?.encounters);
           this.awaitingVisits.push(visit);
         }
         this.dataSource3.data = [...this.awaitingVisits];
@@ -265,6 +285,18 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
+  }
+
+  getDemarcation(enc) {
+    let isFollowUp = false;
+    const adlIntl = enc?.find?.(e => e?.type?.name === visitTypes.ADULTINITIAL);
+    if (Array.isArray(adlIntl?.obs)) {
+      adlIntl?.obs.forEach(obs => {
+        if (!isFollowUp)
+          isFollowUp = obs?.value_text?.toLowerCase?.()?.includes?.("follow up");
+      });
+    }
+    return isFollowUp ? visitTypes.FOLLOW_UP : visitTypes.NEW;
   }
 
   /**
@@ -453,7 +485,7 @@ export class DashboardComponent implements OnInit {
   * @param {string} encounterName - Encounter type
   * @return {string} - Encounter datetime
   */
-  getEncounterObs(encounters: CustomEncounterModel[] , encounterName: string, conceptId: number) {
+  getEncounterObs(encounters: CustomEncounterModel[], encounterName: string, conceptId: number) {
     let obs: CustomObsModel;
     encounters.forEach((encounter: CustomEncounterModel) => {
       if (encounter.type?.name === encounterName) {

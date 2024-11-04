@@ -33,6 +33,8 @@ export const visitTypes = {
     VISIT_NOTE:'Visit Note',
     MEDICAL_HISTORY:'MEDICAL HISTORY',
     FAMILY_HISTORY:'FAMILY HISTORY',
+    FOLLOW_UP:'Follow-up',
+    NEW:'New',
 }
 
 export const doctorDetails = {
@@ -61,7 +63,8 @@ export const doctorDetails = {
     WORK_EXPERIENCE_DETAILS:'workExperienceDetails',
     WHATS_APP_NUMBER:'whatsAppNumber',
     ROLE: 'user_role',
-    USER_NAME: 'username'
+    USER_NAME: 'username',
+    IS_NEW_DOCTOR: 'isNewDoctor'
 }
 
 export const facility = {

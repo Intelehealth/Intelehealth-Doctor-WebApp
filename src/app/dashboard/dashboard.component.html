@@ -1,6 +1,6 @@
 <div class="container-fluid">
-  <div class="row">
-      <div class="col p-1" *ngIf="pvs.appointment_button" (click)="scrollToPanel('anchor-appointment')">
+  <div id="count-cards" class="row">
+      <div id="appointment" class="col p-1" *ngIf="pvs.appointment_button" (click)="scrollToPanel('anchor-appointment')">
         <div class="chip-item chip-item-blue" title="{{'Appointments' | translate}}">
           <img class="chip-img" src="assets/svgs/cam-icon.svg" alt="" />
           <div class="chip-info">
@@ -9,7 +9,7 @@
           </div>
         </div>
       </div>
-    <div class="col p-1" *ngIf="pvs.priority_visit_section" (click)="scrollToPanel('anchor-priority')">
+    <div id="priority" class="col p-1" *ngIf="pvs.priority_visit_section" (click)="scrollToPanel('anchor-priority')">
       <div class="chip-item chip-item-red" title="{{'Priority visits' | translate}}">
         <img class="chip-img" src="assets/svgs/red-profile.svg" alt="" />
         <div class="chip-info">
@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <div class="col p-1" (click)="scrollToPanel('anchor-awaiting')">
+    <div id="awaiting" class="col p-1" (click)="scrollToPanel('anchor-awaiting')">
       <div class="chip-item chip-item-green" title="{{'Awaiting visits' | translate}}">
         <img class="chip-img" src="assets/svgs/green-profile.svg" alt="" />
         <div class="chip-info">
@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    <div class="col p-1" (click)="scrollToPanel('anchor-inprogress')">
+    <div id="in-progress" class="col p-1" (click)="scrollToPanel('anchor-inprogress')">
       <div class="chip-item chip-item-green" title="{{'In-progress visits' | translate}}">
         <img class="chip-img" src="assets/svgs/pen-board.svg" alt="" />
         <div class="chip-info">
@@ -297,6 +297,15 @@
               <ng-container matColumnDef="cheif_complaint">
                 <th mat-header-cell *matHeaderCellDef> {{'Chief Complaint' | translate}} </th>
                 <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'awComplaint'+j"> {{element.cheif_complaint}} </td>
+              </ng-container>
+
+              <!-- Patient Type Column -->
+              <ng-container matColumnDef="patient_type">
+                <th mat-header-cell *matHeaderCellDef> {{'Patient Type' | translate}} </th>
+                <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'patientType'+j">
+                  <div [ngClass]="{'chip-item-blue blue':element.patient_type==='Follow-up','chip-item-green green': element.patient_type==='New'}"
+                   class="chip">{{element.patient_type}} </div>
+                </td>
               </ng-container>
 
               <!-- Visit Uploaded Column -->

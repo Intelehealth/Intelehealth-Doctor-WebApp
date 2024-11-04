@@ -89,7 +89,33 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn-block mt-3" (click)="onPublish()" data-test-id="btnAddMindmap">{{'Publish' | translate}}</button>
+            <div class="mat-elevation-z8 section">
+                <div class="mb-4">
+                    <h6 class="section-logo mb-4">{{ 'Help Tour JSON' | translate }}</h6>
+                </div>
+                <div class="col-md p-0">
+                    <textarea id="helpTourJson" [(ngModel)]="themeConfigData.help_tour_config" class="form-control h-auto" rows="4"
+                        (input)="validateJson(themeConfigData.help_tour_config)" placeholder="{{ 'Enter your JSON here' | translate }}">
+                    </textarea>
+                    <div class="mt-2">
+                        <span *ngIf="isJsonValid" class="text-success">
+                            <img src="assets/svgs/success-circle.svg" alt="Valid" height="20px" class="mr-1">
+                            {{ 'Valid JSON' | translate }}
+                        </span>
+                        <span *ngIf="!isJsonValid && themeConfigData.help_tour_config" class="text-danger">
+                            <img src="assets/svgs/failed-status.svg" alt="Invalid" height="20px" class="mr-1">
+                            {{ 'Invalid JSON' | translate }} ({{validateJson(themeConfigData.help_tour_config)}})
+                        </span>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12 text-right">
+                        <button type="button" class="btn btn-save-slides" [disabled]="!validateSildesData()"
+                            (click)="saveHelpTourConfig()">{{'Save' | translate}}</button>
+                    </div>
+                </div>
+            </div>
+
           </div>
         </div>
       </div>

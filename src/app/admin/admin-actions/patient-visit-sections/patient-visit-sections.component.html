@@ -1,0 +1,103 @@
+<div class="container-fluid">
+    <div class="row mt-3">
+        <div class="col-md-12 p-0">
+            <div class="card intel-card">
+                <div class="card-header">
+                    <img class="mr-2" src="assets/svgs/vital-grey.svg" alt="" height="44px">
+                    <div>
+                        <h6 class="mb-0">{{'Patient Visit Sections' | translate}}</h6>
+                    </div>
+                    <div class="card-header-actions">
+                        <button type="button" class="btn" (click)="onPublish()" data-test-id="btnAddMindmap">{{'Publish'
+                            | translate}}</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mat-elevation-z8">
+                        <table mat-table [dataSource]="dataSource" matTableResponsive cdkDropList
+                            [cdkDropListData]="dataSource" (cdkDropListDropped)="drop($event)">
+                            <!-- Position Column -->
+                            <ng-container matColumnDef="id">
+                                <th mat-header-cell *matHeaderCellDef> {{'Sr. No.' | translate}} </th>
+                                <td mat-cell *matCellDef="let element; let i = index">
+                                   {{ i + 1 }}
+                                </td>
+                            </ng-container>
+
+                            <!-- Name Column -->
+                            <ng-container matColumnDef="name">
+                                <th mat-header-cell *matHeaderCellDef> {{'Section Name' | translate}} </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div>
+                                        <span>{{element.name}}</span>
+                                        <button mat-icon-button
+                                            aria-label="Edit sections"
+                                            (click)="openDialog(element)">
+                                            <mat-icon class="ml-0" style="line-height: normal;">edit</mat-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                            </ng-container>
+
+                            <!-- Name Column -->
+                            <ng-container matColumnDef="order">
+                                <th mat-header-cell *matHeaderCellDef> {{'Position' | translate}} </th>
+                                <td mat-cell *matCellDef="let element">
+                                    {{element.order}}
+                                </td>
+                            </ng-container>
+
+                            <!-- Last Updated Column -->
+                            <ng-container matColumnDef="updatedAt">
+                                <th mat-header-cell *matHeaderCellDef> {{'Last Updated' | translate}} </th>
+                                <td mat-cell *matCellDef="let element">{{element.updatedAt|date:'dd MMM, yyyy'}}</td>
+                            </ng-container>
+
+                            <!-- Active Column -->
+                            <ng-container matColumnDef="is_enabled">
+                                <th mat-header-cell *matHeaderCellDef> {{'Active' | translate}} </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <div class="tooltip-box">
+                                        <div class="pretty p-switch p-fill">
+                                            <input type="checkbox" [checked]="element.is_enabled"
+                                                (change)="updateStatus(element.id, $event.target.checked)"
+                                                [disabled]="element.is_locked"
+                                                data-test-id="checkboxMindmapToggleStatus" />
+                                            <div class="state">
+                                                <label></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </ng-container>
+
+                            <!-- Sub Section Column -->
+                            <ng-container matColumnDef="sub_sections">
+                                <th mat-header-cell *matHeaderCellDef></th>
+                                <td mat-cell *matCellDef="let element">
+                                    <button *ngIf="element.sub_sections" mat-icon-button
+                                        aria-label="Sub sections"
+                                        (click)="openSubSectionDialog(element)">
+                                        <mat-icon class="ml-0" style="line-height: normal;">more_vert</mat-icon>
+                                    </button>
+                                </td>
+                            </ng-container>
+                            
+
+                            <tr class="mat-row" *matNoDataRow>
+                                <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+                                    {{'No data to display.' | translate}}
+                                </td>
+                            </tr>
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row [ngClass]="'text-greyout'" *matRowDef="let row; columns: displayedColumns;"
+                                cdkDrag [cdkDragData]="row"></tr>
+                        </table>
+                    </div>
+                    <button type="button" class="btn-block mt-3" (click)="onPublish()">{{'Publish' |
+                        translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

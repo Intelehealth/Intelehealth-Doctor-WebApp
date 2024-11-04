@@ -32,6 +32,7 @@ import { SelectLanguageComponent } from 'src/app/modal-components/select-languag
 import { SharePrescriptionErrorComponent } from 'src/app/modal-components/share-prescription-error/share-prescription-error.component';
 import { SharePrescriptionSuccessComponent } from 'src/app/modal-components/share-prescription-success/share-prescription-success.component';
 import { SharePrescriptionComponent } from 'src/app/modal-components/share-prescription/share-prescription.component';
+import { SubSectionsComponent } from 'src/app/modal-components/sub-sections/sub-sections.component';
 import { UploadMindmapJsonComponent } from 'src/app/modal-components/upload-mindmap-json/upload-mindmap-json.component';
 import { VcallOverlayComponent } from 'src/app/modal-components/vcall-overlay/vcall-overlay.component';
 import { VideoCallComponent } from 'src/app/modal-components/video-call/video-call.component';
@@ -382,6 +383,15 @@ export class CoreService {
   */
   openLanguageFieldModal({ data }: { data: ILanguageFieldUpdate; }): MatDialogRef<LanguageFieldUpdate, any> {
     const dialogRef = this.dialog.open(LanguageFieldUpdate, { panelClass: 'modal-lg', hasBackdrop: true, disableClose: false, data });
+    return dialogRef;
+  }
+
+  /**
+  * Open Visit Summery Sub Section modal
+  * @return {Observable<any>} - Dialog result
+  */
+  openPatientVisitSubSectionModel({ data }: { data: any }): MatDialogRef<SubSectionsComponent, any> {
+    const dialogRef = this.dialog.open(SubSectionsComponent, { panelClass: 'modal-md', hasBackdrop: true, disableClose: false, data });
     return dialogRef;
   }
 }

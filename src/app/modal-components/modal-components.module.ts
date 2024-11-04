@@ -50,6 +50,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { PasswordResetComponent } from './password-reset/password-reset.component';
 import { AddTicketComponent } from './add-ticket/add-ticket.component';
 import { LanguageFieldUpdate } from './language-fields-update/language-fields-update.component';
+import { SubSectionsComponent } from './sub-sections/sub-sections.component';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
     declarations: [
@@ -87,7 +89,8 @@ import { LanguageFieldUpdate } from './language-fields-update/language-fields-up
         ReportSuccessComponent,
         PasswordResetComponent,
         AddTicketComponent,
-        LanguageFieldUpdate
+        LanguageFieldUpdate,
+        SubSectionsComponent
     ],
     imports: [
         CommonModule,
@@ -107,7 +110,8 @@ import { LanguageFieldUpdate } from './language-fields-update/language-fields-up
         ImageCropperModule,
         SharedModule,
         MatProgressBarModule,
-        MatTabsModule
+        MatTabsModule,
+        MatTableModule
     ],
     exports: [ViewVisitPrescriptionComponent, ViewVisitSummaryComponent],
     schemas: [NO_ERRORS_SCHEMA]

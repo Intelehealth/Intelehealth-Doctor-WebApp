@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
@@ -31,7 +32,8 @@ export class ChangePasswordComponent implements OnInit {
     private toastr: ToastrService,
     private authService: AuthService,
     private pageTitleService: PageTitleService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private router: Router
   ) {
     this.resetPasswordForm = new FormGroup({
       oldPassword: new FormControl('', [Validators.required]),
@@ -76,8 +78,13 @@ export class ChangePasswordComponent implements OnInit {
       return;
     }
     this.authService.changePassword(this.resetPasswordForm.value.oldPassword, passwd).subscribe((res) => {
-      this.toastr.success(this.translateService.instant('Password has been changed successfully!'),
-      this.translateService.instant('Password Changed!'));
+      if (!res) {
+        this.toastr.success(this.translateService.instant('Password has been changed successfully!'),
+        this.translateService.instant('Password Changed!'));
+        this.router.navigate(['/session/login']);
+      } else {
+        this.toastr.error(this.translateService.instant(res.message), "Error");
+      }
     });
   }
 
