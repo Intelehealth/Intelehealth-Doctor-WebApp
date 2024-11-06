@@ -809,7 +809,7 @@
       <div class="intel-card">
         <div class="card-body">
           <mat-accordion class="intel-accordion-con" multi>
-            <mat-expansion-panel [expanded]="true" #panel1 hideToggle>
+            <mat-expansion-panel [expanded]="true" #panel1 hideToggle *ngIf="isSubSectionEnabled('patient_interaction','HW')">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <div class="intel-accordion-title">
@@ -874,109 +874,7 @@
                       </ng-template>
                     </div>
                   </li>
-                  <li *ngIf="isSubSectionEnabled('patient_interaction','Patient') && !patientInteractionForm.value.present">
-                    <div class="row">
-                      <label class="col-sm-3 col-form-label"
-                        >{{'Have you spoken with the patient directly?'|translate}}*</label
-                      >
-                      <div class="col-sm-9 d-flex align-items-center">
-                        <div class="pretty p-default p-round">
-                          <input
-                            type="radio"
-                            value="{{'Yes' | translate}}"
-                            formControlName="spoken"
-                            data-test-id="radioSpokenYes"
-                          />
-                          <div class="state p-success">
-                            <label>{{'Yes'|translate}}</label>
-                          </div>
-                        </div>
-                        <div class="pretty p-default p-round">
-                          <input
-                            type="radio"
-                            value="{{'No' | translate}}"
-                            formControlName="spoken"
-                            data-test-id="radioSpokenNo"
-                          />
-                          <div class="state p-success">
-                            <label>{{'No'|translate}}</label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                  <li *ngIf="isSubSectionEnabled('patient_interaction','Patient') && !patientInteractionForm.value.present">
-                    <div class="row">
-                      <label class="col-sm-3 col-form-label">{{ 'Call Status' | translate }}*</label>
-                      <div class="col-sm-9 d-flex align-items-center">
-                        <div class="pretty p-default p-round">
-                          <input
-                            type="radio"
-                            value="{{ 'Completed' | translate }}"
-                            [attr.data-value]="'Completed'"
-                            formControlName="callStatus"
-                            (change)="onCallStatusChange($event)"
-                            data-test-id="radioCallStatusCompleted"
-                          />
-                          <div class="state p-success">
-                            <label>{{ 'Completed' | translate }}</label>
-                          </div>
-                        </div>
-                        <div class="pretty p-default p-round">
-                          <input
-                            type="radio"
-                            value="{{ 'Reschedule/Repeat Internally' | translate }}"
-                            [attr.data-value]="'Reschedule/Repeat Internally'"
-                            formControlName="callStatus"
-                            (change)="onCallStatusChange($event)"
-                            data-test-id="radioCallStatusReschedule"
-                          />
-                          <div class="state p-success">
-                            <label>{{ 'Reschedule/Repeat Internally' | translate }}</label>
-                          </div>
-                        </div>
-                        <div class="pretty p-default p-round">
-                          <input
-                            type="radio"
-                            value="{{ 'Close Call without Completion' | translate }}"
-                            [attr.data-value]="'Close Call without Completion'"
-                            formControlName="callStatus"
-                            (change)="onCallStatusChange($event)"
-                            data-test-id="radioCallStatusClose"
-                          />
-                          <div class="state p-success">
-                            <label>{{ 'Close Call without Completion' | translate }}</label>
-                          </div>
-                        </div>
-                  
-                      </div>
-                    </div>
-                  </li>
-                  
-                  <li *ngIf="isSubSectionEnabled('patient_interaction','Patient') && !patientInteractionForm.value.present && (reasonsList.length > 0)">
-                    <div class="row">
-                      <label class="col-sm-3 col-form-label">{{ 'Select Reason' | translate }}*</label>
-                      <div class="col-sm-9">
-                        <ng-select
-                          #ngSelectComponent
-                          appendTo=".visit-summary-tab-group"
-                          class="visit-select"
-                          formControlName="reason"
-                          bindLabel="label"
-                          bindValue="label"
-                          placeholder="{{ 'Select a reason' | translate }}"
-                          data-test-id="selectReason"
-                        >
-                          <ng-option *ngFor="let reason of reasonsList" [value]="reason.name">
-                            {{ reason.name | translate }}
-                          </ng-option>
-                        </ng-select>
-                      </div>
-                    </div>
-                  </li>
-                                    
-                  <li *ngIf="isSubSectionEnabled('patient_interaction','HW') && !patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction">
+                  <li *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction">
                     <div class="row">
                       <label class="col-sm-3 col-form-label"
                         >{{'Have you spoken with the healthcare worker directly?'|translate}}*</label
@@ -1008,7 +906,7 @@
                     </div>
                   </li>
                 </ul>
-                <div *ngIf="isSubSectionEnabled('patient_interaction','HW') && !patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction" class="form-group">
+                <div *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction" class="form-group">
                   <label for="note"
                     ><b>{{'Comment'|translate}}*&nbsp;</b>
                     </label
@@ -1026,15 +924,13 @@
                   *ngIf="
                     isVisitNoteProvider &&
                     !visitEnded &&
-                    (!patientInteractionForm.value.present ||
-                    (!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction)) &&
-                    canShowSaveButton()
+                    (!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction)
                   "
                 >
                   <button
                     type="submit"
                     class="gray-btn"
-                    [disabled]="!canSavePatientInteractionForm()"
+                    [disabled]="patientInteractionForm.invalid"
                     data-test-id="btnSubmitPatientInteraction"
                   >
                     {{'Save'|translate}}
@@ -1046,29 +942,15 @@
                       <tr>
                         <th scope="col">{{'Patient interaction'|translate}}</th>
                         <th scope="col">{{'Status'|translate}}</th>
+                        <th scope="col">{{'Comment'|translate}}</th>
                         <th scope="col"></th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngIf="isSubSectionEnabled('patient_interaction','Patient') && patientInteractionForm.value.present">
-                        <td>{{'Spoken with the patient directly?'|translate}}</td>
-                        <td>{{ patientInteractionForm.value.spoken }}</td>
-                        <td class="pr-0">
-                          <button
-                            type="button"
-                            mat-icon-button
-                            class="float-right"
-                            *ngIf="isVisitNoteProvider && !visitEnded"
-                            (click)="deletePatientInteraction()"
-                            data-test-id="btnDeletePatientInteraction"
-                          >
-                            <img src="assets/svgs/delete-icon.svg" alt="" />
-                          </button>
-                        </td>
-                      </tr>
-                      <tr *ngIf="isSubSectionEnabled('patient_interaction','HW') && patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction">
+                      <tr *ngIf="patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction">
                         <td>{{'Spoken with the healthcare worker directly?'|translate}}</td>
-                        <td>{{ patientInteractionForm.value.hwSpoken }}</td>
+                        <td>{{ patientInteractionForm.value.hwSpoken.split(',')[0] }}</td>
+                        <td>{{ patientInteractionForm.value.hwSpoken.split(':')[1] }}</td>
                         <td class="pr-0">
                           <button
                             type="button"
@@ -2138,6 +2020,228 @@
                   </tbody>
                 </table>
               </div>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel [expanded]="true" #panel9 hideToggle *ngIf="isSubSectionEnabled('patient_interaction','Patient')">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <div class="intel-accordion-title">
+                    <img
+                      src="assets/svgs/patient-interaction.svg"
+                      alt=""
+                      width="44px"
+                    />
+                    <h6 class="mb-0 ml-2">{{'Call Status'|translate}}</h6>
+                  </div>
+                </mat-panel-title>
+                <mat-icon>{{ panel9.expanded ? "remove" : "add" }}</mat-icon>
+              </mat-expansion-panel-header>
+
+              <form
+                [formGroup]="patientCallStatusForm"
+                (ngSubmit)="saveCallStatus()"
+              >
+                <ul class="items-list">
+                  <li>
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label"
+                        >{{'Connect with patient'|translate}}</label
+                      >
+                      <div
+                        class="col-sm-9 d-flex align-items-center"
+                        *ngIf="
+                          getPersonAttributeValue('Telephone Number') != 'NA';
+                          else noContactDetails
+                        "
+                      >
+                        <div class="d-flex">
+                          <a
+                            href="tel:{{
+                              getPersonAttributeValue('Telephone Number')
+                            }}"
+                            target="_blank"
+                            class="icon-btn m-0 mr-2"
+                            data-test-id="linkPatientPhone"
+                          >
+                            <img src="assets/svgs/phone-green.svg" alt="" />
+                          </a>
+                          <a
+                            href="{{ getWhatsAppLink() }}"
+                            target="_blank"
+                            class="icon-btn m-0 mr-2"
+                            data-test-id="linkPatientWhatsApp"
+                          >
+                            <img src="assets/svgs/whatsapp-green.svg" alt="" />
+                          </a>
+                        </div>
+                        <span class="text-muted"
+                          >{{'Click here to connect with the patient'|translate}}</span
+                        >
+                      </div>
+                      <ng-template #noContactDetails>
+                        <div class="col-sm-9 d-flex align-items-center">
+                          <span class="text-muted"
+                            >{{'Patient Mobile number is not available'|translate}}</span
+                          >
+                        </div>
+                      </ng-template>
+                    </div>
+                  </li>
+
+                  <li *ngIf="!patientCallStatusForm.value.patientPresent">
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label"
+                        >{{'Have you spoken with the patient directly?'|translate}}*</label
+                      >
+                      <div class="col-sm-9 d-flex align-items-center">
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{'Yes' | translate}}"
+                            formControlName="spoken"
+                            data-test-id="radioSpokenYes"
+                          />
+                          <div class="state p-success">
+                            <label>{{'Yes'|translate}}</label>
+                          </div>
+                        </div>
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{'No' | translate}}"
+                            formControlName="spoken"
+                            data-test-id="radioSpokenNo"
+                          />
+                          <div class="state p-success">
+                            <label>{{'No'|translate}}</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li *ngIf="!patientCallStatusForm.value.patientPresent">
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label">{{ 'Call Status' | translate }}*</label>
+                      <div class="col-sm-9 d-flex align-items-center">
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{ 'Completed' | translate }}"
+                            [attr.data-value]="'Completed'"
+                            formControlName="callStatus"
+                            (change)="onCallStatusChange($event)"
+                            data-test-id="radioCallStatusCompleted"
+                          />
+                          <div class="state p-success">
+                            <label>{{ 'Completed' | translate }}</label>
+                          </div>
+                        </div>
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{ 'Reschedule/Repeat Internally' | translate }}"
+                            [attr.data-value]="'Reschedule/Repeat Internally'"
+                            formControlName="callStatus"
+                            (change)="onCallStatusChange($event)"
+                            data-test-id="radioCallStatusReschedule"
+                          />
+                          <div class="state p-success">
+                            <label>{{ 'Reschedule/Repeat Internally' | translate }}</label>
+                          </div>
+                        </div>
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{ 'Close Call without Completion' | translate }}"
+                            [attr.data-value]="'Close Call without Completion'"
+                            formControlName="callStatus"
+                            (change)="onCallStatusChange($event)"
+                            data-test-id="radioCallStatusClose"
+                          />
+                          <div class="state p-success">
+                            <label>{{ 'Close Call without Completion' | translate }}</label>
+                          </div>
+                        </div>
+                  
+                      </div>
+                    </div>
+                  </li>
+                  
+                  <li *ngIf="!patientCallStatusForm.value.patientPresent && (reasonsList.length > 0)">
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label">{{ 'Select Reason' | translate }}*</label>
+                      <div class="col-sm-9">
+                        <ng-select
+                          #reasonSelect
+                          appendTo=".visit-summary-tab-group"
+                          class="visit-select"
+                          formControlName="reason"
+                          bindLabel="label"
+                          bindValue="label"
+                          placeholder="{{ 'Select a reason' | translate }}"
+                          data-test-id="selectReason"
+                        >
+                          <ng-option *ngFor="let reason of reasonsList" [value]="reason.name">
+                            {{ reason.name | translate }}
+                          </ng-option>
+                        </ng-select>
+                      </div>
+                    </div>
+                  </li>
+
+                </ul>
+                <div
+                  class="form-group mb-0 mt-3"
+                  *ngIf="
+                    isVisitNoteProvider &&
+                    !visitEnded &&
+                    !patientCallStatusForm.value.patientPresent
+                  "
+                >
+                  <button
+                    type="submit"
+                    class="gray-btn"
+                    [disabled]="patientCallStatusForm.invalid"
+                    data-test-id="btnSubmitPatientInteraction"
+                  >
+                    {{'Save'|translate}}
+                  </button>
+                </div>
+                <div class="table-responsive" *ngIf="patientCallStatusForm.value.patientPresent">
+                  <table class="table" aria-describedby="">
+                    <thead>
+                      <tr>
+                        <th scope="col">{{'Patient interaction'|translate}}</th>
+                        <th scope="col">{{'Status'|translate}}</th>
+                        <th scope="col">{{'Call status'|translate}}</th>
+                        <th scope="col">{{'Reason'|translate}}</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngIf="patientCallStatusForm.value.patientPresent">
+                        <td>{{'Spoken with the patient directly?'|translate}}</td>
+                        <td>{{ patientCallStatusForm.value.spoken.split(',')[0] }}</td>
+                        <td>{{ patientCallStatusForm.value.spoken.split(',')[1].split(':')[1] }}</td>
+                        <td>{{ patientCallStatusForm.value.spoken.split(',')[2].split(':')[1] }}</td>
+                        <td class="pr-0">
+                          <button
+                            type="button"
+                            mat-icon-button
+                            class="float-right"
+                            *ngIf="isVisitNoteProvider && !visitEnded"
+                            (click)="deletePatientInteraction()"
+                            data-test-id="btnDeletePatientInteraction"
+                          >
+                            <img src="assets/svgs/delete-icon.svg" alt="" />
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </form>
             </mat-expansion-panel>
           </mat-accordion>
         </div>

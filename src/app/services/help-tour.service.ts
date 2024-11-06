@@ -15,6 +15,7 @@ export interface TourStep {
 })
 export class HelpTourService {
   tourIsActive = false;
+  public tour: TourGuideClient | null = null;
   constructor(
     private appConfigSvc: AppConfigService
   ) { }
@@ -23,12 +24,13 @@ export class HelpTourService {
     if(this.tourIsActive || !steps || Array.isArray(steps) && steps.length === 0) return;
 
     this.tourIsActive = true;
-    const tour = new TourGuideClient({
+    this.tour = new TourGuideClient({
       steps,
       showStepProgress: false,
       debug: false,
       dialogZ: 1100,
       dialogWidth: 300,
+      dialogClass: 'help-tour-dialog',
       backdropClass: 'help-tour-backdrop',
       exitOnClickOutside: false,
       showStepDots: false,
@@ -38,16 +40,27 @@ export class HelpTourService {
       autoScrollSmooth: false,
     });
 
-    tour.onAfterExit(()=>{
+    this.tour.onAfterExit(()=>{
       this.tourIsActive = false;
       document.querySelector('.help-tour-backdrop')?.remove?.();
       document.querySelector('.tg-dialog')?.remove?.();
     });
 
+    this.tour.onAfterStepChange(()=>{
+      const btn = document.getElementById('tg-dialog-next-btn')
+      if(btn){
+        btn?.textContent?.trim?.() === 'Finish' ? btn.classList.add('btn-finish') : btn.classList.remove('btn-finish');
+      }
+    });
+
     setTimeout(() => {
-      tour.start();
+      this.tour.start();
     }, 0);
 
-    return tour;
+    return this.tour;
   };
+
+  closeTour(){
+    this.tour?.exit();
+  }
 }

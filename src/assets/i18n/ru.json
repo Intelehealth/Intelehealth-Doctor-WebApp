@@ -278,6 +278,7 @@
   "High priority visit":"Высокоприоритетное посещение",
   "General Uploaded Visits":"Общие загруженные посещения",
   "Visits going through the consultation":"Визиты, проходящие через консультацию",
+  "Visits under follow-up": "Посещения под наблюдением",
   "I18N": {
     "MAT_PAGINATOR": {
       "FIRST_PAGE": "Первая страница",

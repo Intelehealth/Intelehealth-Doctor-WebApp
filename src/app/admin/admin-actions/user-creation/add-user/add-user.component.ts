@@ -7,6 +7,7 @@ import { RolesModel } from 'src/app/model/model';
 import { AuthService } from 'src/app/services/auth.service';
 import { getCacheData } from 'src/app/utils/utility-functions';
 import { doctorDetails } from 'src/config/constant';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-add-user',
@@ -29,7 +30,7 @@ export class AddUserComponent implements OnInit, OnDestroy{
   controlsArray: string[] = [];
   subscription1: any;
 
-  constructor(private authService: AuthService, private activatedRoute: ActivatedRoute, private toastr: ToastrService, private router: Router){
+  constructor(private authService: AuthService, private activatedRoute: ActivatedRoute, private toastr: ToastrService, private router: Router, private location: Location){
     this.activatedRoute.params.subscribe(paramsId => {
         if(paramsId?.uuid){
           this.uuid = paramsId?.uuid
@@ -218,5 +219,9 @@ export class AddUserComponent implements OnInit, OnDestroy{
 
   ngOnDestroy(): void {
     this.subscription1.unsubscribe();
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }

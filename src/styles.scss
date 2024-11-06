@@ -1077,3 +1077,41 @@ body.font-lato td {
 .help-tour-backdrop {
   z-index: 1070;
 }
+
+.help-tour-dialog {
+  .tg-dialog-footer {
+    #tg-dialog-next-btn {
+      background: var(--color-darkBlue);
+      color: #FFFFFF;
+
+      border-radius: 8px;
+      padding: 5px 24px;
+      min-width: 100px;
+      min-height: 40px;
+      font-size: 15px;
+      line-height: 150%;
+      font-weight: bold;
+      border: 1px solid var(--color-darkBlue);
+
+      &.btn-finish{
+        background: #0FD197;
+        color: #FFFFFF;
+        border: 1px solid #FFFFFF;
+      }
+    }
+
+    #tg-dialog-prev-btn{
+      background: #FFFFFF;
+      color: var(--color-darkBlue);
+
+      border-radius: 8px;
+      padding: 5px 24px;
+      min-width: 100px;
+      min-height: 40px;
+      font-size: 15px;
+      line-height: 150%;
+      font-weight: bold;
+      border: 1px solid var(--color-darkBlue);
+    }
+  }
+}

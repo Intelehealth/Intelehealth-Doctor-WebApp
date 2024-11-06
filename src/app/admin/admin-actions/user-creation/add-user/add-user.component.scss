@@ -444,6 +444,11 @@
     }
   }
   
+  .text-muted {
+    font-size: 18px;
+    color: #6C757D !important;
+  }
+  
   @media (max-width: 768px) {
     ::ng-deep .mat-stepper-horizontal {
       .mat-horizontal-stepper-header-container {

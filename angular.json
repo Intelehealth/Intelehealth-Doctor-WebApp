@@ -28,7 +28,8 @@
               "pdfjs-dist/build/pdf",
               "pdfjs-dist/web/pdf_viewer",
               "pdfmake/build/pdfmake",
-              "pdfmake/build/vfs_fonts"
+              "pdfmake/build/vfs_fonts",
+              "@sjmc11/tourguidejs"
             ],
             "outputPath": "dist/intelehealth-ui",
             "index": "src/index.html",

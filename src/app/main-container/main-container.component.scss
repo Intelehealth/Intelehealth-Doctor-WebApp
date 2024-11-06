@@ -87,6 +87,22 @@
       }
     }
 
+    .help-tour-button{
+      width: 44px;
+      min-width: 44px;
+      height: 44px;
+      background: var(--color-lightGray);
+      border-radius: 12px;
+      padding: 0px;
+
+      img {
+        height: 19px;
+        width: 19px;
+        font-size: 20px;
+        color: var(--color-darkBlue);
+      }
+    }
+
     .user-info-wrap {
       display: flex;
       flex-direction: row;
