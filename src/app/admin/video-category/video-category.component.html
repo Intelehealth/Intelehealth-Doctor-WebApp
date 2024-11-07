@@ -32,6 +32,9 @@
                     </div>
                 </mat-card>
             </div>
+            <div *ngIf="categories.length <= 0"  class="mb-5 font-bold text-center">
+                {{'No categories to display.'|translate}}
+            </div>
           </div>
         </div>
       </div>

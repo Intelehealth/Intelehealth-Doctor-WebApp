@@ -3,25 +3,25 @@
   width: 2%;
 }
 .mat-column-videoId {
-  width: 4%;
-  padding: 20px;
+  width: 2%;
+ // padding-right: 0px !important ;
 }
 
 .mat-column-title {
-  width: 6%;
-  padding: 20px;
+  width: 5%;
+  padding: 15px;
 }
 .mat-column-updatedAt {
-  width: 10%;
-  padding: 20px;
+  width: 2%;
+ // padding-right: 0px !important ;
 }
 
 .mat-column-move {
-  padding-right: 0px !important ;
+  //padding-right: 0px !important ;
   width: 2%;
 }
 .mat-column-edit {
-  padding-right: 0px !important ;
+  //padding-right: 0px !important ;
   width: 2%;
 }
 .mat-column-delete {
@@ -63,4 +63,12 @@ input[type=text].search-input {
 }
 .action-btn.bg-blue {
   background: var(--color-lightGray) !important;
+}
+
+.mat-header-cell {
+  color: #7F7B92;
+}
+
+tr.mat-row:nth-child(odd){
+  background: #F7F7FA;
 }

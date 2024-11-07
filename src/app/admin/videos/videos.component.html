@@ -87,6 +87,12 @@
             </td>
           </ng-container>
 
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center font-bold" [attr.colspan]="displayedColumns.length">
+              {{'No videos to display.'|translate}}
+            </td>
+          </tr>
+
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>

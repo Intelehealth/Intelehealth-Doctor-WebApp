@@ -71,7 +71,6 @@ export class VideosComponent implements OnInit, AfterViewInit {
           })
         );
         this.dataSource.paginator = this.paginator;
-        this.sort.sort(({ id: 'srNo', start: 'asc'}) as MatSortable);
         this.dataSource.sort = this.sort;
       });
   }

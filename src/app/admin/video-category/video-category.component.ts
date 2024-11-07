@@ -90,7 +90,8 @@ export class VideoCategoryComponent implements OnInit {
   */
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    let arr = this.categories.filter(category => (category.name).toLowerCase().includes(filterValue.trim().toLowerCase()))
+    let arr = this.categories.filter(category => (category.name).toLowerCase().includes(filterValue.trim().toLowerCase()) ||
+    (category.updatedAt).toLowerCase().includes(filterValue.trim().toLowerCase()) )
     if (filterValue) {
       this.categories = arr;
     } else {
