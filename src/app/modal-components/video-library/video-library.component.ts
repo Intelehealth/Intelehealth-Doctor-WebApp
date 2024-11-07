@@ -26,10 +26,10 @@ export class VideoLibraryComponent implements OnInit {
     private translateService: TranslateService,
     private sanitizer: DomSanitizer) {
     this.categoryForm = new FormGroup({
-      title: new FormControl('', [Validators.required,Validators.pattern(/^[^~!#$^&*(){}[\]|@<>"\\\/\-+_=;':,.?`%0-9]*$/)],),
+      title: new FormControl('', [Validators.required,Validators.pattern(/^[^~!#$^&*(){}[\]|@<>"\\\/\-+_=;':,.?`%]*$/)],),
     });
     this.videoForm = new FormGroup({
-      title: new FormControl('', [Validators.required, Validators.pattern(/^[^~!#$^&*(){}[\]|@<>"\\\/\-+_=;':,.?`%0-9]*$/)]),
+      title: new FormControl('', [Validators.required, Validators.pattern(/^[^~!#$^&*(){}[\]|@<>"\\\/\-+_=;':,.?`%]*$/)]),
       videoId : new FormControl('', [Validators.required])
     });
     this.moveVideoForm = new FormGroup({

@@ -32,7 +32,7 @@ export class VideoCategoryComponent implements OnInit {
   getAllCategories() {
     this.videoLibararySvc.getAllCategories().subscribe({
       next: (res: any) => {
-        this.categories = res.data;
+        this.categories = res.data?.sort((a, b) => new Date(b.updatedAt) < new Date(a.updatedAt) ? -1 : 1);;
       },
     });
   }
