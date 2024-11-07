@@ -5,6 +5,7 @@ import { MindmapService } from 'src/app/services/mindmap.service';
 import { TranslateService } from '@ngx-translate/core';
 import { getCacheData } from 'src/app/utils/utility-functions';
 import { languages } from 'src/config/constant';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-video-library',
@@ -14,15 +15,25 @@ import { languages } from 'src/config/constant';
 export class VideoLibraryComponent implements OnInit {
 
   categoryForm: FormGroup;
+  videoForm: FormGroup;
+  moveVideoForm : FormGroup;
   submitted: boolean = false;
+  isPreviewVideo: any = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
     private dialogRef: MatDialogRef<VideoLibraryComponent>,
-    private mindmapService: MindmapService,
-    private translateService: TranslateService) {
+    private translateService: TranslateService,
+    private sanitizer: DomSanitizer) {
     this.categoryForm = new FormGroup({
-      title: new FormControl('', [Validators.required]),
+      title: new FormControl('', [Validators.required,Validators.pattern(/^[^~!#$^&*(){}[\]|@<>"\\\/\-+_=;':,.?`%0-9]*$/)],),
+    });
+    this.videoForm = new FormGroup({
+      title: new FormControl('', [Validators.required, Validators.pattern(/^[^~!#$^&*(){}[\]|@<>"\\\/\-+_=;':,.?`%0-9]*$/)]),
+      videoId : new FormControl('', [Validators.required])
+    });
+    this.moveVideoForm = new FormGroup({
+      selectedCategory: new FormControl('', [Validators.required]),
     });
   }
 
@@ -31,9 +42,17 @@ export class VideoLibraryComponent implements OnInit {
     this.categoryForm.patchValue({
       title: this.data?.name,
     });
+    this.videoForm.patchValue({
+      title: this.data?.title,
+      videoId : this.data?.videoId
+    });
   }
 
   get f() { return this.categoryForm.controls; }
+
+  get f1() { return this.videoForm.controls; }
+
+  get f2() { return this.moveVideoForm.controls; }
 
   /**
   * Close modal
@@ -53,5 +72,37 @@ export class VideoLibraryComponent implements OnInit {
       return;
     }
     this.dialogRef.close(this.categoryForm.value);
+  }
+
+
+  previewVideo() {
+    this.data.videoId = this.videoForm.value.videoId;
+    this.data.videoURL = this.getSafeUrl(this.videoForm.value.videoId);
+    this.isPreviewVideo = false;
+    setTimeout(() => {
+      this.isPreviewVideo = true;
+    }, 500);
+  }
+
+  getSafeUrl(videoId: string): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `https://www.youtube.com/embed/${videoId}`
+    );
+  }
+
+  saveVideo() {
+    this.submitted = true;
+    if (this.videoForm.invalid) {
+      return;
+    }
+    this.dialogRef.close(this.videoForm.value);
+  }
+
+  moveVideo() {
+    this.submitted = true;
+    if (this.moveVideoForm.invalid) {
+      return;
+    }
+    this.dialogRef.close(this.moveVideoForm.value);
   }
 }

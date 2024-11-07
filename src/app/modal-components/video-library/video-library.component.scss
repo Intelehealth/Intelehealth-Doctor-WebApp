@@ -49,41 +49,68 @@
           border-radius: 8px;
           outline: none;
         }
+      }
 
-        input[type="date"]::-webkit-calendar-picker-indicator {
-          content: url(../../../assets/svgs/calendar-date.svg);
+      .input-field-group1 {
+        display: flow-root;
+        //flex-direction: column;
+        margin-bottom: 24px;
+
+        label {
+          font-size: 16px;
+          font-weight: bold;
+          line-height: 150%;
+        }
+
+        input {
+          padding: 14px 16px;
+          width: 168%;
+          height: 48px;
+          background: var(--color-offWhite);
+          border: 1px solid rgba(178, 175, 190, 0.2);
+          border-radius: 8px;
+          outline: none;
+        }
+
+        .preview-btn {
           border: none;
-          background: transparent;
+          background-color: white;
+          text-decoration-line: underline;
+          color: darkgrey;
         }
       }
-
-      .cancel-btn {
-        padding: 8px 24px;
-        min-width: 119px;
-        height: 48px;
-        background: var(--color-white);
-        border: 1px solid var(--color-lightGray);
-        border-radius: 8px;
-        font-size: 18px;
-        line-height: 150%;
-        color: var(--color-darkBlue);
-        font-weight: bold;
-        cursor: pointer;
-      }
-
-      .confirm-btn {
-        padding: 8px 24px;
-        min-width: 119px;
-        height: 48px;
-        background: var(--color-darkBlue);
-        border: 1px solid var(--color-darkBlue);
-        border-radius: 8px;
-        font-size: 18px;
-        line-height: 150%;
-        color: var(--color-white);
-        font-weight: bold;
-        cursor: pointer;
-      }
     }
+
+    .cancel-btn {
+      padding: 8px 24px;
+      min-width: 119px;
+      height: 48px;
+      background: var(--color-white);
+      border: 1px solid var(--color-lightGray);
+      border-radius: 8px;
+      font-size: 18px;
+      line-height: 150%;
+      color: var(--color-darkBlue);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .confirm-btn {
+      padding: 8px 24px;
+      min-width: 119px;
+      height: 48px;
+      background: var(--color-darkBlue);
+      border: 1px solid var(--color-darkBlue);
+      border-radius: 8px;
+      font-size: 18px;
+      line-height: 150%;
+      color: var(--color-white);
+      font-weight: bold;
+      cursor: pointer;
+    }
+  }
+
+  input[type="radio"]:checked {
+    accent-color: #0FD197;
   }
 }

@@ -1,59 +1,77 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, inject, OnInit, ViewChild } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
+import { MatSort, MatSortable } from "@angular/material/sort";
+import { MatTable, MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute } from "@angular/router";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { MatDialog } from "@angular/material/dialog";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { getCacheData } from "src/app/utils/utility-functions";
 import { doctorDetails} from 'src/config/constant';
 import { videoLibraryService } from "src/app/services/video-library.service";
+import { PageTitleService } from "src/app/core/page-title/page-title.service";
+import { TranslateService } from "@ngx-translate/core";
+import { languages } from 'src/config/constant';
+import { CoreService } from "src/app/services/core/core.service";
+import { ToastrService } from "ngx-toastr";
 
 @Component({
   selector: "app-videos",
   templateUrl: "./videos.component.html",
-  styleUrls: ["./videos.component.scss"],
+  styleUrls: ["./videos.component.scss"]
 })
-export class VideosComponent implements OnInit {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+export class VideosComponent implements OnInit, AfterViewInit {
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  displayColumns: string[] = [
-    "video",
-    "VideoId",
-    "Title",
-    "lastUpdate",
-    "action",
+  displayedColumns: string[] = [
+    "srNo",
+    "title",
+    "videoId",
+    "updatedAt",
+    "move",
+    "edit",
+    "delete",
   ];
+  category: any;
+  dataSource = new MatTableDataSource([]);
+  categoryId: string;
+
   constructor(
     private videoLibararySvc: videoLibraryService,
+    private pageTitleService: PageTitleService,
     private route: ActivatedRoute,
-    private snackbar: MatSnackBar,
-    private dialog: MatDialog,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private translateService: TranslateService,
+    private coreService: CoreService,
+    private toastr: ToastrService
   ) {}
-  projectId: any;
-  dataSource: any;
-  categoryId;
 
   ngOnInit(): void {
+    this.pageTitleService.setTitle({ title: 'Video Library', imgUrl: 'assets/svgs/videolibrary.svg' })
+    this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
     this.categoryId = this.route.snapshot.paramMap.get("categoryId");
     this.getVideos();
+  }
+
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
   }
 
   getVideos() {
     this.videoLibararySvc
       .getvideosByCategoryId(this.categoryId)
       .subscribe((res) => {
-        this.projectId = res.data.id;
+        this.category = res.data;
+        res.data?.videos.sort((a, b) => new Date(b.updatedAt) < new Date(a.updatedAt) ? -1 : 1);
         this.dataSource = new MatTableDataSource(
-          res.data?.videos.map((v) => {
+          res.data?.videos.map((v, i) => {
+            v.srNo = i+1;
             v.videoURL = this.getSafeUrl(v.videoId);
             return v;
           })
         );
         this.dataSource.paginator = this.paginator;
+        this.sort.sort(({ id: 'srNo', start: 'asc'}) as MatSortable);
         this.dataSource.sort = this.sort;
       });
   }
@@ -64,83 +82,76 @@ export class VideosComponent implements OnInit {
     );
   }
 
-  addVideo(): void {
-    // const dialogRef = this.dialog.open(ModalsComponent, {
-    //   data: { title: "Add Video" },
-    //   width: "40%",
-    // });
-
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     const data = {
-    //       title: result?.Title,
-    //       projectId: this.projectId,
-    //       createdBy: this.user?.uuid,
-    //       videoId: result?.videoId,
-    //     };
-    //     this.videoLibararySvc.creatVideo(data).subscribe({
-    //       next: () => {
-    //         this.snackbar.open("Video added successfully", null, {
-    //           duration: 4000,
-    //         });
-    //         this.getVideos();
-    //       },
-    //     });
-    //   }
-    // });
+  saveVideo(mode:string, selectedVideo?:any): void {
+    selectedVideo ? selectedVideo['isVideo'] = true : null;
+    this.coreService.openVideoLibraryModal((mode == 'edit') ?  selectedVideo : {isVideo: true}).subscribe((result) => {
+      if (result) {
+        const payload = {
+                title: result?.title,
+                categoryId: this.categoryId,
+                createdBy: this.user?.uuid,
+                videoId: result?.videoId,
+              };
+             if(mode == 'add') {
+              this.videoLibararySvc.creatVideo(payload).subscribe({
+                next: () => {
+                  this.toastr.success(`${this.translateService.instant("Video has been added successfully")}`,
+                   this.translateService.instant('Video Added'));
+                  this.getVideos();
+                },
+              });
+             } else {
+              this.videoLibararySvc.updateVideo(payload, selectedVideo?.id).subscribe({
+                next: () => {
+                  this.toastr.success(`${this.translateService.instant("Video has been updated successfully")}`,
+                   this.translateService.instant('Video Updated'));
+                  this.getVideos();
+                },
+              });
+             }
+             
+      }
+    });
   }
 
-  updateVideo(video) {
-    // const dialogRef = this.dialog.open(ModalsComponent, {
-    //   data: {
-    //     title: "Update Video",
-    //     videoId: video.videoId,
-    //     Title: video.title,
-    //   },
-    //   width: "40%",
-    // });
-
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     const data = {
-    //       videoId: result?.videoId,
-    //       title: result?.Title,
-    //       createdBy: this.user?.uuid,
-    //     };
-
-    //     this.videoLibararySvc.updateVideo(data, video.id).subscribe({
-    //       next: () => {
-    //         this.snackbar.open("Video updated successfully", null, {
-    //           duration: 4000,
-    //         });
-
-    //         this.getVideos();
-    //       },
-    //     });
-    //   }
-    // });
+  moveVideo(selectedVideo?:any): void {
+    this.videoLibararySvc.getAllCategories().subscribe({
+      next: (res: any) => {
+        this.coreService.openVideoLibraryModal({isMove: true, categories: res.data}).subscribe((result) => {
+          if (result) {
+            const payload = {
+                    oldCategoryId: this.categoryId,
+                    newCategoryId: result?.selectedCategory?.id
+                  };
+                  this.videoLibararySvc.moveVideo(payload, selectedVideo?.id).subscribe({
+                    next: () => {
+                      this.toastr.success(`${this.translateService.instant("Video has been moved successfully")}`,
+                       this.translateService.instant('Video Moved'));
+                      this.getVideos();
+                    },
+            });
+          }
+        });
+      },
+    });
   }
 
-  delete(id): void {
-    // const dialogRef = this.dialog.open(ModalsComponent, {
-    //   data: { title: "Delete Video" },
-    //   width: "250px",
-    // });
-
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     this.videoLibararySvc.deleteVideo(id).subscribe({
-    //       next: (res) => {
-    //         if (res) {
-    //           this.snackbar.open("Video deleted successfully", null, {
-    //             duration: 4000,
-    //           });
-    //           this.getVideos();
-    //         }
-    //       },
-    //     });
-    //   }
-    // });
+  deleteVideo(videoId: Number): void {
+    this.coreService.openConfirmationDialog({ confirm: "Are you sure?", confirmationMsg: `The video will be permanently deleted from the category.`,
+      cancelBtnText: 'Cancel', confirmBtnText: 'Confirm' })
+   .afterClosed().subscribe((res: boolean) => {
+     if (res) {
+       this.videoLibararySvc.deleteVideo(videoId).subscribe({
+               next: (res) => {
+                 if (res) {
+                   this.toastr.success(`${this.translateService.instant("Video has been deleted successfully")}`,
+                   this.translateService.instant('Video Deleted'));
+                   this.getVideos();
+                 }
+               },
+             });
+     }
+   });
   }
 
   applyFilter(filterValue: string) {

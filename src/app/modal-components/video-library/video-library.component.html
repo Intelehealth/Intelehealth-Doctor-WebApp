@@ -1,18 +1,94 @@
-<div class="add-licnese-key-modal">
+<div *ngIf="!data?.isVideo && !data?.isMove" class="add-licnese-key-modal">
   <div class="modal-title">
-    <h6 class="mb-0">{{ data ? ('Edit'|translate) : ('Add'|translate) }} {{"Category" | translate}}</h6>
+    <h6 class="mb-0">{{ data ? ('Edit category details'|translate) : ('Add category'|translate)}} </h6>
     <button class="modal-close-btn" (click)="close()"><img src="assets/svgs/Close.svg" alt="" data-test-id="btnCloseAddLicense"></button>
   </div>
   <div class="modal-body">
     <form class="license-form" [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
       <div class="input-field-group">
         <label>{{'Tittle' | translate}}</label>
-        <input type="text" formControlName="title" data-test-id="etKeyNameCategory">
-        <small class="text-danger" *ngIf="submitted && f.title.errors">*{{"Required" | translate}}</small>
+        <input type="text" placeholder="{{'Enter tittle' | translate}}" formControlName="title" data-test-id="etKeyNameCategory">
+        <small class="text-danger" *ngIf="submitted && f.title?.errors?.required">*{{"Required" | translate}}</small>
+        <small class="text-danger" *ngIf="submitted && f.title?.errors?.pattern">{{'Enter alphabates only' | translate}}</small>
       </div>
       <div class="d-flex justify-content-center">
         <button class="cancel-btn mr-3" type="button" (click)="close()" data-test-id="btnCancelAddLicense">{{'Cancel' | translate}}</button>
-        <button class="confirm-btn" type="submit" data-test-id="btnSubmitCategory">{{ data ? ('Update'|translate): ('Save'|translate) }}</button>
+        <button class="confirm-btn" type="submit" data-test-id="btnSubmitCategory">{{ 'Save'|translate }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div  *ngIf="data?.isVideo" class="add-licnese-key-modal">
+  <div class="modal-title">
+    <h6 class="mb-0">{{ data?.id ? ('Update video details'|translate) : ('Add video'|translate)}} </h6>
+    <button class="modal-close-btn" (click)="close()"><img src="assets/svgs/Close.svg" alt="" data-test-id="btnCloseAddLicense"></button>
+  </div>
+  <div class="modal-body">
+    <form class="license-form" [formGroup]="videoForm">
+      <div class="input-field-group">
+        <label>{{'Tittle' | translate}}</label>
+        <input type="text" placeholder="{{'Enter tittle' | translate}}" formControlName="title" data-test-id="etKeyNameCategory">
+        <small class="text-danger" *ngIf="submitted && f1.title?.errors?.required">*{{"Required" | translate}}</small>
+        <small class="text-danger" *ngIf="submitted && f1.title?.errors?.pattern">{{'Enter alphabates only' | translate}}</small>
+      </div>
+      <div class="input-field-group1">
+        <div style="float:left;">
+          <label>{{'Video ID' | translate}}</label>
+          <input matInput placeholder="{{'Enter video id' | translate }}"formControlName="videoId" />
+          <small class="text-danger" *ngIf="submitted && f1.videoId.errors">*{{"Required" | translate}}</small>
+        </div>
+        <div style="float:right;">
+          <button
+          *ngIf="!data?.id "
+          class="preview-btn"
+          (click)="previewVideo()"
+        >
+        Preview video
+        </button> </div>
+        <div>
+          <iframe
+            class="col-12 mt-3"
+            *ngIf="isPreviewVideo && data.videoId"
+            [src]="data.videoURL"
+            width="330"
+            height="150"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center">
+        <button class="cancel-btn mr-3" type="button" (click)="close()" data-test-id="btnCancelAddLicense">{{'Cancel' | translate}}</button>
+        <button class="confirm-btn" type="submit" (click)="saveVideo()" data-test-id="btnSubmitCategory">{{ 'Add'|translate }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="data?.isMove" class="add-licnese-key-modal">
+  <div class="modal-title">
+    <h6 class="mb-0">{{ 'Move video' | translate }} </h6>
+    <button class="modal-close-btn" (click)="close()"><img src="assets/svgs/Close.svg" alt="" data-test-id="btnCloseAddLicense"></button>
+  </div>
+  <div class="modal-body">
+    <form class="license-form" [formGroup]="moveVideoForm" (ngSubmit)="moveVideo()">
+        <label class="font-bold">{{'Select category' | translate}}</label> 
+        <br/>
+        <div *ngFor="let category of data?.categories">
+          <span class="pretty p-default p-round" >
+            <input type="radio" formControlName="selectedCategory" [value]="category"> 
+            <div class="state p-success">
+              <label>{{category.name}}</label>
+            </div>
+          </span>
+      </div>
+        <small class="text-danger" *ngIf="submitted && f2.selectedCategory.errors">*{{"Please select category" | translate}}</small>
+        <hr/>
+      <div class="d-flex justify-content-center">
+        <button class="cancel-btn mr-3" type="button" (click)="close()" data-test-id="btnCancelAddLicense">{{'Cancel' | translate}}</button>
+        <button class="confirm-btn" type="submit" data-test-id="btnSubmitCategory">{{ 'Save'|translate }}</button>
       </div>
     </form>
   </div>

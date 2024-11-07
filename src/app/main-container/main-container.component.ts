@@ -121,6 +121,13 @@ export class MainContainerComponent implements OnInit, AfterContentChecked, OnDe
     this.profilePicSubscription = this.profileService.profilePicUpdateEvent.subscribe(img => {
       this.profilePic = img;
     });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+         console.log("=tab is changed")
+      } else {
+         console.log("tab is active")
+      }
+   });
 
     const duration = 1000 * 60 * 15; // hearbeat in every 15 mins
     setInterval(() => {

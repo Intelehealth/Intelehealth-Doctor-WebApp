@@ -51,4 +51,9 @@ export class videoLibraryService {
     const url = `${this.baseURL}/video-library/updateVideo/${id}`;
     return this.http.patch(url, payload);
   }
+
+  moveVideo(payload, videoId): Observable<any> {
+    const url = `${this.baseURL}/video-library/updateCategoryId/${videoId}`;
+    return this.http.patch(url, payload);
+  }
 }

@@ -284,6 +284,10 @@
   "Category Deleted":"Category Deleted",
   "Category Added":"Category Added",
   "Category":"Category",
+  "Edit category details":"Edit category details",
+  "Add category":"Add category",
+  "Tittle":"Tittle",
+  "Enter tittle":"Enter tittle",
   "I18N": {
     "MAT_PAGINATOR": {
       "FIRST_PAGE": "First page",

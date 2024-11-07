@@ -6,7 +6,6 @@ import { getCacheData } from 'src/app/utils/utility-functions';
 import { languages } from 'src/config/constant';
 import { CoreService } from "src/app/services/core/core.service";
 import { ToastrService } from "ngx-toastr";
-import { Router } from "@angular/router";
 
 @Component({
   selector: "app-video-category",
@@ -22,7 +21,6 @@ export class VideoCategoryComponent implements OnInit {
     private translateService: TranslateService,
     private coreService: CoreService,
     private toastr: ToastrService,
-    private router: Router
   ) { }
 
   ngOnInit(): void {
