@@ -49,34 +49,14 @@
           border-radius: 8px;
           outline: none;
         }
-      }
-
-      .input-field-group1 {
-        display: flow-root;
-        //flex-direction: column;
-        margin-bottom: 24px;
-
-        label {
-          font-size: 16px;
-          font-weight: bold;
-          line-height: 150%;
-        }
-
-        input {
-          padding: 14px 16px;
-          width: 170%;
-          height: 48px;
-          background: var(--color-offWhite);
-          border: 1px solid rgba(178, 175, 190, 0.2);
-          border-radius: 8px;
-          outline: none;
-        }
-
         .preview-btn {
           border: none;
           background-color: white;
           text-decoration-line: underline;
           color: darkgrey;
+          margin-top: -75px;
+          width: 23%;
+          margin-left: 340px
         }
       }
     }

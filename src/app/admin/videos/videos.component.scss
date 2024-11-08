@@ -66,7 +66,9 @@ input[type=text].search-input {
 }
 
 .mat-header-cell {
-  color: #7F7B92;
+  color: #7F7B92;    
+  font-size: 14px;
+  font-weight: 700;
 }
 
 tr.mat-row:nth-child(odd){
