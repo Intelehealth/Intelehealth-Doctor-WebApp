@@ -43,6 +43,10 @@ import { ImageCropComponent } from './image-crop/image-crop.component';
 import { VcallOverlayComponent } from './vcall-overlay/vcall-overlay.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { VideoLibraryComponent } from './video-library/video-library.component';
+import { ReportGeneratorComponent } from './report-generator/report-generator.component';
+import { ReportErrorComponent } from './reports-error/reports-error.component';
+import { ReportsSuccessComponent } from './reports-success/reports-success.component';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({
     declarations: [
@@ -74,7 +78,10 @@ import { VideoLibraryComponent } from './video-library/video-library.component';
         RaiseTicketComponent,
         ImageCropComponent,
         VcallOverlayComponent,
-        VideoLibraryComponent
+        VideoLibraryComponent,
+        ReportGeneratorComponent,
+        ReportsSuccessComponent,
+        ReportErrorComponent
     ],
     imports: [
         CommonModule,
@@ -93,6 +100,7 @@ import { VideoLibraryComponent } from './video-library/video-library.component';
         NgSelectModule,
         SignaturePadModule,
         ImageCropperModule,
+        NgMultiSelectDropDownModule,
         SharedModule
     ],
     exports: [ViewVisitPrescriptionComponent]

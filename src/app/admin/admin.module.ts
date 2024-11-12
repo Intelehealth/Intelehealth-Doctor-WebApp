@@ -30,6 +30,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSortModule } from '@angular/material/sort';
 import { VideosComponent } from './videos/videos.component';
+import { ReportListComponent } from './reports/report-list/report-list.component';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -56,6 +58,10 @@ const routes: Routes = [
       {
         path: 'manage-videos/:categoryId',
         component: VideosComponent
+      },
+      {
+        path: 'reports',
+        component: ReportListComponent
       }
     ]
   }
@@ -67,7 +73,8 @@ const routes: Routes = [
     AyuComponent,
     SupportComponent,
     VideoCategoryComponent,
-    VideosComponent
+    VideosComponent,
+    ReportListComponent
   ],
   imports: [
     CommonModule,
@@ -89,6 +96,7 @@ const routes: Routes = [
     MatGridListModule,
     MatMenuModule,
     MatTooltipModule,
+    NgbNavModule,
     NgxPermissionsModule.forChild({
       permissionsIsolate: false,
       rolesIsolate: false,

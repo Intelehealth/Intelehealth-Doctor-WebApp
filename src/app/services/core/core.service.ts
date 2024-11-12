@@ -12,12 +12,16 @@ import { ConfirmDayOffComponent } from 'src/app/modal-components/confirm-day-off
 import { ConfirmDialogComponent } from 'src/app/modal-components/confirm-dialog/confirm-dialog.component';
 import { ConfirmHoursOffComponent } from 'src/app/modal-components/confirm-hours-off/confirm-hours-off.component';
 import { ConfirmOpenmrsIdComponent } from 'src/app/modal-components/confirm-openmrs-id/confirm-openmrs-id.component';
+import { FileDownloadComponent } from 'src/app/modal-components/file-download/file-download.component';
 import { HelpMenuComponent } from 'src/app/modal-components/help-menu/help-menu.component';
 import { ImageCropComponent } from 'src/app/modal-components/image-crop/image-crop.component';
 import { ImagesPreviewComponent } from 'src/app/modal-components/images-preview/images-preview.component';
 import { NoInternetComponent } from 'src/app/modal-components/no-internet/no-internet.component';
 import { PasswordResetSuccessComponent } from 'src/app/modal-components/password-reset-success/password-reset-success.component';
 import { RaiseTicketComponent } from 'src/app/modal-components/raise-ticket/raise-ticket.component';
+import { ReportGeneratorComponent } from 'src/app/modal-components/report-generator/report-generator.component';
+import { ReportErrorComponent } from 'src/app/modal-components/reports-error/reports-error.component';
+import { ReportsSuccessComponent } from 'src/app/modal-components/reports-success/reports-success.component';
 import { RescheduleAppointmentConfirmComponent } from 'src/app/modal-components/reschedule-appointment-confirm/reschedule-appointment-confirm.component';
 import { RescheduleAppointmentComponent } from 'src/app/modal-components/reschedule-appointment/reschedule-appointment.component';
 import { SearchedPatientsComponent } from 'src/app/modal-components/searched-patients/searched-patients.component';
@@ -314,13 +318,51 @@ export class CoreService {
     });
   }
 
-    /**
-  * Open add license modal
+  /**
+  * Open video library modal
   * @param {any} data - Dialog data
   * @return {Observable<any>} - Dialog result
   */
     openVideoLibraryModal(data: any): Observable<any> {
       const dialogRef = this.dialog.open(VideoLibraryComponent, { panelClass: 'modal-md', data, hasBackdrop: true, disableClose: true });
+      return dialogRef.afterClosed();
+    }
+
+  /**
+  * Open generate report modal
+  * @param {any} data - Dialog data
+  * @return {Observable<any>} - Dialog result
+  */
+    openGenerateReportDialog(data: { reportId: Number, title: string, field1: string, field2: string, cancelBtnText: string, confirmBtnText: string }): Observable<any> {
+      const dialogRef = this.dialog.open(ReportGeneratorComponent, { panelClass: 'modal-md', data });
+      return dialogRef.afterClosed();
+    }
+  
+  /**
+  * Open file download modal
+  * @param {any} data - Dialog data
+  * @return {Observable<any>} - Dialog result
+  */
+    openFileDownloadDialog(data): Observable<any> {
+      const dialogRef = this.dialog.open(FileDownloadComponent, { panelClass: 'modal-md', data });
+      return dialogRef.afterClosed();
+    }
+
+  /**
+  * Open report success modal
+  * @return {Observable<any>} - Dialog result
+  */
+    openReportSuccessDialog(): Observable<any> {
+      const dialogRef = this.dialog.open(ReportsSuccessComponent, { panelClass: 'modal-md' });
+      return dialogRef.afterClosed();
+    }
+   
+  /**
+  * Open report error modal
+  * @return {Observable<any>} - Dialog result
+  */
+    openReportErrorDialog(): Observable<any> {
+      const dialogRef = this.dialog.open(ReportErrorComponent, { panelClass: 'modal-md' });
       return dialogRef.afterClosed();
     }
 }

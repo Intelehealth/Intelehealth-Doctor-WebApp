@@ -59,6 +59,7 @@
     "ngx-permissions": "^13.0.1",
     "ngx-toastr": "^14.3.0",
     "ngx-ui-loader": "^13.0.0",
+    "ng-multiselect-dropdown": "^0.3.6",
     "pdfmake": "^0.2.7",
     "popper.js": "^1.14.3",
     "pretty-checkbox": "^3.0.3",
