@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NO_ERRORS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddLicenseKeyComponent } from './add-license-key/add-license-key.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -47,6 +47,8 @@ import { ReportGeneratorComponent } from './report-generator/report-generator.co
 import { ReportErrorComponent } from './reports-error/reports-error.component';
 import { ReportsSuccessComponent } from './reports-success/reports-success.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FileDownloadComponent } from './file-download/file-download.component';
 
 @NgModule({
     declarations: [
@@ -81,7 +83,8 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
         VideoLibraryComponent,
         ReportGeneratorComponent,
         ReportsSuccessComponent,
-        ReportErrorComponent
+        ReportErrorComponent,
+        FileDownloadComponent
     ],
     imports: [
         CommonModule,
@@ -101,8 +104,10 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
         SignaturePadModule,
         ImageCropperModule,
         NgMultiSelectDropDownModule,
+        MatProgressSpinnerModule,
         SharedModule
     ],
-    exports: [ViewVisitPrescriptionComponent]
+    exports: [ViewVisitPrescriptionComponent],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class ModalComponentsModule { }
