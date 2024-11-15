@@ -1,0 +1,38 @@
+<div class="container-fluid pl-0">
+    <div class="card intel-card">
+        <div class="card-header">
+            <img class="mr-2" src="assets/svgs/sevika-log.svg" alt="" height="44px">
+            <h6 class="mb-0">{{'Sevika Log' | translate}}</h6>
+            <div class="card-header-actions">
+                <button type="button" class="action-btn bg-blue" data-test-id="btnExport" (click)="export()">
+                   {{'Export' | translate}}</button>
+            </div>
+        </div>
+        <div class="card-body">
+                <table mat-table [dataSource]="dataSource" matSort class="w-100">
+                    <ng-container *ngFor="let column of hwColumns" [matColumnDef]="column.key">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                            {{ (column?.label) | translate }}
+                        </th>
+                        <td [class]="column.class" mat-cell *matCellDef="let element">
+                            <mat-chip-list *ngIf="column?.key === 'status'">
+                                <mat-chip class="matChip" selected [class]="element[column?.key]">
+                                    {{ element[column?.key] }}
+                                </mat-chip>
+                            </mat-chip-list>
+                            <ng-container *ngIf="column?.key !== 'status'">
+                                {{ element[column?.key] }}
+                            </ng-container>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                </table>
+                <mat-paginator [pageSizeOptions]="[10, 20, 50]"></mat-paginator>
+                <div *ngIf="data.length === 0" class="no-data text-center w-100 p-4">
+                    {{'No Data Found' |translate}}.
+                </div>
+        </div>
+    </div>
+</div>

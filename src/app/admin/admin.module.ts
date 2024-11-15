@@ -32,6 +32,11 @@ import { MatSortModule } from '@angular/material/sort';
 import { VideosComponent } from './videos/videos.component';
 import { ReportListComponent } from './reports/report-list/report-list.component';
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { MonitoringSheetComponent } from './monitoring-sheet/monitoring-sheet.component';
+import { SevikaLogComponent } from './monitoring-sheet/sevika-log/sevika-log.component';
+import { DoctorLogComponent } from './monitoring-sheet/doctor-log/doctor-log.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatChipsModule } from "@angular/material/chips";
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -62,7 +67,11 @@ const routes: Routes = [
       {
         path: 'reports',
         component: ReportListComponent
-      }
+      },
+      {
+          path: 'monitoring',
+          component: MonitoringSheetComponent
+      }   
     ]
   }
 ];
@@ -74,7 +83,10 @@ const routes: Routes = [
     SupportComponent,
     VideoCategoryComponent,
     VideosComponent,
-    ReportListComponent
+    ReportListComponent,
+    MonitoringSheetComponent,
+    SevikaLogComponent,
+    DoctorLogComponent
   ],
   imports: [
     CommonModule,
@@ -91,7 +103,9 @@ const routes: Routes = [
     MatPaginatorModule,
     MatCardModule,
     MatTableModule,
+    MatTabsModule,
     MatCheckboxModule,
+    MatChipsModule,
     MatSlideToggleModule,
     MatGridListModule,
     MatMenuModule,

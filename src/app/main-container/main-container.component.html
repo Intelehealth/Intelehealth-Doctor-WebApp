@@ -83,6 +83,12 @@
             <span>{{'Report' | translate}}</span>
           </a>
         </li>
+        <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="listMonitoeingSheet">
+          <a class="nav-item-link"  routerLink="/admin/monitoring" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkReport">
+            <img src="assets/svgs/file.svg" alt="">
+            <span>{{'Monitoring Sheet' | translate}}</span>
+          </a>
+        </li>
         <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="linkVideoLibrary">
           <a class="nav-item-link" routerLink="/admin/video-library" data-test-id="linkVideoLibrary">
             <img src="assets/svgs/video-library-icon.svg" alt="">
@@ -193,7 +199,7 @@
     </div>
     <div class="main-container" [class.pb-0]="this.routeUrl?.includes('messages')||this.routeUrl?.includes('support')">
       <router-outlet></router-outlet>
-      <div class="help-menu-container d-flex flex-column" *ngIf="routeUrl.includes('/help') && !dialogRef && !dialogRef2">
+      <div class="help-menu-container d-flex flex-column" *ngIf="routeUrl?.includes('/help') && !dialogRef && !dialogRef2">
         <div class="menu-item">
           <span>{{'Raise a Ticket'| translate}}</span>
           <button class="help-btn-2 mr-1" type="button" (click)="openRaiseTicketModal()" data-test-id="btnToggleTicket">

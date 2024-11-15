@@ -1,0 +1,128 @@
+.Online {
+  background: #E5FFF3 !important;
+  color: #0FD197 !important;
+}
+
+.Offline {
+  background: #FFE8E8 !important;
+  color: #EA315B !important;
+}
+
+.mat-column-name {
+  width: 5%;
+}
+
+.mat-column-village {
+  width: 5%;
+}
+
+.mat-column-secondaryVillage {
+  width: 5%;
+}
+
+.mat-column-sanch {
+  width: 5%;
+}
+
+.mat-column-lastSyncTimestamp {
+  width: 10%;
+}
+
+.mat-column-device {
+  width: 5%;
+}
+
+.mat-column-androidVersion {
+  width: 2%;
+}
+
+.mat-column-version {
+  width: 2%;
+}
+
+.mat-column-avgTimeSpentInADay {
+  width: 5%;
+}
+
+.mat-column-totalTime {
+  width: 2%;
+}
+
+.mat-column-lastActivity {
+  width: 10%;
+}
+
+.mat-column-status {
+  width: 5%;
+  padding: 10px !important;
+}
+
+.mat-column-days {
+  width: 2%;
+}
+
+th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
+  padding-right: 0px;
+}
+
+th.mat-column-lastActivity,
+th.mat-column-lastSyncTimestamp {
+  padding-left: 20px !important;
+}
+
+th.mat-column-sanch,
+th.mat-column-village,
+th.mat-column-secondaryVillage,
+th.mat-column-device,
+th.mat-column-avgTimeSpentInADay,
+th.mat-column-days,
+th.mat-column-totalTime,
+th.mat-column-androidVersion,
+th.mat-column-version {
+  padding-left: 9px !important;
+}
+
+.mat-standard-chip {
+  border-radius: 5px;
+}
+
+.no-data {
+  background: white;
+}
+
+.export {
+  height: 20px;
+  width: 20px;
+}
+
+
+table,
+th,
+td {
+  text-align: center;
+  padding-right: 0px;
+  border: 1px solid #E6E0F1
+}
+
+.mat-header-cell {
+  color: #7F7B92;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.action-btn {
+  height: 48px;
+  background: var(--color-white);
+  border: 0.77px solid var(--color-lightGray);
+  border-radius: 8px;
+  color: var(--color-darkBlue);
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px 20px;
+  width: fit-content;
+}
+
+.action-btn.bg-blue {
+  background: white !important;
+  cursor: pointer;
+}

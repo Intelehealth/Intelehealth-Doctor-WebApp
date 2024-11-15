@@ -1,0 +1,37 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 p-0">
+      <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs nav-pills">
+        <li [ngbNavItem]="1">
+          <a ngbNavLink data-test-id="navSent">
+            <div class="chip-item chip-item-blue">
+              <img class="chip-img" *ngIf="active === 1" src="assets/svgs/sevika.svg" alt="" />
+              <img class="chip-img" *ngIf="active === 2" src="assets/svgs/sevika-log.svg" alt="" />
+              <div class="chip-info">
+                <span>{{'Sevika Log' | translate}}</span>
+              </div>
+            </div>
+          </a>
+          <ng-template ngbNavContent>
+            <app-sevika-log [data]="sevikaData" (exportSevikaData)="exportData($event)"></app-sevika-log>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+          <a ngbNavLink data-test-id="navCompleted">
+            <div class="chip-item chip-item-blue">
+              <img class="chip-img" *ngIf="active === 2" src="assets/svgs/doctor.svg" alt="" />
+              <img class="chip-img" *ngIf="active === 1" src="assets/svgs/doctor-log.svg" alt="" />
+              <div class="chip-info">
+                <span>{{"Doctor Log" | translate}}</span>
+              </div>
+            </div>
+          </a>
+          <ng-template ngbNavContent>
+            <app-doctor-log [data]="doctorData" (exportDoctorData)="exportData($event)"></app-doctor-log>
+          </ng-template>
+        </li>
+      </ul>
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </div>
+  </div>
+</div>

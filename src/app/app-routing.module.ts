@@ -69,14 +69,14 @@ const routes: Routes = [
       {
         path: 'admin',
         loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
-        canActivate: [NgxPermissionsGuard],
-        data: {
-          breadcrumb: 'Admin',
-          permissions: {
-            only: ['ORGANIZATIONAL: SYSTEM ADMINISTRATOR'],
-            redirectTo: '/dashboard'
-          }
-        }
+        // canActivate: [NgxPermissionsGuard],
+        // data: {
+        //   breadcrumb: 'Admin',
+        //   permissions: {
+        //     only: ['ORGANIZATIONAL: SYSTEM ADMINISTRATOR','PROJECT MANAGER', 'REPORTING MODULE'],
+        //     redirectTo: '/dashboard'
+        //   }
+        // }
       }
     ]
   },
