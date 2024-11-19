@@ -40,6 +40,13 @@
           font-size: 16px;
           color: var(--color-gray);
         }
+        .info1 span {
+          font-size: 16px;
+          color: white;
+        }
+        .info1 h6 {
+          color: var(--color-white);
+        }
       }
 
       .chip-item-blue {
@@ -49,7 +56,10 @@
       .chip-item-green {
         background: #E6FFF3;
       }
-
+      
+      .chip-item-green1 {
+        background: #0FD197;
+      }
     }
 
     .nav-link.active {
@@ -57,6 +67,7 @@
 
       .chip-item .chip-info h6, .chip-item .chip-info span {
         color: var(--color-white);
+        background: var(--color-darkBlue);
       }
 
       .chip-item-blue {
@@ -64,7 +75,11 @@
       }
 
       .chip-item-green {
-        background: var(--color-green);
+        background: var(--color-darkBlue);
+      }
+
+      .chip-item-green1 {
+        background: var(--color-darkBlue);
       }
     }
   }

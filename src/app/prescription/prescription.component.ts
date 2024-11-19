@@ -16,11 +16,14 @@ export class PrescriptionComponent implements OnInit {
   active: number = 1;
   completedVisits: CustomVisitModel[] = [];
   prescriptionSent: CustomVisitModel[] = [];
+  doctorCompletedVisits: CustomVisitModel[] = [];
   loaded1: boolean = false;
   loaded2: boolean = false;
+  loaded3:  boolean = false;
   specialization: string = '';
   prescriptionSentCount: number = 0;
   completedVisitsCount: number = 0;
+  doctorCompletedVisitsCount: number = 0;
 
   constructor(private pageTitleService: PageTitleService, private visitService: VisitService) { }
 
@@ -34,6 +37,7 @@ export class PrescriptionComponent implements OnInit {
     }
     this.getPrescriptionSentVisits();
     this.getCompletedVisits();
+    this.geDoctorsCompletedVisits(provider.uuid);
   }
 
   /**
@@ -99,6 +103,29 @@ export class PrescriptionComponent implements OnInit {
         }
         this.prescriptionSent = this.prescriptionSent.concat(records);
         this.loaded2 = true;
+      }
+    });
+  }
+
+  geDoctorsCompletedVisits(uuid: any, page: number = 1) {
+    if(page == 1) this.doctorCompletedVisits = [];
+    this.visitService.getEndedVisits(this.specialization, page).subscribe((ps: ApiResponseModel) => {
+      if (ps.success) {
+         let record = [];
+        for (let i = 0; i < ps.data.length; i++) {
+          let visit = ps.data[i];
+          let vcenc = this.checkIfEncounterExists(visit.encounters, visitTypes.VISIT_COMPLETE);
+          visit.cheif_complaint = this.getCheifComplaint(visit);
+          visit.visit_created = this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
+          visit.prescription_sent = (vcenc) ? this.checkIfDateOldThanOneDay(vcenc.encounter_datetime) : null;
+          visit.person.age = this.calculateAge(visit.person.birthdate);
+          if(vcenc.encounter_provider.provider.uuid === uuid) {
+            record.push(visit);
+          }
+        }
+        this.doctorCompletedVisitsCount = record.length;
+        this.doctorCompletedVisits = this.doctorCompletedVisits.concat(record);
+        this.loaded3 = true;
       }
     });
   }

@@ -8,7 +8,7 @@
               <img class="chip-img" src="assets/svgs/pad.svg" alt="" />
               <div class="chip-info">
                 <h6>{{prescriptionSentCount}}</h6>
-                <span>{{'Prescription Sent'|translate}}</span>
+                <span>{{'Overall Prescription Sent'|translate}}</span>
               </div>
             </div>
           </a>
@@ -24,13 +24,29 @@
               <img class="chip-img" src="assets/svgs/completed-2.svg" alt="" />
               <div class="chip-info">
                 <h6>{{completedVisitsCount}}</h6>
-                <span>{{'Completed Visits'|translate}}</span>
+                <span>{{'Overall Completed Visits'|translate}}</span>
               </div>
             </div>
           </a>
           <ng-template ngbNavContent>
             <ng-container *ngIf="loaded1">
               <app-completed [completedVisits]="completedVisits" [completedVisitsCount]="completedVisitsCount" (fetchPageEvent)="getCompletedVisitsData($event)"></app-completed>
+            </ng-container>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="3">
+          <a ngbNavLink data-test-id="navCompleted">
+            <div class="chip-item chip-item-green1">
+              <img class="chip-img" src="assets/svgs/your-completed-visit.svg" alt="" />
+              <div class="chip-info info1">
+                <h6>{{doctorCompletedVisitsCount}}</h6>
+                <span>{{'Your Completed visits'|translate}}</span>
+              </div>
+            </div>
+          </a>
+          <ng-template ngbNavContent>
+            <ng-container *ngIf="loaded3">
+              <app-doctor-completed [doctorCompletedVisits]="doctorCompletedVisits" [doctorCompletedVisitsCount]="doctorCompletedVisitsCount" (fetchPageEvent)="geDoctorsCompletedVisits($event)"></app-doctor-completed>
             </ng-container>
           </ng-template>
         </li>

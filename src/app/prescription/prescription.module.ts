@@ -17,6 +17,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MatPaginationIntlService } from '../services/mat-pagination.service';
 import { MatButtonModule } from '@angular/material/button';
 import { SharedModule } from '../shared.module';
+import { DoctorCompleted } from './doctor-completed/doctor-completed.component';
+import { MatMenuModule } from '@angular/material/menu';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -28,7 +30,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
   declarations: [
     PrescriptionComponent,
     SentComponent,
-    CompletedComponent
+    CompletedComponent,
+    DoctorCompleted
   ],
   imports: [
     CommonModule,
@@ -40,6 +43,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     MatTableModule,
     MatPaginatorModule,
     MatButtonModule,
+    MatMenuModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
