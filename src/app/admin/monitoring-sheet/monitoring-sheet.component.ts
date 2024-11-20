@@ -31,7 +31,7 @@ export class MonitoringSheetComponent implements OnInit {
     { label: "Current Status", key: "status" },
   ];
   hwColumns: any = [
-    { label: "Name of HW", key: "name" },
+    { label: "Name of Sevika", key: "name" },
     { label: "Primary Village", key: "village" },
     { label: "Secondary Village", key: "secondaryVillage" },
     { label: "Sanch", key: "sanch" },

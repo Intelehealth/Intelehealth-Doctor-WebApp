@@ -48,7 +48,7 @@ export class ReportListComponent implements OnInit {
 
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
-    this.pageTitleService.setTitle({ title: 'Report', imgUrl: 'assets/svgs/report-logo.svg' })
+    this.pageTitleService.setTitle({ title: 'Reports', imgUrl: 'assets/svgs/report-logo.svg' })
   }
 
   createReport(element) {

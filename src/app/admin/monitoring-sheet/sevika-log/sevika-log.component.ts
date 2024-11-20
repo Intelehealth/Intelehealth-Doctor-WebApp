@@ -19,7 +19,7 @@ export class SevikaLogComponent implements OnInit, OnChanges {
   displayedColumns: string[] = [];
   dataSource = new MatTableDataSource<any>();
   hwColumns: any = [
-    { label: "Name of HW", key: "name" },
+    { label: "Name of Sevika", key: "name" },
     { label: "Primary Village", key: "village" },
     { label: "Secondary Village", key: "secondaryVillage" },
     { label: "Sanch", key: "sanch" },

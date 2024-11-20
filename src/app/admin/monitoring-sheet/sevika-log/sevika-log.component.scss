@@ -82,6 +82,10 @@ th.mat-column-version {
   padding-left: 9px !important;
 }
 
+td.mat-column-device, td.mat-column-lastActivity {
+  word-break: break-word;
+}
+
 .mat-standard-chip {
   border-radius: 5px;
 }
