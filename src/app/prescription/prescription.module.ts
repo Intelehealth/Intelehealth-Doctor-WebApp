@@ -19,6 +19,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { SharedModule } from '../shared.module';
 import { DoctorCompleted } from './doctor-completed/doctor-completed.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -44,6 +47,9 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     MatPaginatorModule,
     MatButtonModule,
     MatMenuModule,
+    MatCardModule,
+    ReactiveFormsModule,
+    FormsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

@@ -12,8 +12,8 @@
                 <mat-icon class="info_icon" aria-hidden="false" aria-label="help icon" 
                 matTooltip="{{'Visits that prescription provided by you'|translate}}" matTooltipPosition="right"
                  data-test-id="matIcoHelpCompleted">help_outline</mat-icon>
-                <div class="input-group input-group1 search-bar" (click)="$event.stopPropagation();">
-                  <div class="input-group-append1" [matMenuTriggerFor]="menu">
+                <div class="input-group input-group1 search-bar ml-auto" (click)="$event.stopPropagation();">
+                  <div class="input-group-append1" [matMenuTriggerFor]="dateFilter">
                     <span class="input-group-text" id="basic-addon1">
                       <img src="assets/svgs/filter.svg" alt="" width="15px" height="24px">
                       {{'Filter'| translate}}
@@ -96,7 +96,7 @@
 
             <mat-paginator #tempPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]" hidden aria-label="Select page of periodic elements"></mat-paginator>
             <mat-paginator #completedPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]"
-            [length]="doctorCompletedVisitsCount" [pageIndex]="pageIndex" [pageSize]="pageSize" (page)="pageEvent = getData($event)" aria-label="Select page of periodic elements" data-test-id="matPaginatorCompleted">
+            [length]="visitsCount" [pageIndex]="pageIndex" [pageSize]="pageSize" (page)="pageEvent = getData($event)" aria-label="Select page of periodic elements" data-test-id="matPaginatorCompleted">
             </mat-paginator>
           </div>
 
@@ -106,9 +106,36 @@
   </div>
 </div>
 
-<mat-menu #menu="matMenu">
-  <div class="container-fluid">
-    <mat-card>
-      </mat-card>
+<div class="d-flex align-items-center justify-content-end">
+  <mat-menu #dateFilter="matMenu" [hasBackdrop]="true" class="menu1">
+    <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+      <button mat-icon-button  class="date-btn mt-4" [ngClass]="showRange ? 'bg-color-white': 'bg-color-lightGray'" (click)="showDate = true; showRange = false; fromDate=null; toDate=null">Date</button>
+      <button mat-icon-button class="range-btn mt-4" [ngClass]="showDate ? 'bg-color-white': 'bg-color-lightGray'" (click)="showRange = true; showDate = false; fromDate=null; toDate=null">Range</button>
+      <div *ngIf="showDate" class="date-filter">
+        <div class="input-field-group">
+          <input class="mt-4" type="date" [max]="today" [(ngModel)]="fromDate" data-test-id="etExpiryDateAddLicense">
+        </div>
+        <div class="actions-btn-wrap d-flex align-items-center ml-4 mt-4 mb-2">
+          <button class="action-btn white-btn mr-2" type="button" (click)="resetFilter()" data-test-id="btnCancel">Reset</button>
+          <button class="action-btn blue-btn" type="button" [disabled]="(showDate && !fromDate)"
+                    (click)="applyDateFilter()" data-test-id="btnSubmit">Apply</button>
+        </div>
+      </div>
+      <div *ngIf="showRange" class="date-filter">
+        <div class="input-field-group">
+          <label class="mt-4">From</label>
+          <input type="date" [max]="today" [(ngModel)]="fromDate" data-test-id="etExpiryDateAddLicense">
+        </div> 
+        <div class="input-field-group">
+          <label>To</label>
+          <input type="date" [max]="today"  [(ngModel)]="toDate" data-test-id="etExpiryDateAddLicense">
+        </div>
+        <div class="actions-btn-wrap d-flex align-items-center ml-4 mt-4 mb-2">
+          <button class="action-btn white-btn mr-2" type="button" (click)="resetFilter()" data-test-id="btnCancel">Reset</button>
+          <button class="action-btn blue-btn" type="button" [disabled]="(showRange && !fromDate && !toDate)" 
+          (click)="applyDateFilter()" data-test-id="btnSubmit">Apply</button>
+        </div>
+      </div>
     </div>
-</mat-menu>
+  </mat-menu>
+</div>

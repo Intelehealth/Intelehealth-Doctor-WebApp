@@ -94,13 +94,14 @@ th:last-child {
   }
 
   .blue-btn {
-    background: var(--color-lightGray);
-    color: var(--color-darkBlue);
+    background: var(--color-darkBlue);
+    color: var(--color-white);
   }
 
-  .pink-btn {
-    background: var(--color-lightPink);
-    color: var(--color-red);
+  .white-btn {
+    background: var(--color-white);
+    color: var(--color-darkBlue);
+    border: 1px solid var(--color-lightGray);
   }
 }
 
@@ -121,6 +122,7 @@ th:last-child {
 
 .input-group-append1 {
   margin-left: 18px;
+  margin-top: 5px;
   .input-group-text {
   color: darkblue;
   font-weight: 500;
@@ -157,6 +159,89 @@ th:last-child {
     box-shadow: none;
   }
 }
+
+
+::ng-deep  .menu1{
+  min-width: 265px !important;
+  border-radius: 12px !important;
+  position: relative;
+  margin-top: 5px;
+  margin-left: -18px;
+  background: white;
+  overflow: visible !important;
+  min-height: fit-content !important;
+}
+
+.date-btn {
+  margin-left: 10px;
+  min-width: 110px;
+  height: 35px;
+  background: var(--color-lightGray);
+  border: 1px solid var(--color-lightGray);
+  border-radius: 8px;
+  font-size: 18px;
+  line-height: 150%;
+  color: var(--color-darkBlue);
+  font-weight: bold;
+  float: left;
+  cursor: pointer;
+}
+
+.range-btn {
+  margin-right: 10px;
+  min-width: 110px;
+  height: 35px;
+  background: var(--color-white);
+  border: 1px solid var(--color-lightGray);
+  border-radius: 8px;
+  font-size: 18px;
+  line-height: 150%;
+  color: var(--color-darkBlue);
+  font-weight: bold;
+  float: right;
+  cursor: pointer;
+}
+
+.input-field-group {
+  label {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 150%;
+    margin-left: 14px;
+    margin-top: 12px;
+    color: lightgray;
+  }
+
+  input {
+    padding: 14px 16px;
+    margin-left: 10px;
+    width: 93%;
+    height: 48px;
+    background: var(--color-offWhite);
+    border: 1px solid rgba(178, 175, 190, 0.2);
+    border-radius: 8px;
+    outline: none;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    content: url(../../../assets/svgs/calendar-date.svg);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+}
+
+.blue-btn:disabled,
+  .white-btn:disabled{
+    opacity: 0.5;
+  }
+
+  .bg-color-white {
+    background: var(--color-white);
+  }
+  .bg-color-lightGray {
+    background: var(--color-lightGray);
+  }
 
 @media (max-width: 768px) {
   .input-group {

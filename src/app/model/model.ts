@@ -231,6 +231,7 @@ export interface AppointmentModel {
 
 export interface CustomVisitModel {
   uuid: string,
+  date_created?: string;
   encounters: CustomEncounterModel[],
   location?: {
     name: string
