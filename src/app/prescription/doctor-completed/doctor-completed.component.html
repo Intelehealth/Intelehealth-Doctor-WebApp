@@ -20,7 +20,7 @@
                     </span>
                   </div>
                 </div>
-                <div class="input-group input-group2 search-bar ml-auto" (click)="$event.stopPropagation();">
+                <div class="input-group input-group2 search-bar ml-3" (click)="$event.stopPropagation();">
                   <input type="text" #compSearchInput class="form-control" placeholder="Search by patient name" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchCompleted">
                   <div class="input-group-append">
                     <span class="input-group-text" id="basic-addon1" *ngIf="!dataSource.filter">
@@ -107,7 +107,7 @@
 </div>
 
 <div class="d-flex align-items-center justify-content-end">
-  <mat-menu #dateFilter="matMenu" [hasBackdrop]="true" class="menu1">
+  <mat-menu #dateFilter="matMenu" [hasBackdrop]="false" class="menu1">
     <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
       <button mat-icon-button  class="date-btn mt-4" [ngClass]="showRange ? 'bg-color-white': 'bg-color-lightGray'" (click)="showDate = true; showRange = false; fromDate=null; toDate=null">Date</button>
       <button mat-icon-button class="range-btn mt-4" [ngClass]="showDate ? 'bg-color-white': 'bg-color-lightGray'" (click)="showRange = true; showDate = false; fromDate=null; toDate=null">Range</button>
@@ -132,7 +132,7 @@
         </div>
         <div class="actions-btn-wrap d-flex align-items-center ml-4 mt-4 mb-2">
           <button class="action-btn white-btn mr-2" type="button" (click)="resetFilter()" data-test-id="btnCancel">Reset</button>
-          <button class="action-btn blue-btn" type="button" [disabled]="(showRange && !fromDate && !toDate)" 
+          <button class="action-btn blue-btn" type="button" [disabled]="(showRange && (!fromDate || !toDate) || (fromDate > toDate))" 
           (click)="applyDateFilter()" data-test-id="btnSubmit">Apply</button>
         </div>
       </div>

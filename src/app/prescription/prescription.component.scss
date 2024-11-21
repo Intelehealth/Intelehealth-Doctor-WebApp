@@ -64,6 +64,7 @@
 
     .nav-link.active {
       background: transparent;
+      cursor: pointer;
 
       .chip-item .chip-info h6, .chip-item .chip-info span {
         color: var(--color-white);
