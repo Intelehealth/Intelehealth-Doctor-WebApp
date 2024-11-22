@@ -24,7 +24,7 @@
       <div class="rows patient-info-wrapper">
         <div class="col-md-3 patient-info-section p-3" *ngIf="patient">
           <div class="patient-img-item mb-2">
-            <div class="patient-img">
+            <!-- <div class="patient-img">
               <img
                 src="{{ baseUrl + '/personimage/' + patient?.person.uuid }}"
 
@@ -32,7 +32,7 @@
                 width="100%"
                 height="100%"
               />
-            </div>
+            </div> -->
             <div class="ml-3">
               <h6>
                 <span>{{ patient?.person?.names[0]?.givenName }}</span>
@@ -127,12 +127,12 @@
 
           <mat-tab label="{{'Other' | translate}}">
             <div class="rows patient-info-wrapper">
-              <div class="col-md-3 patient-info-section p-3">
+              <!-- <div class="col-md-3 patient-info-section p-3">
                 <div class="patient-info-item mb-3">
                   <h6 data-test-id="etPatient">{{'Occupation' | translate}}</h6>
                   <p data-test-id="etPatient">{{ getPersonAttributeValue('occupation') }}</p>
                 </div>
-              </div>
+              </div> -->
 
               <div class="col-md-3 patient-info-section p-3">
                 <div class="patient-info-item mb-3">
@@ -141,12 +141,12 @@
                 </div>
               </div>
 
-              <div class="col-md-3 patient-info-section p-3" *ngIf="getPersonAttributeValue('NationalID') !== 'NA'">
+              <!-- <div class="col-md-3 patient-info-section p-3" *ngIf="getPersonAttributeValue('NationalID') !== 'NA'">
                 <div class="patient-info-item mb-3">
                   <h6 data-test-id="etPatient">{{'National ID' | translate}}</h6>
                   <p data-test-id="etPatient">{{ getPersonAttributeValue('NationalID') }}</p>
                 </div>
-              </div>
+              </div> -->
 
               <div class="col-md-3 patient-info-section p-3" *ngIf="getPersonAttributeValue('Economic Status') !== 'NA'">
                 <div class="patient-info-item mb-3">
@@ -348,14 +348,14 @@
                     </div>
                   </div>
                 </li>
-                <li>
+                <!-- <li>
                   <div class="list-item">
                     <label>{{'Sugar Level(Fasting)'|translate}}</label>
                     <div class="list-item-content" [class.text-muted]="!getObsValue('sugar fasting')">
                       {{(getObsValue('sugar fasting'))?getObsValue('sugar fasting'):'No information' | translate}}
                     </div>
                   </div>
-                </li>
+                </li> -->
                 <li>
                   <div class="list-item">
                     <label>{{'Sugar Level - Random'|translate}}</label>

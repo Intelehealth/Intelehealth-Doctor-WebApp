@@ -528,12 +528,12 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   * @return {void}
   */
   async downloadPrescription() {
-    const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
+  //  const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
     const pdfObj = {
       pageSize: 'A4',
       pageOrientation: 'portrait',
       pageMargins: [ 20, 50, 20, 40 ],
-     // watermark: { text: 'INTELEHEALTH', color: 'var(--color-gray)', opacity: 0.1, bold: true, italics: false, angle: 0, fontSize: 50 },
+      watermark: { text: 'EKAL AROGYA', color: 'var(--color-gray)', opacity: 0.1, bold: true, italics: false, angle: 0, fontSize: 50 },
       header: {
         columns: [
           { text: ''},
@@ -543,7 +543,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       footer: (currentPage, pageCount) => {
         return {
           columns: [
-            [ { text: (pageCount === currentPage ? '*The diagnosis and prescription is through telemedicine consultation conducted as per applicable telemedicine guideline\n\n' : '\n\n'),bold: true,fontSize: 9,margin: [10, 0, 0, 0] },{ text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [5, 0, 0, 0]} ],
+            { text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [5, 0, 0, 0]} ,
             { text: '\n\n'+currentPage.toString() + ' of ' + pageCount, width:"7%", fontSize: 8, margin: [5, 5, 5, 5], alignment: 'right'}
           ]
         };
@@ -570,20 +570,20 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                 {
                   colSpan: 4,
                   table: {
-                    widths: ['auto', '*'],
+                   // widths: ['auto', '*'],
                     body: [
                       [
-                        {
-                          image: (userImg && !userImg?.includes('application/json')) ? userImg : 'user',
-                          width: 30,
-                          height: 30,
-                          margin: [0, (userImg && !userImg?.includes('application/json')) ? 15 : 5, 0, 5]
-                        },
+                        // {
+                        //   image: (userImg && !userImg?.includes('application/json')) ? userImg : 'user',
+                        //   width: 30,
+                        //   height: 30,
+                        //   margin: [0, (userImg && !userImg?.includes('application/json')) ? 15 : 5, 0, 5]
+                        // },
                         [
                           {
                             text: `${this.patient?.person.display.toLocaleUpperCase()}`,
                             bold: true,
-                            margin: [10, 10, 0, 5],
+                          //  margin: [0, 0, 0, 0],
                           }
                         ]
                       ]
@@ -1118,7 +1118,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         records.push({ text: [{ text: `Respiratory Rate : `, bold: true }, `${respRate}`], margin: [0, 5, 0, 5]});
         records.push({ text: [{ text: `Hemoglobin : `, bold: true }, `${hgb}`], margin: [0, 5, 0, 5]});
         records.push({ text: [{ text: `Blood Group : `, bold: true }, `${bloodg}`], margin: [0, 5, 0, 5]});
-        records.push({ text: [{ text: `Sugar Level(Fasting): `, bold: true }, `${sugarF}`], margin: [0, 5, 0, 5]});
+      //  records.push({ text: [{ text: `Sugar Level(Fasting): `, bold: true }, `${sugarF}`], margin: [0, 5, 0, 5]});
         records.push({ text: [{ text: `Sugar Level - Random : `, bold: true }, `${sugarR}`], margin: [0, 5, 0, 5]});
         break;
     }
@@ -1232,7 +1232,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       other.push({ 
         stack: [
           { text: 'Age', style: 'subsubheader' },
-          { text: this.patient?.person.age, style: 'pval' }
+          { text: `${this.patient?.person.age} years` , style: 'pval' }
         ] 
       });
     }
@@ -1363,14 +1363,14 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         ''
       ]);
       let other = [];
-      if(this.getPersonAttributeValue('occupation')) {
-        other.push({ 
-          stack: [
-            { text: 'Occupation', style: 'subsubheader' },
-            { text: this.getPersonAttributeValue('occupation'), style: 'pval' }
-          ] 
-        });
-      }
+      // if(this.getPersonAttributeValue('occupation')) {
+      //   other.push({ 
+      //     stack: [
+      //       { text: 'Occupation', style: 'subsubheader' },
+      //       { text: this.getPersonAttributeValue('occupation'), style: 'pval' }
+      //     ] 
+      //   });
+      // }
       if(this.getPersonAttributeValue('Education Level')) {
         if (this.getPersonAttributeValue('Education Level') !== 'NA') 
         other.push({ 
@@ -1380,15 +1380,16 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
           ] 
         });
       }
-      if(this.getPersonAttributeValue('NationalID')) {
-        if (this.getPersonAttributeValue('NationalID') !== 'NA') 
-          other.push({ 
-          stack: [
-            { text: 'National ID', style: 'subsubheader' },
-            { text: this.getPersonAttributeValue('NationalID'), style: 'pval' }
-          ] 
-        });
-      } if(this.getPersonAttributeValue('Economic Status')) {
+      // if(this.getPersonAttributeValue('NationalID')) {
+      //   if (this.getPersonAttributeValue('NationalID') !== 'NA') 
+      //     other.push({ 
+      //     stack: [
+      //       { text: 'National ID', style: 'subsubheader' },
+      //       { text: this.getPersonAttributeValue('NationalID'), style: 'pval' }
+      //     ] 
+      //   });
+      // } 
+      if(this.getPersonAttributeValue('Economic Status')) {
         if (this.getPersonAttributeValue('Economic Status') !== 'NA') 
         other.push({ 
           stack: [
