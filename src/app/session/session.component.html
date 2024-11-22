@@ -38,10 +38,10 @@
               <img class="btn-icon web-back-btn click" (click)="location.back()" *ngIf="!router.url.includes('/session/login')" src="assets/svgs/left-arrow-blue.svg" alt="">
               <img class="w-75 rounded mobile-logo" src="assets/images/intelehealth-logo-reverse.png" alt="">
             </div>
-            <div class="col-sm-6 col-6 px-0 py-4">
+            <!-- <div class="col-sm-6 col-6 px-0 py-4">
               <ng-select data-test-id="selectLanguageSession" class="language-select-input ml-auto" [items]="languages" bindLabel="name" bindValue="code" [searchable]="false" [clearable]="false" [multiple]="false" [(ngModel)]="selectedLanguage" (ngModelChange)="changeLanguage()">
               </ng-select>
-            </div>
+            </div> -->
           </div>
         </div>
         <router-outlet></router-outlet>
