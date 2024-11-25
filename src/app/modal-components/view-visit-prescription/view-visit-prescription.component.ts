@@ -543,7 +543,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       footer: (currentPage, pageCount) => {
         return {
           columns: [
-            { text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [5, 0, 0, 0]} ,
+            { text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [20, 0, 0, 0]} ,
             { text: '\n\n'+currentPage.toString() + ' of ' + pageCount, width:"7%", fontSize: 8, margin: [5, 5, 5, 5], alignment: 'right'}
           ]
         };
@@ -1228,15 +1228,14 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         ] 
       });
     }
-    if(this.patient?.person.age) {
+    
+    if(this.patient?.person.birthdate) {
       other.push({ 
         stack: [
           { text: 'Age', style: 'subsubheader' },
-          { text: `${this.patient?.person.age} years` , style: 'pval' }
+          { text: this.getAge(this.patient?.person?.birthdate) , style: 'pval' }
         ] 
       });
-    }
-    if(this.patient?.person.birthdate) {
       other.push({ 
         stack: [
           { text: 'Date of Birth', style: 'subsubheader' },
