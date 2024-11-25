@@ -2191,21 +2191,23 @@
       <span *ngxPermissionsExcept="['PROJECT MANAGER']" >
         <button
         type="button"
-        class="blue-btn mr-2 mb-2"
-        (click)="sharePrescription()"
-        *ngIf="visitNotePresent && !visitEnded && isVisitNoteProvider"
-        data-test-id="btnSharePrescription"
-      >
-        {{ visitCompleted ? ('Update'|translate): ('Share'|translate) }} {{'prescription'|translate}}
-      </button>
-      <button
-        type="button"
-        class="blue-btn mb-2"
+        class="blue-btn mb-2 mr-2"
         (click)="openVisitPrescriptionModal(visit?.uuid)"
-        *ngIf="visitNotePresent && visitCompleted"
+        *ngIf="visitNotePresent && !visitCompleted"
         data-test-id="btnViewPrescription"
         >
-        {{'View prescription'|translate}}
+        {{'Preview prescription'|translate}}
+      </button>
+
+        <button
+        type="button"
+        class="blue-btn mb-2"
+        (click)="sharePrescription()"
+        *ngIf="visitNotePresent && !visitEnded && isVisitNoteProvider"
+        [disabled]="visitCompleted"
+        data-test-id="btnSharePrescription"
+      >
+        {{'Share'|translate }} {{'prescription'|translate}}
       </button>
       </span>
     </div>
