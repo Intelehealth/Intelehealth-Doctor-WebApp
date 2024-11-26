@@ -195,6 +195,12 @@
     }
   }
 
+  .anchor-con {
+    position: absolute;
+    top: -120px;
+    left: 0;
+  }
+
   @media (max-width: 768px) {
     .input-group {
       width: 100%;
@@ -209,5 +215,16 @@
     .intel-accordion-con .mat-expansion-panel .mat-expansion-panel-header.mat-expanded {
       height: fit-content;
     }
+    .info-icon{
+      display: none;
+    }
+
+    .anchor-con {
+      top: -100px;
+    }  
   }
-  
+
+  .matIconButton {
+    border: none;
+    background: transparent;
+  }

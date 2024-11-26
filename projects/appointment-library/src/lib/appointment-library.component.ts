@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
     <!-- <p>
       appointment-library works!
     </p> -->
-    <lib-appointment-table><lib-appointment-table>
+    <lib-appointment-table></lib-appointment-table>
   `,
   styles: [
   ]

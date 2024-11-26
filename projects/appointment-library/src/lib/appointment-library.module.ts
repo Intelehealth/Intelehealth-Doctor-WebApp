@@ -18,6 +18,7 @@ import { MyLibraryMaterialModule } from './material.module';
   ],
   exports: [
     AppointmentLibraryComponent,
+    AppointmentTableComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,

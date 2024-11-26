@@ -55,7 +55,13 @@
       </div>
     </div>
   </div>
-  <lib-appointment-library></lib-appointment-library>
+  <lib-appointment-table
+    (rescheduleAppointment)="reschedule($event)"
+    (cancelAppointment)="cancel($event)"
+    [appointmentVisitsCount]="appointmentVisitsCount"
+    [patientRegFields]="patientRegFields">
+  </lib-appointment-table>
+
   <div class="row mt-3">
     <div class="col-md-12 p-0">
       <div class="text-right my-2">

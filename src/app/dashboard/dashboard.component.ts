@@ -20,6 +20,7 @@ import { CompletedVisitsComponent } from './completed-visits/completed-visits.co
 import { FollowupVisitsComponent } from './followup-visits/followup-visits.component';
 import { MindmapService } from '../services/mindmap.service';
 import { NgxRolesService } from 'ngx-permissions';
+import { AppointmentTableComponent } from 'appointment-library';
 
 @Component({
   selector: 'app-dashboard',
@@ -53,6 +54,7 @@ export class DashboardComponent implements OnInit {
   inprogressVisitsCount: number = 0;
   completedVisitsCount: number = 0;
   followUpVisitsCount: number = 0;
+  appointmentVisitsCount: number = 0;
 
   @ViewChild(MatAccordion) accordion: MatAccordion;
   @ViewChild('appointmentPaginator') appointmentPaginator: MatPaginator;
@@ -101,6 +103,7 @@ export class DashboardComponent implements OnInit {
 
   @ViewChild(CompletedVisitsComponent) completedVisitsComponent: CompletedVisitsComponent;
   @ViewChild(FollowupVisitsComponent) followUpVisitsComponent: FollowupVisitsComponent;
+  @ViewChild(AppointmentTableComponent) AppointmentTableComponent: AppointmentTableComponent;
 
   constructor(
     private pageTitleService: PageTitleService,
@@ -169,6 +172,14 @@ export class DashboardComponent implements OnInit {
 
   get dataSource6(){
     return this.followUpVisitsComponent?.tblDataSource;
+  }
+
+  get tempPaginator7() {
+    return this.AppointmentTableComponent?.paginator;
+  };
+
+  get dataSource7(){
+    return this.AppointmentTableComponent?.tblDataSource;
   }
 
   /**
@@ -422,6 +433,10 @@ export class DashboardComponent implements OnInit {
             }
           }
         });
+        this.appointmentVisitsCount = this.appointments.length;
+        this.dataSource7.data = [...this.appointments];
+        this.dataSource7.paginator = this.tempPaginator7;
+        this.dataSource7.filterPredicate = (data, filter: string) => data?.openMrsId.toLowerCase().indexOf(filter) != -1 || data?.patientName.toLowerCase().indexOf(filter) != -1;
         this.dataSource1.data = [...this.appointments];
         this.dataSource1.paginator = this.appointmentPaginator;
         this.dataSource1.filterPredicate = (data, filter: string) => data?.openMrsId.toLowerCase().indexOf(filter) != -1 || data?.patientName.toLowerCase().indexOf(filter) != -1;
