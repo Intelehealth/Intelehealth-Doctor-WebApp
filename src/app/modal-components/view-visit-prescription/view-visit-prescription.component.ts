@@ -13,6 +13,7 @@ import { doctorDetails, visitTypes } from 'src/config/constant';
 import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel } from 'src/app/model/model';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 import { precription, logo } from "../../utils/base64"
+import { getCacheData } from 'src/app/utils/utility-functions';
 
 @Component({
   selector: 'app-view-visit-prescription',
@@ -112,21 +113,26 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
             this.getVitalObs(visit.encounters);
 
             visit.encounters.forEach((encounter: EncounterModel) => {
-              if (encounter.encounterType.display === visitTypes.VISIT_COMPLETE) {
+              if (encounter.encounterType.display === visitTypes.VISIT_NOTE) {
                 this.completedEncounter = encounter;
-                encounter.obs.forEach((o: ObsModel) => {
-                  if (o.concept.display === 'Doctor details') {
-                    this.consultedDoctor = JSON.parse(o.value);
-                  }
-                });
-                encounter.encounterProviders.forEach((p: EncounterProviderModel) => {
-                  this.consultedDoctor.gender = p.provider.person.gender;
-                  this.consultedDoctor.person_uuid = p.provider.person.uuid;
-                  this.consultedDoctor.attributes = p.provider.attributes;
-                  if (this.isDownloadPrescription) {
-                    this.setSignature(this.signature?.value, this.signatureType?.value);
-                  }
-                });
+                this.consultedDoctor = getCacheData(true,doctorDetails.PROVIDER);
+
+                if (this.isDownloadPrescription) {
+                  this.setSignature(this.signature?.value, this.signatureType?.value);
+                }
+                // encounter.obs.forEach((o: ObsModel) => {
+                //   if (o.concept.display === 'Doctor details') {
+                //     this.consultedDoctor = JSON.parse(o.value);
+                //   }
+                // });
+                // encounter.encounterProviders.forEach((p: EncounterProviderModel) => {
+                //   this.consultedDoctor.gender = p.provider.person.gender;
+                //   this.consultedDoctor.person_uuid = p.provider.person.uuid;
+                //   this.consultedDoctor.attributes = p.provider.attributes;
+                //   if (this.isDownloadPrescription) {
+                //     this.setSignature(this.signature?.value, this.signatureType?.value);
+                //   }
+                // });
               }
             });
           }
@@ -492,6 +498,22 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   }
 
   /**
+  * Getter for signature
+  * @return {string} - Signature
+  */
+  get qualification() {
+    return this.attributes.find(a => a?.attributeType?.display === doctorDetails.TYPE_OF_PROFESSION);
+  }
+
+  /**
+  * Getter for signature
+  * @return {string} - Signature
+  */
+  get registrationNo() {
+    return this.attributes.find(a => a?.attributeType?.display === doctorDetails.REGISTRATION_NUMBER);
+  }
+
+  /**
   * Detect MIME type from the base 64 url
   * @param {string} b64 - Base64 url
   * @return {string} - MIME type
@@ -690,12 +712,13 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                     widths: [30, '*'],
                     headerRows: 1,
                     body: [
-                      [ {image: 'cheifComplaint', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Chief complaint', style: 'sectionheader', border: [false, false, false, true] }],
+                      [ {image: 'consultation', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Consultation details', style: 'sectionheader', border: [false, false, false, true]}],
                       [
                         {
                           colSpan: 2,
                           ul: [
-                            ...this.getRecords('cheifComplaint')
+                            {text: [{text: 'Patient ID:', bold: true}, ` ${this.patient?.identifiers?.[0]?.identifier}`], margin: [0, 5, 0, 5]},
+                            {text: [{text: 'Date of Consultation:', bold: true}, ` ${moment(this.completedEncounter?.encounterDatetime).format('DD MMM yyyy')}`],  margin: [0, 5, 0, 5]}
                           ]
                         }
                       ]
@@ -743,13 +766,12 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                     widths: [30, '*'],
                     headerRows: 1,
                     body: [
-                      [ {image: 'consultation', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Consultation details', style: 'sectionheader', border: [false, false, false, true] }],
+                      [ {image: 'cheifComplaint', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Chief complaint', style: 'sectionheader', border: [false, false, false, true] }],
                       [
                         {
                           colSpan: 2,
                           ul: [
-                            {text: [{text: 'Patient ID:', bold: true}, ` ${this.patient?.identifiers?.[0]?.identifier}`], margin: [0, 5, 0, 5]},
-                            {text: [{text: 'Date of Consultation:', bold: true}, ` ${moment(this.completedEncounter?.encounterDatetime).format('DD MMM yyyy')}`],  margin: [0, 5, 0, 5]}
+                            ...this.getRecords('cheifComplaint')
                           ]
                         }
                       ]
@@ -958,9 +980,9 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                   alignment: 'right',
                   stack: [
                     { image: `${this.signature?.value}`, width: 100, height: 100, margin: [0, 5, 0, 5] },
-                    { text: `Dr. ${this.consultedDoctor?.name}`, margin: [0, -30, 0, 0]},
-                    { text: `${this.consultedDoctor?.qualification}`},
-                    { text: `Registration No. ${this.consultedDoctor?.registrationNumber}`},
+                    { text: `Dr. ${this.consultedDoctor?.person?.preferredName.display}`, margin: [0, -30, 0, 0]},
+                    { text: `${this.qualification?.value}`},
+                    { text: `Registration No. ${this.registrationNo?.value}`},
                   ]
                 },
                 '',
