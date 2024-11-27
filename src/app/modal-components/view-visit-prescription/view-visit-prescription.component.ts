@@ -910,38 +910,38 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                 '',
                 ''
               ],
-              [
-                {
-                  colSpan: 4,
-                  table: {
-                    widths: [30, '*'],
-                    headerRows: 1,
-                    body:  [
-                      [ {image: 'referral', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Referral Out', style: 'sectionheader', border: [false, false, false, true] }],
-                      [
-                        {
-                          colSpan: 2,
-                          table: {
-                            widths: ['30%', '30%', '10%', '30%'],
-                            headerRows: 1,
-                            body: [
-                              [{text: 'Referral to', style: 'tableHeader'}, {text: 'Referral facility', style: 'tableHeader'}, {text: 'Priority', style: 'tableHeader'}, {text: 'Referral for (Reason)', style: 'tableHeader'}],
-                              ...this.getRecords('referral')
-                            ]
-                          },
-                          layout: 'lightHorizontalLines'
-                        }
-                      ]
-                    ]
-                  },
-                  layout: {
-                    defaultBorder: false
-                  }
-                },
-                '',
-                '',
-                ''
-              ],
+              // [
+              //   {
+              //     colSpan: 4,
+              //     table: {
+              //       widths: [30, '*'],
+              //       headerRows: 1,
+              //       body:  [
+              //         [ {image: 'referral', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Referral Out', style: 'sectionheader', border: [false, false, false, true] }],
+              //         [
+              //           {
+              //             colSpan: 2,
+              //             table: {
+              //               widths: ['30%', '30%', '10%', '30%'],
+              //               headerRows: 1,
+              //               body: [
+              //                 [{text: 'Referral to', style: 'tableHeader'}, {text: 'Referral facility', style: 'tableHeader'}, {text: 'Priority', style: 'tableHeader'}, {text: 'Referral for (Reason)', style: 'tableHeader'}],
+              //                 ...this.getRecords('referral')
+              //               ]
+              //             },
+              //             layout: 'lightHorizontalLines'
+              //           }
+              //         ]
+              //       ]
+              //     },
+              //     layout: {
+              //       defaultBorder: false
+              //     }
+              //   },
+              //   '',
+              //   '',
+              //   ''
+              // ],
               [
                 {
                   colSpan: 4,
