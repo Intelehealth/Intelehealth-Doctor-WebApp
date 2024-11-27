@@ -1,7 +1,7 @@
 {
-  "name": "Intelehealth Doctor App",
-  "short_name": "Intelehealth Doctor App",
-  "theme_color": "#2e1e91",
+  "name": "UNFPA Doctor App",
+  "short_name": "UNFPA Doctor App",
+  "theme_color": "#3571A4",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
