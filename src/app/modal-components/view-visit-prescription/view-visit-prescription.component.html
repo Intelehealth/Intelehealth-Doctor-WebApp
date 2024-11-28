@@ -398,7 +398,7 @@
                   <div class="list-item">
                     <label class="border-0">{{'Name'|translate}}</label>
                     <div class="list-item-content">
-                      {{ consultedDoctor ? consultedDoctor.name : ('NA'|translate) }}
+                      {{ consultedDoctor ? consultedDoctor?.person?.preferredName.display : ('NA'|translate) }}
                     </div>
                   </div>
                 </li>
@@ -407,7 +407,7 @@
                     <label>{{'Qualification'|translate}}</label>
                     <div class="list-item-content">
                       {{
-                        consultedDoctor ? consultedDoctor.typeOfProfession : ('NA'|translate)
+                        consultedDoctor ? qualification?.value : ('NA'|translate)
                       }}
                     </div>
                   </div>
@@ -417,7 +417,7 @@
                     <label>{{'Speciality'|translate}}</label>
                     <div class="list-item-content">
                       {{
-                        consultedDoctor ? consultedDoctor.specialization : ('NA'|translate)
+                        consultedDoctor ? specialization?.value : ('NA'|translate)
                       }}
                     </div>
                   </div>

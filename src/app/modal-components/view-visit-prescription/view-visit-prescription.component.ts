@@ -498,8 +498,8 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   }
 
   /**
-  * Getter for signature
-  * @return {string} - Signature
+  * Getter for qualification
+  * @return {string} - qualification
   */
   get qualification() {
     return this.attributes.find(a => a?.attributeType?.display === doctorDetails.TYPE_OF_PROFESSION);
@@ -512,6 +512,14 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   get registrationNo() {
     return this.attributes.find(a => a?.attributeType?.display === doctorDetails.REGISTRATION_NUMBER);
   }
+
+    /**
+  * Getter for specialization
+  * @return {string} - specialization
+  */
+    get specialization() {
+      return this.attributes.find(a => a?.attributeType?.display === doctorDetails.SPECIALIZATION);
+    }
 
   /**
   * Detect MIME type from the base 64 url

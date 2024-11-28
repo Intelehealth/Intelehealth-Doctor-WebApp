@@ -49,7 +49,7 @@ import { ReportsSuccessComponent } from './reports-success/reports-success.compo
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FileDownloadComponent } from './file-download/file-download.component';
-
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 @NgModule({
     declarations: [
         AddLicenseKeyComponent,
@@ -105,6 +105,7 @@ import { FileDownloadComponent } from './file-download/file-download.component';
         ImageCropperModule,
         NgMultiSelectDropDownModule,
         MatProgressSpinnerModule,
+        MatProgressBarModule,
         SharedModule
     ],
     exports: [ViewVisitPrescriptionComponent],

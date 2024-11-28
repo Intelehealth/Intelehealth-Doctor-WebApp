@@ -121,10 +121,15 @@ registerLocaleData(localeEn);
     NgxUiLoaderHttpModule.forRoot({
       showForeground: true,
       exclude: [
-        'https://dev.intelehealth.org:3004/api/messages/',
-        'https://dev.intelehealth.org:3004/api/support/',
-        'https://dev.intelehealth.org:3004/api/auth/validateProviderAttribute',
-        'https://dev.intelehealth.org:3000/api/getToken'
+        'https://ekal.intelehealth.org:3004/api/messages/',
+        'https://ekal.intelehealth.org:3004/api/support/',
+        'https://ekal.intelehealth.org:3004/api/auth/validateProviderAttribute',
+        'https://ekal.intelehealth.org:3000/api/getToken',
+        'https://ekal.intelehealth.org/gen',
+        'https://ekal.intelehealth.org/vl2',
+        'https://ekal.intelehealth.org/bs',
+        'https://ekal.intelehealth.org/vlrv',
+        'https://ekal.intelehealth.org/lcrep'
       ]
     }),
     NgxPermissionsModule.forRoot({
