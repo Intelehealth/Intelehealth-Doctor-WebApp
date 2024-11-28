@@ -1098,7 +1098,7 @@
                   class="form-group mb-0 mt-3"
                   *ngIf="
                     isVisitNoteProvider &&
-                    !visitEnded &&
+                    !visitEnded && !visitCompleted &&
                     !patientInteractionForm.value.present
                   "
                 >
@@ -1129,7 +1129,7 @@
                             type="button"
                             mat-icon-button
                             class="float-right"
-                            *ngIf="isVisitNoteProvider && !visitEnded"
+                            *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
                             (click)="deletePatientInteraction()"
                             data-test-id="btnDeletePatientInteraction"
                           >
@@ -1179,7 +1179,7 @@
                           <button
                             mat-icon-button
                             class="float-right"
-                            *ngIf="isVisitNoteProvider && !visitEnded"
+                            *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
                             (click)="deleteDiagnosis(i, d.uuid)"
                             data-test-id="{{'btnDeleteDiagnosisVisitSummary' + i}}"
                           >
@@ -1188,7 +1188,7 @@
                         </td>
                       </tr>
                     </ng-container>
-                    <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+                    <ng-container *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted">
                       <tr *ngIf="addMoreDiagnosis">
                         <td colspan="4" class="px-0">
                           <div class="form-group mb-0">
@@ -1209,7 +1209,7 @@
                 </table>
               </div>
 
-              <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+              <ng-container *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted">
                 <form
                   [formGroup]="diagnosisForm"
                   (ngSubmit)="saveDiagnosis()"
@@ -1344,7 +1344,7 @@
                     <button
                       mat-icon-button
                       (click)="deleteNote(i, n.uuid)"
-                      *ngIf="isVisitNoteProvider && !visitEnded"
+                      *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
                       data-test-id="{{'btnDeleteNoteVisitSummary'+i}}"
                     >
                       <img src="assets/svgs/delete-icon.svg" alt="" />
@@ -1361,7 +1361,7 @@
                 class="mt-3"
                 [formGroup]="addNoteForm"
                 (ngSubmit)="addNote()"
-                *ngIf="isVisitNoteProvider && !visitEnded"
+                *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
               >
                 <div class="form-group" *ngIf="addMoreNote">
                   <button
@@ -1454,7 +1454,7 @@
                               type="button"
                               mat-icon-button
                               class="float-right"
-                              *ngIf="isVisitNoteProvider && !visitEnded"
+                              *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
                               (click)="deleteMedicine(i, m.uuid)"
                               data-test-id="{{'btnDeleteMedVisitSummary'+i}}"
                             >
@@ -1470,7 +1470,7 @@
                           </td>
                         </tr>
                       </ng-template>
-                      <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+                      <ng-container *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted">
                         <tr *ngIf="addMoreMedicine">
                           <td colspan="6" class="px-0">
                             <div class="form-group mb-0">
@@ -1587,7 +1587,7 @@
                       <span>{{ ai.value }}</span>
                       <button
                         mat-icon-button
-                        *ngIf="isVisitNoteProvider && !visitEnded"
+                        *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
                         (click)="deleteAdditionalInstruction(i, ai.uuid)"
                         data-test-id="{{'btnDeleteAIVisitSummary'+i}}"
                       >
@@ -1603,7 +1603,7 @@
                   {{'No additional instructions added!' |translate}}
                 </div>
               </ng-template>
-              <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+              <ng-container *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted">
                 <div class="form-group" *ngIf="addMoreAdditionalInstruction">
                   <button
                     type="button"
@@ -1675,7 +1675,7 @@
                       mat-icon-button
                       (click)="deleteAdvice(i, ad.uuid)"
                       data-test-id="{{'btnDeleteAdviceVisitSummary'+i}}"
-                      *ngIf="isVisitNoteProvider && !visitEnded"
+                      *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
                     >
                       <img src="assets/svgs/delete-icon.svg" alt="" />
                     </button>
@@ -1687,7 +1687,7 @@
                   {{'No advices added!'|translate}}
                 </div>
               </ng-template>
-              <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+              <ng-container *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted">
                 <div class="form-group mt-3" *ngIf="addMoreAdvice">
                   <button
                     type="button"
@@ -1762,7 +1762,7 @@
                       mat-icon-button
                       (click)="deleteTest(i, t.uuid)"
                       data-test-id="{{'btnDeleteTestVisitSummary'+i}}"
-                      *ngIf="isVisitNoteProvider && !visitEnded"
+                      *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
                     >
                       <img src="assets/svgs/delete-icon.svg" alt="" />
                     </button>
@@ -1774,7 +1774,7 @@
                   {{'No tests added!'|translate}}
                 </div>
               </ng-template>
-              <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+              <ng-container *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted">
                 <div class="form-group mt-3" *ngIf="addMoreTest">
                   <button
                     type="button"
@@ -2132,7 +2132,7 @@
                   class="form-group mb-0 mt-3"
                   *ngIf="
                     isVisitNoteProvider &&
-                    !visitEnded &&
+                    !visitEnded && !visitCompleted && 
                     !followUpForm.value.present &&
                     followUpForm.value.wantFollowUp == 'Yes'|| followUpForm.value.wantFollowUp == 'Да'
                   "
@@ -2172,7 +2172,7 @@
                           mat-icon-button
                           (click)="deleteFollowUp()"
                           data-test-id="btnDeleteFollowUp"
-                          *ngIf="isVisitNoteProvider && !visitEnded"
+                          *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
                         >
                           <img src="assets/svgs/delete-icon.svg" alt="" />
                         </button>
@@ -2193,7 +2193,7 @@
         type="button"
         class="blue-btn mb-2 mr-2"
         (click)="openVisitPrescriptionModal(visit?.uuid)"
-        *ngIf="visitNotePresent && !visitCompleted"
+        *ngIf="visitNotePresent && isVisitNoteProvider && !visitCompleted"
         data-test-id="btnViewPrescription"
         >
         {{'Preview prescription'|translate}}
