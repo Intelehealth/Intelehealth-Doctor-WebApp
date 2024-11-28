@@ -1296,6 +1296,15 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
           case 'Postal Code':
             value = this.patient?.person.preferredAddress.postalCode;
             break;
+          case 'Provinces':
+            value = this.getPersonAttributeValue('Provinces');
+            break;
+          case 'Registration address of health facility':
+            value = this.getPersonAttributeValue('Registration address of health facility');
+            break;
+          case 'Cities':
+            value = this.getPersonAttributeValue('Cities');
+            break;
           default:
             break;
         }
@@ -1364,6 +1373,21 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
             break;
           case 'Social Category':
             value = this.getPersonAttributeValue('Caste');
+            break;
+          case 'Code of the Health Facility':
+            value = this.getPersonAttributeValue('Code of the Health Facility');
+            break;
+          case 'Health facility name':
+            value = this.getPersonAttributeValue('Health facility name');
+            break;
+          case 'Code of the Department':
+            value = this.getPersonAttributeValue('Code of the Department');
+            break;
+          case 'INN':
+            value = this.getPersonAttributeValue('INN');
+            break;
+          case 'Department':
+            value = this.getPersonAttributeValue('Department');
             break;
           default:
             break;
