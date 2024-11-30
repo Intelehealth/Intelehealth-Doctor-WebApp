@@ -209,4 +209,17 @@ export class VisitService {
     return this.http.post(`${environment.mindmapURL}/openai/getDiagnosticTestAndTreatmentPlan`, { caseInformation, finalDiagnosis });
     return this.http.post(`http://localhost:3004/api/openai/getDiagnosticTestAndTreatmentPlan`, { caseInformation, finalDiagnosis });
   }
+
+   /**
+  * Parse observation data
+  * @param {any} data - Observation data
+  * @return {any} - Observation data with parsed value
+  */
+   getData(data: any) {
+    if (data?.value.toString().startsWith("{")) {
+      let value = JSON.parse(data.value.toString());
+      data.value = value["en"];
+    }
+    return data;
+  }
 }

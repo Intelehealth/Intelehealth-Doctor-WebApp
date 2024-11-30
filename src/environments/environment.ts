@@ -12,6 +12,8 @@ export const environment = {
   notificationURL: "https://demoai.intelehealth.org:3004/notification",
   socketURL: "https://demoai.intelehealth.org:3004",
   captchaSiteKey: "6LdowFQmAAAAADsQdI3gtUM88w4u5wV5uQLkvoSo",
+  webrtcSdkServerUrl: "wss://demoai.intelehealth.org:9090",
+  webrtcTokenServerUrl: "https://demoai.intelehealth.org:3000/",
   firebase: {
     /* apiKey: "AIzaSyC5cRqdDtLWwJpz7WY1Ekpx7rbawbG1CA8",
     authDomain: "intelehealth-3-0.firebaseapp.com",

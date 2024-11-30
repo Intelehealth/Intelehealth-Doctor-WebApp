@@ -8,6 +8,7 @@ import { ProfileService } from 'src/app/services/profile.service';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Observable, Subscription } from 'rxjs';
+import { visitTypes } from 'src/config/constant';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -131,14 +132,14 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   getCheckUpReason(encounters: any) {
     this.cheifComplaints = [];
     encounters.forEach((enc: any) => {
-      if (enc.encounterType.display == 'ADULTINITIAL') {
+      if (enc.encounterType.display === visitTypes.ADULTINITIAL) {
         enc.obs.forEach((obs: any) => {
-          if (obs.concept.display == 'CURRENT COMPLAINT') {
-            const currentComplaint = obs.value.split('<b>');
+          if (obs.concept.display === visitTypes.CURRENT_COMPLAINT) {
+            const currentComplaint = this.visitService.getData(obs)?.value.split('<b>');
             for (let i = 0; i < currentComplaint.length; i++) {
               if (currentComplaint[i] && currentComplaint[i].length > 1) {
                 const obs1 = currentComplaint[i].split('<');
-                if (!obs1[0].match('Associated symptoms')) {
+                if (!obs1[0].match(visitTypes.ASSOCIATED_SYMPTOMS)) {
                   this.cheifComplaints.push(obs1[0]);
                 }
               }
@@ -402,7 +403,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     pdfMake.createPdf({
       pageSize: 'A4',
       pageOrientation: 'portrait',
-      pageMargins: [ 20, 50, 20, 20 ],
+      pageMargins: [ 20, 50, 20, 40 ],
       watermark: { text: 'INTELEHEALTH', color: '#7F7B92', opacity: 0.1, bold: true, italics: false, angle: 0, fontSize: 50 },
       header: {
         columns: [
@@ -413,8 +414,8 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       footer: (currentPage, pageCount) => {
         return {
           columns: [
-            { text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [5,5,5,5] },
-            { text: currentPage.toString() + ' of ' + pageCount, fontSize: 8, margin: [5,5,5,5], alignment: 'right'}
+            { text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [15, 5, 5, 0], width: "80%" },
+            { text: currentPage.toString() + ' of ' + pageCount, fontSize: 8, margin: [5, 5, 15, 0], alignment: 'right'}
           ]
         };
       },
@@ -422,7 +423,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         {
           style: 'tableExample',
           table: {
-            widths: ['*','*','*','*'],
+            widths: ['25%', '30%', '22%', '23%'],
             body: [
               // ['', '', '', { image: 'logo', width: 90, height: 30, alignment: 'right' }],
               [
@@ -463,7 +464,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                 },
                 {
                   table: {
-                    widths: ['*'],
+                    widths: ['100%'],
                     body: [
                       [
                         [
@@ -479,7 +480,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                 },
                 {
                   table: {
-                    widths: ['*'],
+                    widths: ['100%'],
                     body: [
                       [
                         [
@@ -495,7 +496,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                 },
                 {
                   table: {
-                    widths: ['auto','*'],
+                    widths: ['auto', '*'],
                     body: [
                       [ {text: 'Contact no.', style: 'subheader', colSpan: 2}, ''],
                       [ {image: 'phone', width: 15, height: 15 }, `${this.getPersonAttributeValue("Telephone Number")?this.getPersonAttributeValue('Telephone Number'):'NA'}`],
@@ -721,7 +722,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                         {
                           colSpan: 2,
                           table: {
-                            widths: ['*','*'],
+                            widths: ['40%', '60%'],
                             headerRows: 1,
                             body: [
                               [{text: 'Referral', style: 'tableHeader'}, {text: 'Remarks', style: 'tableHeader'}],

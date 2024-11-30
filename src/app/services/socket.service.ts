@@ -8,21 +8,27 @@ import {
 import { BehaviorSubject, Observable } from "rxjs";
 import * as io from "socket.io-client";
 import { environment } from "../../environments/environment";
-// import { CallStateComponent } from "../component/call-state/call-state.component";
-// import { VcComponent } from "../component/vc/vc.component";
-// import { VcallOverlayComponent } from "../component/vc/vcall-overlay/vcall-overlay.component";
 import { VisitService } from "./visit.service";
+import { getCacheData, setCacheData } from "../utils/utility-functions";
+import { WebrtcService } from "./webrtc.service";
+import { ToastrService } from "ngx-toastr";
+import { doctorDetails } from "src/config/constant";
+import { CoreService } from "./core/core.service";
+import { SocketUserModel } from "../model/model";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class SocketService {
   public socket: any;
   public incoming;
-  public activeUsers = [];
-  appIcon =
-    false && environment.production
-      ? "/intelehealth/assets/images/intelehealth-logo-reverse.png"
-      : "/assets/images/intelehealth-logo-reverse.png";
-
+  public incomingCallData = {};
+  public activeUsers: SocketUserModel[] = [];
+  appIcon = "/assets/images/intelehealth-logo-reverse.png";
+  public callRing = new Audio("assets/phone.mp3");
+  ringTimeout = null;
+  closeOverlayTimeout = null;
+  updateMessage = false;
   private baseURL = environment.socketURL;
   private adminUnreadSubject: BehaviorSubject<any>;
   public adminUnread: Observable<any>;
@@ -30,7 +36,10 @@ export class SocketService {
   constructor(
     private http: HttpClient,
     private dialog: MatDialog,
-    private visitSvc: VisitService
+    private visitSvc: VisitService,
+    private webrtcSvc: WebrtcService,
+    private cs: CoreService,
+    private toastr: ToastrService
   ) {
     this.adminUnreadSubject = new BehaviorSubject<any>(0);
     this.adminUnread = this.adminUnreadSubject.asObservable();
@@ -46,33 +55,48 @@ export class SocketService {
   }
 
   public initSocket(forceInit = false) {
-    console.log("initSocket:called");
     if (forceInit && this.socket?.id && this.socket?.disconnect) {
       this.socket.disconnect();
     }
     if (!this.socket || forceInit) {
       if (!sessionStorage.webrtcDebug) {
-        localStorage.socketQuery = `userId=${this.userUuid}&name=${this.userName}`;
+        setCacheData('socketQuery', `userId=${this.userUuid}&name=${this.userName}`);
       }
+
       this.socket = io(environment.socketURL, {
-        query: localStorage.socketQuery,
+        query: getCacheData(false, 'socketQuery'),
       });
-      this.onEvent("allUsers").subscribe((data) => {
-        this.activeUsers = data;
-      });
-      this.onEvent("incoming_call").subscribe((data = {}) => {
-        if (!location.hash.includes("test/chat")) {
-          localStorage.patientUuid = data.patientUuid;
-          console.log("patientUuid: ", localStorage.patientUuid);
-          if (localStorage.patientUuid) {
-            this.openVcOverlay();
-          }
-        }
-      });
+
       this.onEvent("log").subscribe((array) => {
-        if (localStorage.log === "1") console.log.apply(console, array);
+        if (getCacheData(false, 'log') === "1") console.log.apply(console, array);
       });
+
+      this.initEvents();
     }
+  }
+
+  initEvents() {
+    this.onEvent("allUsers").subscribe((data) => {
+      this.activeUsers = data;
+    });
+
+    this.onEvent("cancel_hw").subscribe((data) => {
+      this.toastr.error(`Call Cancelled.`, "Health Worker cancelled the call.");
+      this.closeVcOverlay();
+    });
+
+    this.onEvent("incoming_call").subscribe((data = {}) => {
+      if (!location.hash.includes("test/chat")) {
+        localStorage.patientId = data.patientId;
+        if (localStorage.patientId) {
+          this.openVcOverlay();
+        }
+      }
+    });
+
+    this.onEvent("updateMessage").subscribe((data) => {
+      this.emitEvent('ack_msg_received', { messageId: data.id });
+    });
   }
 
   public emitEvent(action, data) {
@@ -99,7 +123,6 @@ export class SocketService {
     }
   }
 
-  callRing = new Audio("assets/phone.mp3");
   public openVcOverlay() {
     // this.dialog.open(VcallOverlayComponent, {
     //   disableClose: false,
@@ -113,22 +136,13 @@ export class SocketService {
   }
 
   public closeVcOverlay() {
-    const dailog = this.dialog.getDialogById("vcOverlay");
+    const dailog = this.dialog.getDialogById("vcOverlayModal");
+    clearInterval(this.ringTimeout);
+    clearInterval(this.closeOverlayTimeout);
     if (dailog) {
       dailog.close();
     }
     this.callRing.pause();
-  }
-
-  public openVcModal(initiator = "dr") {
-    // this.dialog.open(VcComponent, {
-    //   disableClose: true,
-    //   data: {
-    //     patientUuid: localStorage.patientUuid,
-    //     initiator,
-    //     connectToDrId: localStorage.connectToDrId,
-    //   },
-    // });
   }
 
   public openNewVCModal(
@@ -143,34 +157,11 @@ export class SocketService {
       top: "90px",
       right: "0px",
     };
-    const config: MatDialogConfig = {
-      width: "calc(100% - 300px)",
-      height: "82vh",
-      maxHeight: "90vh",
-      autoFocus: false,
-      hasBackdrop: false,
-      position,
-      data: {
-        patientUuid: localStorage.patientUuid,
-        connectToDrId: localStorage.connectToDrId,
-        visitId,
-        initiator,
-      },
-    };
-    // this.dialog.open(CallStateComponent, config);
-    // this.dialog.open(CallStateComponent, {
-    //   disableClose: true,
-    //   data: {
-    //     patientUuid: localStorage.patientUuid,
-    //     initiator,
-    //     connectToDrId: localStorage.connectToDrId,
-    //   },
-    // });
   }
 
   get user() {
     try {
-      return JSON.parse(localStorage.user);
+      return getCacheData(true, doctorDetails.USER);
     } catch (error) {
       return {};
     }
@@ -185,7 +176,9 @@ export class SocketService {
   }
 
   close() {
-    this.socket.close();
+    try {
+      this.socket.close();
+    } catch (error) { }
   }
 
   public initSocketSupport(forceInit = false) {
@@ -194,8 +187,9 @@ export class SocketService {
     }
     if (!this.socket || forceInit) {
       this.socket = io(environment.socketURL, {
-        query: `userId=${this.userUuid}&name=${this.userName}`,
+        query: `userId=${this.userUuid}&name=${this.userName}`
       });
     }
+    this.initEvents();
   }
 }

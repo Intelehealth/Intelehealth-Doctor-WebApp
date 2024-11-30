@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { conceptIds } from 'src/config/constant';
 declare var getEncounterProviderUUID: any,
   getFromStorage: any;
 
@@ -34,28 +35,22 @@ export class DiagnosisService {
     return this.http.get(url);
   }
 
-  getDiagnosisList(term: any) {
-    const url = `${environment.baseURLCoreApp}/search.action?&term=${term}`;
+   /**
+  * Get diagnosis list
+  * @param {string} term - Search term
+  * @return {Observable<any>}
+  */
+  getDiagnosisList(term: string): Observable<any> {
+    const url = `${environment.baseURL}/concept?class=${conceptIds.conceptDiagnosisClass}&source=ICD-10-WHO&q=${term}`;
     return this.http.get(url)
     .pipe(
-      map((response: []) => {
-        this.diagnosisArray = [];
-        response.forEach((element: any) => {
-          element.concept.conceptMappings.forEach(name => {
-            if (name.conceptReferenceTerm.conceptSource.name === 'ICD-10-WHO') {
-              // const diagnosis = {
-              //   name: element.concept.preferredName,
-              //   code: name.conceptReferenceTerm.code
-              // };
-              this.diagnosisArray.push(element.concept.preferredName);
-            }
-          });
-        });
-        return this.diagnosisArray;
+      map((response: any) => {
+        return (response?.results ?? []).map((element: any) => element.display);
       })
-    );
+    );;
   }
 
+  
   isSameDoctor() {
     const providerDetails = getFromStorage("provider");
     const providerUuid = providerDetails.uuid;

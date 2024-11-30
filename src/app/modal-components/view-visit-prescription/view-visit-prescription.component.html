@@ -1,4 +1,7 @@
 <div class="title-con position-relative" mat-dialog-title>
+  <div *ngIf="!isDownloadPrescription">
+    <button class="btn_download_pdf" (click)="downloadPrescription()" data-test-id="btnDownload"><mat-icon class="align-middle">download</mat-icon><span>Download</span></button>
+  </div>
   <h6>
     {{ isDownloadPrescription ? "Intelehealth e-" : "" }}Prescription
 

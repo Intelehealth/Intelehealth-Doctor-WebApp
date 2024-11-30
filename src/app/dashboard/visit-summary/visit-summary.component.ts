@@ -22,6 +22,7 @@ import { LinkService } from 'src/app/services/link.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ChatBoxComponent } from 'src/app/modal-components/chat-box/chat-box.component';
 import { VideoCallComponent } from 'src/app/modal-components/video-call/video-call.component';
+import { visitTypes } from 'src/config/constant';
 
 export const PICK_FORMATS = {
   parse: { dateInput: { month: 'short', year: 'numeric', day: 'numeric' } },
@@ -505,7 +506,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
               if (this.aiDiagnosisPresent) {
                 this.diagnosisService.getObs(this.visit.patient.uuid, this.conceptAiDiagnosisSuggestions).subscribe((response: any) => {
                   response.results.forEach((obs: any) => {
-                    if (obs.encounter.visit.uuid === this.visit.uuid) {
+                    if (obs.encounter.visit.uuid === this.visit.uuid && obs.value) {
                       // const result = (JSON.parse(obs.value)?.data.choices[0]?.message.content.trim()).match(/```json((.|[\n\r])*)```/);
                       // this.diagnosisSuggestions = JSON.parse(result[0].replace('```json','').replace('``json','').replace('```','').replace('``','').trim()).diagnosis;
                       this.diagnosisSuggestions = JSON.parse(obs.value)?.data.choices[0]?.message.content.split('\n');
@@ -515,9 +516,9 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
                 });
                 this.diagnosisService.getObs(this.visit.patient.uuid, this.conceptAiTreatmentPlan).subscribe((response: any) => {
                   response.results.forEach((obs: any) => {
-                    if (obs.encounter.visit.uuid === this.visit.uuid) {
-                      const result = (JSON.parse(obs.value)?.data.choices[0]?.message.content.trim()).match(/```json((.|[\n\r])*)```/);
-                      this.treatmentPlan = JSON.parse(result[0].replace('```json','').replace('``json','').replace('```','').replace('``','').trim());
+                    if (obs.encounter.visit.uuid === this.visit.uuid && obs.value) {
+                      // const result = (JSON.parse(obs.value)?.data.choices[0]?.message.content.trim()).match(/```json((.|[\n\r])*)```/);
+                      this.treatmentPlan = JSON.parse(obs.value)?.data?.choices[0]?.message?.content?.split('\n');
                     }
                   });
                 });
@@ -627,26 +628,30 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     return val;
   }
 
-  getCheckUpReason(encounters: any) {
+  /**
+  * Get chief complaints and patient visit reason/summary
+  * @param {any[]} encounters - Array of encounters
+  * @return {void}
+  */
+  getCheckUpReason(encounters: any[]) {
     this.cheifComplaints = [];
     this.checkUpReasonData = [];
     encounters.forEach((enc: any) => {
-      if (enc.encounterType.display == 'ADULTINITIAL') {
+      if (enc.encounterType.display === visitTypes.ADULTINITIAL) {
         enc.obs.forEach((obs: any) => {
-          if (obs.concept.display == 'CURRENT COMPLAINT') {
-            this.currentComplaint = obs.display;
-            const currentComplaint = obs.value.split('<b>');
+          if (obs.concept.display === visitTypes.CURRENT_COMPLAINT) {
+            this.currentComplaint = obs.value;
+            const currentComplaint = this.visitService.getData(obs)?.value.split('<b>');
             for (let i = 0; i < currentComplaint.length; i++) {
               if (currentComplaint[i] && currentComplaint[i].length > 1) {
                 const obs1 = currentComplaint[i].split('<');
-                if (!obs1[0].match('Associated symptoms')) {
+                if (!obs1[0].match(visitTypes.ASSOCIATED_SYMPTOMS)) {
                   this.cheifComplaints.push(obs1[0]);
                 }
-
                 const splitByBr = currentComplaint[i].split('<br/>');
-                if (splitByBr[0].includes('Associated symptoms')) {
-                  let obj1: any = {};
-                  obj1.title = 'Associated symptoms';
+                if (splitByBr[0].includes(visitTypes.ASSOCIATED_SYMPTOMS)) {
+                  const obj1: any = {};
+                  obj1.title = visitTypes.ASSOCIATED_SYMPTOMS;
                   obj1.data = [];
                   for (let j = 1; j < splitByBr.length; j = j + 2) {
                     if (splitByBr[j].trim() && splitByBr[j].trim().length > 1) {
@@ -655,7 +660,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
                   }
                   this.checkUpReasonData.push(obj1);
                 } else {
-                  let obj1: any = {};
+                  const obj1: any = {};
                   obj1.title = splitByBr[0].replace('</b>:', '');
                   obj1.data = [];
                   for (let k = 1; k < splitByBr.length; k++) {
@@ -669,33 +674,28 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
               }
             }
           }
-          if (obs.concept.display == 'FAMILY HISTORY') {
-            this.familyHistory = obs.display;
-          }
-          if (obs.concept.display == 'PHYSICAL EXAMINATION') {
-            this.physicalExamination = obs.display;
-          }
-          if (obs.concept.display == 'MEDICAL HISTORY') {
-            this.medicalHistory = obs.display;
-          }
         });
       }
     });
   }
 
-  getPhysicalExamination(encounters: any) {
+  /**
+  * Get physical examination details
+  * @param {any[]} encounters - Array of encounters
+  * @return {void}
+  */
+  getPhysicalExamination(encounters: any[]) {
     this.physicalExaminationData = [];
     encounters.forEach((enc: any) => {
-      if (enc.encounterType.display == 'ADULTINITIAL') {
+      if (enc.encounterType.display === visitTypes.ADULTINITIAL) {
         enc.obs.forEach((obs: any) => {
-          if (obs.concept.display == 'PHYSICAL EXAMINATION') {
-            const physicalExam = obs.value.split('<b>');
+          if (obs.concept.display === 'PHYSICAL EXAMINATION') {
+            const physicalExam = this.visitService.getData(obs)?.value.replace(new RegExp('<br/>►', 'g'), '').split('<b>');
             for (let i = 0; i < physicalExam.length; i++) {
               if (physicalExam[i]) {
                 const splitByBr = physicalExam[i].split('<br/>');
-
                 if (splitByBr[0].includes('Abdomen')) {
-                  let obj1: any = {};
+                  const obj1: any = {};
                   obj1.title = splitByBr[0].replace('</b>', '').replace(':', '').trim();
                   obj1.data = [];
                   for (let k = 1; k < splitByBr.length; k++) {
@@ -705,7 +705,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
                   }
                   this.physicalExaminationData.push(obj1);
                 } else {
-                  let obj1: any = {};
+                  const obj1: any = {};
                   obj1.title = splitByBr[0].replace('</b>', '').replace(':', '').trim();
                   obj1.data = [];
                   for (let k = 1; k < splitByBr.length; k++) {
@@ -724,14 +724,19 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  getMedicalHistory(encounters: any) {
+  /**
+  * Get medical history details
+  * @param {any[]} encounters - Array of encounters
+  * @return {void}
+  */
+  getMedicalHistory(encounters: any[]) {
     this.patientHistoryData = [];
     encounters.forEach((enc: any) => {
-      if (enc.encounterType.display == 'ADULTINITIAL') {
+      if (enc.encounterType.display === visitTypes.ADULTINITIAL) {
         enc.obs.forEach((obs: any) => {
-          if (obs.concept.display == 'MEDICAL HISTORY') {
-            const medicalHistory = obs.value.split('<br/>');
-            let obj1: any = {};
+          if (obs.concept.display === visitTypes.MEDICAL_HISTORY) {
+            const medicalHistory = this.visitService.getData(obs)?.value.split('<br/>');
+            const obj1: any = {};
             obj1.title = 'Patient history';
             obj1.data = [];
             for (let i = 0; i < medicalHistory.length; i++) {
@@ -742,17 +747,25 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
             }
             this.patientHistoryData.push(obj1);
           }
-
-          if (obs.concept.display == 'FAMILY HISTORY') {
-            const familyHistory = obs.value.split('<br/>');
-            let obj1: any = {};
+          if (obs.concept.display === visitTypes.FAMILY_HISTORY) {
+            const familyHistory = this.visitService.getData(obs)?.value.split('<br/>');
+            const obj1: any = {};
             obj1.title = 'Family history';
             obj1.data = [];
             for (let i = 0; i < familyHistory.length; i++) {
               if (familyHistory[i]) {
-                const splitByColon = familyHistory[i].split(':');
-                const splitByComma = splitByColon[1].split(',');
-                obj1.data.push({ key: splitByComma[0].trim(), value: splitByComma[1] });
+                if (familyHistory[i].includes(':')) {
+                  const splitByColon = familyHistory[i].split(':');
+                  const splitByDot = splitByColon[1].trim().split("•");
+                  splitByDot.forEach(element => {
+                    if(element.trim()){
+                      const splitByComma = element.split(',');
+                      obj1.data.push({ key: splitByComma.shift().trim(), value: splitByComma.length ? splitByComma.toString().trim() : " " });
+                    }
+                  });
+                } else {
+                  obj1.data.push({ key: familyHistory[i].replace('•', '').trim(), value: null });
+                }
               }
             }
             this.patientHistoryData.push(obj1);
@@ -951,7 +964,10 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       patientName: this.patient.person.display,
       patientPersonUuid: this.patient.person.uuid,
       patientOpenMrsId: this.getPatientIdentifier('OpenMRS ID'),
-      initiator: 'dr'
+      initiator: 'dr',
+      drPersonUuid: this.provider?.person.uuid,
+      patientAge: this.patient.person.age,
+      patientGender: this.patient.person.gender,
     });
 
     this.dialogRef2.afterClosed().subscribe((res: any) => {
@@ -1078,24 +1094,22 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   }
 
   searchDiagnosis(val: any) {
-    if (val) {
-      if (val.length >= 3) {
-        this.diagnosisService.getDiagnosisList(val).subscribe(response => {
-          if (response && response.length) {
-            let data = [];
-            response.forEach(element => {
-              if (element) {
-                data.push({ name: element });
-              }
-            });
-            this.diagnosisSubject.next(data);
-          } else {
-            this.diagnosisSubject.next([]);
-          }
-        }, (error) => {
+    if (val?.length >= 3) {
+      this.diagnosisService.getDiagnosisList(val).subscribe(response => {
+        if (response && response.length) {
+          let data = [];
+          response.forEach(element => {
+            if (element) {
+              data.push({ name: element });
+            }
+          });
+          this.diagnosisSubject.next(data);
+        } else {
           this.diagnosisSubject.next([]);
-        });
-      }
+        }
+      }, (error) => {
+        this.diagnosisSubject.next([]);
+      });
     }
   }
 
@@ -1948,9 +1962,10 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
         finalDiagnosis
       ).subscribe((res: any) => {
         try {
-          const result = (res?.data.choices[0]?.message.content.trim()).match(/```json((.|[\n\r])*)```/);
+          // const result = (res?.data.choices[0]?.message.content.trim()).match(/```json((.|[\n\r])*)```/);
+          const result = res?.data?.choices[0]?.message?.content?.trim();
           if (result) {
-            this.treatmentPlan = JSON.parse(result[0].replace('```json','').replace('``json','').replace('```','').replace('``','').trim());
+            this.treatmentPlan = JSON.parse(result);
             this.encounterService.postObs({
               concept: this.conceptAiTreatmentPlan,
               person: this.visit.patient.uuid,

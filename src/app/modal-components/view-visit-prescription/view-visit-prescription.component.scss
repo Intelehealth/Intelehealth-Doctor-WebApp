@@ -223,3 +223,15 @@
   height: 50px;
   width: 150px;
 }
+
+.btn_download_pdf{
+  position: absolute;
+  color: #7F7B92;
+  border: unset;
+  background: transparent;
+  font-size: 18px;
+  
+  span{
+    display: none;
+  }
+}

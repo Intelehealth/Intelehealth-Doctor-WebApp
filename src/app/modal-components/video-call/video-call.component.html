@@ -19,12 +19,8 @@
     <div class="row">
       <div class="col p-0">
         <div class="main-container">
-          <div class="remote-con" [class.minimized]="_minimized">
-            <video
-              #remoteVideo
-              autoplay
-              [ngClass]="{ 'd-none': _remoteVideoOff }"
-            ></video>
+          <div class="remote-con" [class.minimized]="_minimized" [class.video-on]="!_remoteVideoOff">
+            <div #remoteVideo class="remote-container"></div>
             <div
               [ngClass]="{ 'd-none': !_remoteVideoOff }"
               class="video-off-container"
@@ -125,10 +121,10 @@
             </div>
           </div>
           <div class="local-con" [class.d-none]="_minimized">
-            <video #localVideo autoplay></video>
+            <div #localVideo class="local-container"></div>
             <div class="video-off-container" *ngIf="_localVideoOff">
               <img
-                src="{{ baseUrl + '/personimage/' + data.connectToDrId }}"
+                src="{{ baseUrl + '/personimage/' + data.drPersonUuid }}"
                 (error)="$event.target.src = 'assets/svgs/dr-user.svg'"
                 alt=""
               />

@@ -607,9 +607,11 @@ body.font-lato td {
   }
 }
 
+
 .vc-modal-lg {
-  width: 96%;
-  max-width: 96% !important;
+  width: auto;
+  min-width: 20%;
+  max-width: 80% !important;
 
   .mat-dialog-container {
     padding: 0px;
@@ -631,6 +633,33 @@ body.font-lato td {
   .mat-dialog-actions {
     margin: 0px;
     border-top: 2px solid rgba(178, 175, 190, 0.2);
+  }
+}
+
+@media (max-width: 768px) {
+  .vc-modal-lg {
+    width: 96%;
+    min-width: auto;
+    max-width: 96% !important;
+  }
+
+  .intel-accordion-con {
+    .mat-expansion-panel {
+      padding: 10px !important;
+      margin-bottom: 10px !important;
+    }
+  }
+
+  .mat-expansion-indicator {
+    padding: 1rem !important;
+  }
+
+  .mat-tab-label {
+    padding: 0px 10px !important;
+  }
+
+  .mat-paginator-range-label{
+    margin: 0 10px 0 0 !important;
   }
 }
 

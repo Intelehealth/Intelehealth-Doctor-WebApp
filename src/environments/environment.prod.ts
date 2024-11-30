@@ -7,6 +7,8 @@ export const environment = {
   mindmapURL: `${window.location.protocol}//${window.location.hostname}:3004/api`,
   notificationURL: `${window.location.protocol}//${window.location.hostname}:3004/notification`,
   socketURL: `${window.location.protocol}//${window.location.hostname}:3004`,
+  webrtcSdkServerUrl: `wss://${window.location.hostname}:9090`,
+  webrtcTokenServerUrl: `${window.location.protocol}//${window.location.hostname}:3000`,
   captchaSiteKey: "6LdowFQmAAAAADsQdI3gtUM88w4u5wV5uQLkvoSo",
   firebase: {
     /* apiKey: "AIzaSyC5cRqdDtLWwJpz7WY1Ekpx7rbawbG1CA8",

@@ -101,7 +101,7 @@ export class CoreService {
   }
 
   openVideoCallModal(data: any): MatDialogRef<VideoCallComponent> {
-    const dialogRef = this.dialog.open(VideoCallComponent, { panelClass: "vc-modal-lg", data, hasBackdrop: false } );
+    const dialogRef = this.dialog.open(VideoCallComponent, { panelClass: "vc-modal-lg", data, hasBackdrop: true, disableClose: true });
     return dialogRef;
   }
 
