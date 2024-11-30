@@ -1,0 +1,77 @@
+.intel-card{
+  width: 100%;
+}
+
+
+table {
+  width: 100%;
+  font-family: DM Sans;
+}
+
+th.mat-header-cell {
+  border: none;
+  font-size: 14px !important;
+  font-weight: 700;
+  color: var(--color-gray);
+  height: 21px;
+}
+
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+  border: none;
+  min-width: 60px;
+  padding-right: 24px;
+  white-space: nowrap;
+}
+
+td.mat-cell {
+  font-size: 16px;
+}
+
+tr.mat-row, tr.mat-footer-row {
+  height: 88px;
+  border-radius: 8px;
+}
+
+tr.mat-row:nth-child(even){
+  background: #F7F7FA;
+}
+
+tr.mat-row.selected {
+  background: #E6FFF3;
+}
+
+td:first-child,
+th:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+td:last-child,
+th:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.intelehealth-card {
+  background: var(--color-white);
+  box-shadow: 0px 4px 24px rgba(31, 28, 58, 0.08);
+  border-radius: 20px;
+  font-family: DM Sans;
+
+  .mat-card-title {
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-lightGray);
+  }
+
+  .intelehealth-card-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    h6 {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--color-black);
+    }
+  }
+
+}
+

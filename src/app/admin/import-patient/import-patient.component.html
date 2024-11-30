@@ -1,0 +1,118 @@
+<div class="card intel-card">
+  <div class="card-body">
+    <form
+      [formGroup]="searchMemberForm"
+      (ngSubmit)="onSubmit()"
+      class="facility-form"
+    >
+      <div class="form-group">
+        <ng-container *ngFor="let field of formFields">
+          <div class="input-field-group">
+            <label>{{ field.label | translate }}</label>
+            <ng-container [ngSwitch]="field.type">
+              <input
+                *ngSwitchCase="'text'"
+                [type]="field.type"
+                [formControlName]="field.controlName"
+                [placeholder]="field.placeholder | translate"
+                class="form-control"
+              />
+              <select
+                *ngSwitchCase="'select'"
+                [formControlName]="field.controlName"
+                class="form-control"
+              >
+                <option value="">
+                  {{ "Select " + field.label | translate }}
+                </option>
+                <option
+                  *ngFor="let option of field.options"
+                  [value]="option.value"
+                >
+                  {{ option.label | translate }}
+                </option>
+              </select>
+            </ng-container>
+            <small
+              class="text-danger"
+              *ngIf="f[field.controlName].touched && f[field.controlName].invalid"
+            >
+              {{ "Invalid " + field.label | translate }}
+            </small>
+          </div>
+        </ng-container>
+      </div>
+      <div class="form-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="searchMemberForm.invalid"
+        >
+          {{ "Search" | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="card intel-card">
+  <div
+    class="card-body"
+    *ngIf="searchPatientList && searchPatientList.length > 0; else noModules"
+  >
+    <table mat-table [dataSource]="searchPatientList" class="full-width-table">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>{{ "SL" | translate }}</th>
+        <td mat-cell *matCellDef="let module; let i = index">{{ i + 1 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>{{ "Member Name" | translate }}</th>
+        <td mat-cell *matCellDef="let module">{{ module.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="identifier">
+        <th mat-header-cell *matHeaderCellDef>{{ "Member ID" | translate }}</th>
+        <td mat-cell *matCellDef="let module">{{ module.identifier }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="telecom">
+        <th mat-header-cell *matHeaderCellDef>{{ "Mobile Number" | translate }}</th>
+        <td mat-cell *matCellDef="let module">{{ module.telecom }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="birthDate">
+        <th mat-header-cell *matHeaderCellDef>{{ "DOB" | translate }}</th>
+        <td mat-cell *matCellDef="let module">{{ module.birthDate | date }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="gender">
+        <th mat-header-cell *matHeaderCellDef>{{ "Gender" | translate }}</th>
+        <td mat-cell *matCellDef="let module">{{ module.gender | titlecase }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>{{ "Actions" | translate }}</th>
+        <td mat-cell *matCellDef="let module">
+          <button  mat-raised-button
+          color="primary" (click)="importPatient(module.id)">
+            {{ "Import" | translate }}
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+
+  <ng-template #noModules>
+    <mat-card class="no-modules-card">
+      <mat-card-content>
+        {{ "No modules available" | translate }}
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
+</div>

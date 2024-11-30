@@ -1,8 +1,8 @@
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { tr } from 'date-fns/locale';
 import { Observable } from 'rxjs/internal/Observable';
+import { AddFacilityDialogComponent } from 'src/app/admin/facility-configuration/add-facility-dialog/add-facility-dialog.component';
 import { AddLicenseKeyComponent } from 'src/app/modal-components/add-license-key/add-license-key.component';
 import { AppointmentDetailMonthComponent } from 'src/app/modal-components/appointment-detail-month/appointment-detail-month.component';
 import { AppointmentDetailComponent } from 'src/app/modal-components/appointment-detail/appointment-detail.component';
@@ -30,6 +30,7 @@ import { VcallOverlayComponent } from 'src/app/modal-components/vcall-overlay/vc
 import { VideoCallComponent } from 'src/app/modal-components/video-call/video-call.component';
 import { ViewVisitPrescriptionComponent } from 'src/app/modal-components/view-visit-prescription/view-visit-prescription.component';
 import { ViewVisitSummaryComponent } from 'src/app/modal-components/view-visit-summary/view-visit-summary.component';
+
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +65,15 @@ export class CoreService {
   */
   openAddLicenseKeyModal(data: any): Observable<any> {
     const dialogRef = this.dialog.open(AddLicenseKeyComponent, { panelClass: 'modal-md', data, hasBackdrop: true, disableClose: true });
+    return dialogRef.afterClosed();
+  }
+  /**
+  * Open add license modal
+  * @param {any} data - Dialog data
+  * @return {Observable<any>} - Dialog result
+  */
+  openAddFacilityModuleModal(data: any): Observable<any> {
+    const dialogRef = this.dialog.open(AddFacilityDialogComponent, { panelClass: 'modal-md', data, hasBackdrop: true, disableClose: true });
     return dialogRef.afterClosed();
   }
 
@@ -299,6 +309,8 @@ export class CoreService {
     const dialogRef = this.dialog.open(ImageCropComponent, { panelClass: 'modal-md', data, hasBackdrop: true, disableClose: true });
     return dialogRef;
   }
+
+
 
   /**
   * Convert blob to base64

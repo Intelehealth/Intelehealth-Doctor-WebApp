@@ -1,18 +1,20 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DiagnosisService } from 'src/app/services/diagnosis.service';
-import { VisitService } from 'src/app/services/visit.service';
-import { environment } from 'src/environments/environment';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import { ProfileService } from 'src/app/services/profile.service';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Observable, Subscription } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
-import { doctorDetails, visitTypes } from 'src/config/constant';
 import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel } from 'src/app/model/model';
+import { DiagnosisService } from 'src/app/services/diagnosis.service';
+import { EncounterService } from 'src/app/services/encounter.service';
+import { ProfileService } from 'src/app/services/profile.service';
+import { VisitEncounterPatientOrderService } from 'src/app/services/visit-encounter-patient-order.service';
+import { VisitService } from 'src/app/services/visit.service';
+import { conceptIds, doctorDetails, visitTypes } from 'src/config/constant';
+import { environment } from 'src/environments/environment';
+import { logo, precription } from "../../utils/base64";
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
-import { precription, logo } from "../../utils/base64"
 
 @Component({
   selector: 'app-view-visit-prescription',
@@ -43,6 +45,9 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   referrals: ReferralModel[] = [];
   followUp: FollowUpDataModel;
   consultedDoctor: any;
+  testsList: string[] = [];
+  testResultList: any[] = [];
+  referralList: any[] = [];
 
   conceptDiagnosis = '537bb20d-d09d-4f88-930b-cc45c7d662df';
   conceptNote = '162169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
@@ -64,9 +69,71 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<ViewVisitPrescriptionComponent>,
     private visitService: VisitService,
     private profileService: ProfileService,
+    private encounterService: EncounterService,
     private diagnosisService: DiagnosisService,
+    private visitEncounterService: VisitEncounterPatientOrderService,
     private translateService: TranslateService) { }
-
+  
+    getOrderList() {
+      this.visitEncounterService
+        .fetchAndProcessData(this.visit.patient.uuid, this.visit.uuid)
+        .then((data) => {
+          this.medicines = [];
+          // this.existingDiagnosis = [];
+          if (data?.drugorder) {
+            this.medicines = data.drugorder.map((item) => {
+              const name = item.apiResponse.drug.display;
+              const strength = item.apiResponse.doseUnits.uuid;
+              const days = item.apiResponse.duration;
+              const [timing, remark] = item.apiResponse.dosingInstructions
+                .split(":")
+                .map((item) => item.trim());
+              return {
+                drug: name,
+                strength,
+                days,
+                timing,
+                remark,
+                uuid: item.apiResponse.uuid,
+              };
+            });
+          }
+          if (data?.testorder) {
+            this.tests = data.testorder.map((item) => {
+              // const name = item.apiResponse.concept.uuid;
+              // const [type, status] = item.apiResponse.instructions
+              //   .split("&")
+              //   .map((item) => item.trim());
+              return {
+                // diagnosisName: name,
+                // diagnosisType: type,
+                // diagnosisStatus: status,
+                value: item.apiResponse.concept.uuid,
+                uuid: item.apiResponse.uuid,
+              };
+            });
+          }
+        });
+    }
+  
+    getReferralList() {
+      this.visitEncounterService.getReferralList(this.visit.patient.uuid).subscribe((referrals) => { 
+       this.referralList= referrals
+      })
+    }
+  
+    fetchTestList(): void {
+      this.encounterService.getTestList().subscribe((response) => {
+       console.log(response.answers)
+        this.testsList = response.answers;
+      });
+    }
+  
+    fetchTestResultList(patientId:string): void {
+      this.visitEncounterService.getTestResultList(patientId).subscribe((response) => {
+        this.testResultList = response;
+      });
+    }
   ngOnInit(): void {
     this.getVisit(this.isDownloadPrescription ? this.visitId : this.data.uuid);
     pdfMake.fonts = {
@@ -78,8 +145,10 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       }
     };
     this.eventsSubscription = this.download?.subscribe((val) => { if (val) { this.downloadPrescription(); } });
+    this.fetchTestList();
   }
 
+ 
   /**
   * Get visit
   * @param {string} uuid - Visit uuid
@@ -89,9 +158,12 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     this.visitService.fetchVisitDetails(uuid).subscribe((visit: VisitModel) => {
       if (visit) {
         this.visit = visit;
+        this.fetchTestResultList(visit.patient.uuid )
         this.checkVisitStatus(visit.encounters);
         this.visitService.patientInfo(visit.patient.uuid).subscribe((patient: PatientModel) => {
           if (patient) {
+            this.getReferralList()
+            this.getOrderList();
             this.patient = patient;
             this.clinicName = visit.location.display;
             this.getVisitProvider(visit.encounters);
@@ -103,7 +175,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               this.checkIfNotePresent();
               this.checkIfMedicationPresent();
               this.checkIfAdvicePresent();
-              this.checkIfTestPresent();
+              // this.checkIfTestPresent();
               this.checkIfReferralPresent();
               this.checkIfFollowUpPresent();
             }
@@ -228,22 +300,25 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   * @returns {void}
   */
   checkIfMedicationPresent() {
-    this.medicines = [];
-    this.diagnosisService.getObs(this.visit.patient.uuid, this.conceptMed).subscribe((response: ObsApiResponseModel) => {
+    // this.medicines = [];
+    this.diagnosisService.getObs(this.visit.patient.uuid, conceptIds.conceptMed).subscribe((response: ObsApiResponseModel) => {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this.visit.uuid) {
-          if (obs.value.includes(':')) {
-            this.medicines.push({
-              drug: obs.value?.split(':')[0],
-              strength: obs.value?.split(':')[1],
-              days: obs.value?.split(':')[2],
-              timing: obs.value?.split(':')[3],
-              remark: obs.value?.split(':')[4],
-              uuid: obs.uuid
-            });
-          } else {
+          if (!obs.value.includes(":")) {
             this.additionalInstructions.push(obs);
           }
+          // if (obs.value.includes(':')) {
+          //   this.medicines.push({
+          //     drug: obs.value?.split(':')[0],
+          //     strength: obs.value?.split(':')[1],
+          //     days: obs.value?.split(':')[2],
+          //     timing: obs.value?.split(':')[3],
+          //     remark: obs.value?.split(':')[4],
+          //     uuid: obs.uuid
+          //   });
+          // } else {
+          //   this.additionalInstructions.push(obs);
+          // }
         }
       });
     });

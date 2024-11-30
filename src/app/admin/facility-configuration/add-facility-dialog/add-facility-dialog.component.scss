@@ -1,0 +1,58 @@
+.facility-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.input-field-group input,
+.input-field-group select,
+.ng-select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.d-flex {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-btn {
+  background: #ccc;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.confirm-btn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.confirm-btn:disabled {
+  background: #aaa;
+}
+
+.visit-select{
+  width: 100%;
+}
+
+.dialog-content{
+  padding-bottom: 2%;
+}

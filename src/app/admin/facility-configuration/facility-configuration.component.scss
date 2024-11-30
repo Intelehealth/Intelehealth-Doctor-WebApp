@@ -1,0 +1,168 @@
+
+.select-key-wrapper {
+    font-family: DM Sans;
+
+    label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    span {
+      font-size: 16px;
+    }
+  }
+
+  ::ng-deep .ng-select.ayu-select {
+    width: fit-content;
+  }
+
+  ::ng-deep .ng-select.ayu-select.ng-select-single .ng-select-container {
+    height: 48px;
+    width: 236px;
+    background: var(--color-offWhite);
+    border: 1px solid rgba(178, 175, 190, 0.2);
+    border-radius: 8px;
+    box-shadow: none;
+
+    .ng-value-container .ng-input {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  ::ng-deep .ng-select.ayu-select.ng-select-single.ng-select-container:hover {
+    box-shadow: none;
+    outline: none;
+  }
+
+  .action-btn.sm-btn {
+    height: 30px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: normal;
+  }
+
+  .action-btn {
+    height: 48px;
+    background: var(--color-white);
+    border: 1.33px solid var(--color-lightGray);
+    border-radius: 8px;
+    color: var(--color-darkBlue);
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 20px;
+    width: fit-content;
+  }
+
+  .action-btn.bg-blue {
+    background: var(--color-lightGray) !important;
+  }
+
+  input[type=text].search-input {
+    height: 48px;
+    border: 0.770833px solid rgba(178, 175, 190, 0.2);
+    border-radius: 8px;
+    padding: 14px 36px 14px 16px;
+    outline: none;
+    font-size: 16px;
+    background: var(--color-offWhite) url(../../../assets/svgs/search-icon.svg);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: 95% center;
+  }
+
+  .mat-elevation-z8 {
+    box-shadow: none;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    font-family: DM Sans;
+  }
+
+  th.mat-header-cell {
+    border: none;
+    font-size: 14px !important;
+    font-weight: 700;
+    color: var(--color-gray);
+    height: 21px;
+  }
+
+  th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+    border: none;
+    min-width: 60px;
+    padding-right: 24px;
+    white-space: nowrap;
+  }
+
+  td.mat-cell {
+    font-size: 16px;
+  }
+
+  tr.mat-row, tr.mat-footer-row {
+    height: 88px;
+    border-radius: 8px;
+  }
+
+  tr.mat-row:nth-child(even){
+    background: #F7F7FA;
+  }
+
+  tr.mat-row.selected {
+    background: #E6FFF3;
+  }
+
+  td:first-child,
+  th:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+
+  td:last-child,
+  th:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+
+  .intelehealth-card {
+    background: var(--color-white);
+    box-shadow: 0px 4px 24px rgba(31, 28, 58, 0.08);
+    border-radius: 20px;
+    font-family: DM Sans;
+
+    .mat-card-title {
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-lightGray);
+    }
+
+    .intelehealth-card-title {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      h6 {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--color-black);
+      }
+    }
+
+    .add-facility-button-container {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .card-header {
+      padding: 16px;
+      border-bottom: 1px solid #ccc;
+    }
+    .full-width-table {
+      width: 100%;
+    }
+    .action-buttons button {
+      margin-right: 8px;
+    }
+
+  }
+
+

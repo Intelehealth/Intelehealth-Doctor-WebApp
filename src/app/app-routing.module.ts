@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { MainContainerComponent } from './main-container/main-container.component';
-import { RouteAuthGuard } from './core/guards/route-auth.guard';
 import { NgxPermissionsGuard } from 'ngx-permissions';
+import { RouteAuthGuard } from './core/guards/route-auth.guard';
+import { MainContainerComponent } from './main-container/main-container.component';
 
 const routes: Routes = [
   {
@@ -65,6 +65,35 @@ const routes: Routes = [
           breadcrumb: 'Help & Support'
         },
         loadChildren: () => import('./help-and-support/help-and-support.module').then(m => m.HelpAndSupportModule)
+      },
+      {
+        path: 'sync-module-configuration',
+        loadChildren: () => import('./admin/sync-module-configuration/sync-module-configuration.module').then(m => m.SyncModuleConfigurationModule),
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          breadcrumb: 'Sync module configuration', permissions: {
+            only: ['ORGANIZATIONAL: SYSTEM ADMINISTRATOR'],
+            redirectTo: '/dashboard'
+          }
+        }
+      },
+      {
+        path: 'import-patient',
+        loadChildren: () => import('./admin/import-patient/import-patient.module').then(m => m.ImportPatientModule),
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          breadcrumb: 'Import Patient', permissions: {
+            only: ['ORGANIZATIONAL: SYSTEM ADMINISTRATOR'],
+            redirectTo: '/dashboard'
+          }
+        }
+      },
+      {
+        path: 'facility-module-configuration',
+        data: {
+          breadcrumb: 'Facility module configuration'
+        },
+        loadChildren: () => import('./admin/facility-configuration/facility-configuration.module').then(m => m.FacilityConfigurationModule)
       },
       {
         path: 'admin',

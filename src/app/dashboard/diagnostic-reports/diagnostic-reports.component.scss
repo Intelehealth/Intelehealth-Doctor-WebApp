@@ -1,0 +1,94 @@
+.table-wrapper {
+    max-height: 400px; /* Adjust as necessary */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--color-white);
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    font-family: DM Sans, sans-serif;
+    border-collapse: collapse;
+}
+
+th.mat-header-cell,
+td.mat-cell {
+    padding: 12px 20px;
+    font-size: 16px;
+    color: var(--color-darkGray);
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+th.mat-header-cell {
+    background-color: var(--color-lightGray);
+    font-weight: bold;
+}
+
+td.mat-cell {
+    background-color: var(--color-offWhite);
+    border-radius: 8px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+tr.mat-row:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+tr.mat-row:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+tr.mat-row.selected {
+    background-color: #e6fff3;
+}
+
+td:first-child,
+th:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+td:last-child,
+th:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.mat-elevation-z8 {
+    box-shadow: none;
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Optional Action Button Styles */
+.action-btn {
+    background-color: var(--color-lightGray);
+    color: var(--color-darkBlue);
+    border: 1px solid var(--color-lightGray);
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background-color 0.3s, border-color 0.3s;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.action-btn:hover {
+    background-color: var(--color-darkBlue);
+    color: white;
+    border-color: var(--color-darkBlue);
+}
+
+.action-btn.sm-btn {
+    height: 30px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: normal;
+}

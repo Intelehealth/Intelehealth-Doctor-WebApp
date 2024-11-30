@@ -1,0 +1,102 @@
+<div class="card intel-card">
+  <div class="card-header">
+    <div class="add-facility-button-container">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openAddFacilityDialog()"
+      >
+        {{ "Add New Facility" | translate }}
+      </button>
+    </div>
+  </div>
+  <div class="card-body" *ngIf="modules?.length; else noModules">
+    <table mat-table [dataSource]="modules" class="full-width-table">
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>{{ "ID" | translate }}</th>
+        <td mat-cell *matCellDef="let module">{{ module.id }}</td>
+      </ng-container>
+
+      <!-- Facility Name Column -->
+      <ng-container matColumnDef="facilityName">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ "Facility Name" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let module">{{ module.facilityName }}</td>
+      </ng-container>
+
+      <!-- Prescription API Column -->
+      <ng-container matColumnDef="prescriptionApi">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ "Prescription Api" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let module">{{ module.prescriptionApi }}</td>
+      </ng-container>
+
+      <!-- Appointment API Column -->
+      <ng-container matColumnDef="appointmentApi">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ "Appointment Api" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let module">{{ module.appointmentApi }}</td>
+      </ng-container>
+
+      <!-- Action Column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>{{ "Action" | translate }}</th>
+        <td mat-cell *matCellDef="let module">
+          <div
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
+              justify-content: left;
+            "
+          >
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="openEditFacilityDialog(module)"
+            >
+              {{ "Edit" | translate }}
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Table Header and Rows -->
+      <tr
+        mat-header-row
+        *matHeaderRowDef="[
+          'id',
+          'facilityName',
+          'prescriptionApi',
+          'appointmentApi',
+          'action'
+        ]"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="
+          let row;
+          columns: [
+            'id',
+            'facilityName',
+            'prescriptionApi',
+            'appointmentApi',
+            'action'
+          ]
+        "
+      ></tr>
+    </table>
+  </div>
+
+  <ng-template #noModules>
+    <mat-card class="no-modules-card">
+      <mat-card-content>{{
+        "No modules available" | translate
+      }}</mat-card-content>
+    </mat-card>
+  </ng-template>
+</div>

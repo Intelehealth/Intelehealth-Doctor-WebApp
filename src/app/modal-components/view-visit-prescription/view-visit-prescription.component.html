@@ -87,6 +87,77 @@
           </div>
         </div>
       </div>
+      <ng-container *ngIf="testResultList.length">
+        <div>
+          <div class="intel-accordion-title d-flex align-items-center mb-3">
+            <img src="assets/svgs/test.svg" alt="" width="44px" />
+            <h1 class="mb-0 ml-2">{{'Test History'|translate}}</h1>
+          </div>
+          <div class="table-responsive medication-con">
+            <table class="table table-fixed">
+              <thead>
+                <tr>
+                  <th scope="col" class="col-2">Test Name</th>
+                  <th scope="col" class="col-2">Value</th>
+                  <th scope="col" class="col-2">Result Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let tr of testResultList; let i = index">
+                  <td class="col-2">
+                    {{tr.test_name}}
+                  </td>  
+                  <td class="col-2">
+                    {{tr.value}}
+                  </td>
+                  <td class="col-2">
+                    {{ tr.result_date | date: 'MMMM d, y, h:mm a' }}
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="referralList.length">
+        <div>
+          <div class="intel-accordion-title d-flex align-items-center mb-3">
+            <img src="assets/svgs/referral.svg" alt="" width="44px" />
+            <h1 class="mb-0 ml-2">{{'Referral List'|translate}}</h1>
+          </div>
+          <div class="table-responsive medication-con">
+            <table class="table table-fixed">
+              <thead>
+                <tr>
+                  <th scope="col" class="col-2">Patient Name</th>
+                  <th scope="col" class="col-2">Gender</th>
+                  <th scope="col" class="col-2">Referral Date</th>
+                  <th scope="col" class="col-2">Referral Text</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let tr of referralList; let i = index">
+                  <td class="col-2">
+                    {{tr.patientName}}
+                  </td>
+                  <td class="col-2">
+                    {{tr.gender}}
+                  </td>
+                  <td class="col-2">
+                    {{ tr.referDate | date: 'MMMM d, y, h:mm a' }}
+                  </td>
+                  <td class="col-2">
+                    {{tr.referText}}
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </ng-container>
       <div class="row">
         <div class="col-md-12 px-3 mb-3">
           <div class="data-section">
@@ -381,21 +452,23 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th scope="col">{{'Drug name'|translate}}</th>
-                      <th scope="col">{{'Strength'|translate}}</th>
-                      <th scope="col">{{'No. of days'|translate}}</th>
-                      <th scope="col">{{'Timing'|translate}}</th>
-                      <th scope="col">{{'Remarks'|translate}}</th>
+                      <th scope="col" class="col-2">{{'Drug name'|translate}}</th>
+                      <th scope="col" class="col-2">{{'Type'|translate}}</th>
+                      <th scope="col" class="col-2">{{'No. of days'|translate}}</th>
+                      <th scope="col" class="col-2">{{'Timing'|translate}}</th>
+                      <th scope="col" class="col-2">{{'Remarks'|translate}}</th>
+                      <th scope="col" class="col-auto"></th>
                     </tr>
                   </thead>
                   <tbody>
                     <ng-container *ngIf="medicines.length; else noMedicines">
                       <tr *ngFor="let m of medicines; let i = index">
-                        <td>{{ m.drug }}</td>
-                        <td>{{ m.strength }}</td>
-                        <td>{{ m.days }}</td>
-                        <td>{{ m.timing }}</td>
-                        <td>{{ m.remark }}</td>
+                        <td class="col-2">{{ m.drug }}</td>
+                        <td class="col-2">{{ visitEncounterService.getOrderTypeDisplay(drugStrengthUnits,m.strength)
+                          }}</td>
+                        <td class="col-2">{{ m.days }}</td>
+                        <td class="col-2">{{ m.timing }}</td>
+                        <td class="col-2">{{ m.remark }}</td>
                       </tr>
                     </ng-container>
                     <ng-template #noMedicines>
@@ -484,8 +557,8 @@
                   <div
                     class="d-flex justify-content-between align-items-center"
                   >
-                    <span>{{ t.value }}</span>
-                  </div>
+                  <span>{{ visitEncounterService.getOrderTypeDisplay(testsList,t.value) }}</span>
+                </div>
                 </li>
               </ul>
               <ng-template #noTests>

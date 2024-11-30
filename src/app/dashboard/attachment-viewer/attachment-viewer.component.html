@@ -1,0 +1,41 @@
+<div class="file-preview-dialog">
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+    <mat-dialog-content class="file-preview-content">
+      <div class="preview-container">
+        <ng-container [ngSwitch]="data.contentType">
+          <!-- PDF Preview -->
+          <iframe
+            *ngSwitchCase="'application/pdf'"
+            [src]="data.url | safeUrl"
+            class="preview-frame"
+            title="PDF Preview"
+          ></iframe>
+  
+          <!-- Video Preview -->
+          <video
+            *ngSwitchCase="'video/mp4'"
+            [src]="data.url | safeUrl"
+            controls
+            class="preview-video"
+          ></video>
+  
+          <!-- Image Preview -->
+          <img
+            *ngSwitchCase="'image/jpeg'"
+            [src]="data.url | safeUrl"
+            alt="Image Preview"
+            class="preview-image"
+          />
+  
+          <!-- Fallback -->
+          <div *ngSwitchDefault class="unsupported-format">
+            <p>Unsupported file format</p>
+          </div>
+        </ng-container>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button mat-dialog-close class="close-btn">Close</button>
+    </mat-dialog-actions>
+  </div>
+  
