@@ -2002,7 +2002,6 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   */
   getImagesBySection(section: string): Array<string> {
     const images = this.eyeImages.filter((o: { section: string; }) => o.section?.toLowerCase() === section?.toLowerCase())
-    console.log("images", images)
     return images;
   }
 
