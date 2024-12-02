@@ -32,6 +32,7 @@
               "src/assets",
               "src/manifest.webmanifest",
               "src/ngsw-worker.js",
+              "src/custom-service-worker.js",
               "src/ngsw.json",
               "src/js/util.js"
             ],

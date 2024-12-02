@@ -216,7 +216,7 @@
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    var UpdateCacheStatus = /*@__PURE__*/ (function (UpdateCacheStatus) {
+    const UpdateCacheStatus = /*@__PURE__*/ (function (UpdateCacheStatus) {
         UpdateCacheStatus[UpdateCacheStatus["NOT_CACHED"] = 0] = "NOT_CACHED";
         UpdateCacheStatus[UpdateCacheStatus["CACHED_BUT_UNUSED"] = 1] = "CACHED_BUT_UNUSED";
         UpdateCacheStatus[UpdateCacheStatus["CACHED"] = 2] = "CACHED";
@@ -305,7 +305,7 @@
     function rol32(a, count) {
         return (a << count) | (a >>> (32 - count));
     }
-    var Endian = /*@__PURE__*/ (function (Endian) {
+    const Endian = /*@__PURE__*/ (function (Endian) {
         Endian[Endian["Little"] = 0] = "Little";
         Endian[Endian["Big"] = 1] = "Big";
         return Endian;
@@ -744,7 +744,6 @@
                         // hash expected. This could be because the HTTP cache got in the way and returned stale
                         // data, or because the version on the server really doesn't match. A cache-busting
                         // request will differentiate these two situations.
-                        // TODO: handle case where the URL has parameters already (unlikely for assets).
                         const cacheBustReq = this.adapter.newRequest(this.cacheBust(req.url));
                         const cacheBustedResult = yield this.safeFetch(cacheBustReq);
                         // If the response was unsuccessful, there's nothing more that can be done.
@@ -1109,7 +1108,6 @@
                     // Writing lru cache table failed. This could be a result of a full storage.
                     // Continue serving clients as usual.
                     this.debugHandler.log(err, `DataGroup(${this.config.name}@${this.config.version}).syncLru()`);
-                    // TODO: Better detect/handle full storage; e.g. using
                     // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
                 }
             });
@@ -1270,13 +1268,11 @@
                         // Saving the API response failed. This could be a result of a full storage.
                         // Since this data is cached lazily and temporarily, continue serving clients as usual.
                         this.debugHandler.log(err, `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${req.url}, status: ${res.status})`);
-                        // TODO: Better detect/handle full storage; e.g. using
                         // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
                     }
                 }
                 catch (_a) {
                     // Request failed
-                    // TODO: Handle this error somehow?
                 }
             });
         }
@@ -1304,7 +1300,6 @@
                     }
                     lru.remove(req.url);
                     yield this.clearCacheForUrl(req.url);
-                    // TODO: avoid duplicate in event of network timeout, maybe.
                     yield this.syncLru();
                 }
                 return null;
@@ -1332,7 +1327,6 @@
                         yield this.clearCacheForUrl(evictedUrl);
                     }
                 }
-                // TODO: evaluate for possible race conditions during flaky network periods.
                 // Mark this resource as having been accessed recently. This ensures it won't be evicted
                 // until enough other resources are requested that it falls off the end of the LRU chain.
                 lru.accessed(req.url);
@@ -1854,7 +1848,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
         'actions', 'badge', 'body', 'data', 'dir', 'icon', 'image', 'lang', 'renotify',
         'requireInteraction', 'silent', 'tag', 'timestamp', 'title', 'vibrate'
     ];
-    var DriverReadyState = /*@__PURE__*/ (function (DriverReadyState) {
+    let DriverReadyState = /*@__PURE__*/ (function (DriverReadyState) {
         // The SW is operating in a normal mode, responding to all traffic.
         DriverReadyState[DriverReadyState["NORMAL"] = 0] = "NORMAL";
         // The SW does not have a clean installation of the latest version of the app, but older
@@ -2006,7 +2000,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             // `mode: 'same-origin'`.
             // This is likely a bug in Chrome DevTools. Avoid handling such requests.
             // (See also https://github.com/angular/angular/issues/22362.)
-            // TODO(gkalpak): Remove once no longer necessary (i.e. fixed in Chrome DevTools).
             if (req.cache === 'only-if-cached' && req.mode !== 'same-origin') {
                 // Log the incident only the first time it happens, to avoid spamming the logs.
                 if (!this.loggedInvalidOnlyIfCachedRequest) {
@@ -2377,7 +2370,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                             yield this.updateClient(client);
                             appVersion = this.lookupVersionByHash(this.latestHash, 'assignVersion');
                         }
-                        // TODO: make sure the version is valid.
                         return appVersion;
                     }
                     else {
@@ -2482,7 +2474,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                         yield this.versionFailed(appVersion, err);
                     }
                 });
-                // TODO: better logic for detecting localhost.
                 if (this.scope.registration.scope.indexOf('://localhost') > -1) {
                     return initialize();
                 }
@@ -2501,7 +2492,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                 const affectedClients = Array.from(this.clientVersionMap.entries())
                     .filter(([clientId, hash]) => hash === brokenHash)
                     .map(([clientId]) => clientId);
-                // TODO: notify affected apps.
                 // The action taken depends on whether the broken manifest is the active (latest) or not.
                 // If so, the SW cannot accept new clients, but can continue to service old ones.
                 if (this.latestHash === brokenHash) {

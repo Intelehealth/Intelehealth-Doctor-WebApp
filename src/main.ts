@@ -7,8 +7,5 @@ if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule).then(() => {
-  // if ('serviceWorker' in navigator && environment.production) {
-  //   navigator.serviceWorker.register('/intelehealth/ngsw-worker.js');
-  // }
-}).catch(err => console.error(err));
+platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err));
