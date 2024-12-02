@@ -403,15 +403,25 @@
                             </div>
                           </div>
                         </li>
-                        <li *ngIf="eyeImages.length">
+                        <li *ngIf="getImagesBySection(pe.title).length">
                           <div class="list-item">
                             <label>Eye images</label>
                             <div class="list-item-content">
                               <div class="eye-images-con">
-                                <div class="eye-item" *ngFor="let e of eyeImages; let x = index">
-                                  <img [src]="e.src" alt="" />
-                                  <div class="cover" (click)="previewEyeImages(x)">
-                                    <img src="assets/svgs/maximize.svg" alt="" />
+                                <div
+                                  class="eye-item"
+                                  *ngFor="let e of getImagesBySection(pe.title); let x = index"
+                                >
+                                  <img [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
+                                  <div
+                                    class="cover"
+                                    (click)="previewEyeImages(x,pe.title)"
+                                    [attr.data-test-id]="'etValue'+x+'PhysicalExam'"
+                                  >
+                                    <img
+                                      src="assets/svgs/maximize.svg"
+                                      alt=""
+                                    />
                                   </div>
                                 </div>
                               </div>
@@ -425,6 +435,31 @@
                       <ul class="items-list pt-0">
                         <li *ngFor="let pei of pe.data">
                           {{ pei.key }}
+                        </li>
+                        <li *ngIf="getImagesBySection(pe.title).length">
+                          <div class="list-item">
+                            <label>Eye images</label>
+                            <div class="list-item-content">
+                              <div class="eye-images-con">
+                                <div
+                                  class="eye-item"
+                                  *ngFor="let e of getImagesBySection(pe.title); let x = index"
+                                >
+                                  <img [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
+                                  <div
+                                    class="cover"
+                                    (click)="previewEyeImages(x,pe.title)"
+                                    [attr.data-test-id]="'etValue'+x+'PhysicalExam'"
+                                  >
+                                    <img
+                                      src="assets/svgs/maximize.svg"
+                                      alt=""
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </li>
                       </ul>
                     </ng-container>

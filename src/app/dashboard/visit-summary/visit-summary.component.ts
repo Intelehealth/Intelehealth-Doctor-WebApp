@@ -780,15 +780,15 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.diagnosisService.getObs(visit.patient.uuid, this.conceptPhysicalExamination).subscribe((response) => {
       response.results.forEach((obs: any) => {
         if (obs.encounter !== null && obs.encounter.visit.uuid === visit.uuid) {
-          const data = { src: `${this.baseURL}/obs/${obs.uuid}/value` };
+          const data = { src: `${this.baseURL}/obs/${obs.uuid}/value`, section: obs.comment };
           this.eyeImages.push(data);
         }
       });
     });
   }
 
-  previewEyeImages(index: number) {
-    this.coreService.openImagesPreviewModal({ startIndex: index, source: this.eyeImages }).subscribe((res: any) => { });
+  previewEyeImages(index: number, section: string) {
+    this.coreService.openImagesPreviewModal({ startIndex: index, source: this.getImagesBySection(section) }).subscribe((res) => { });
   }
 
   getVisitAdditionalDocs(visit: any) {
@@ -1993,6 +1993,17 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     localStorage.removeItem('patientVisitProvider');
+  }
+
+  /**
+  * Getting Images by section
+  * @param {string} section - Section Title
+  * @returns {arra}
+  */
+  getImagesBySection(section: string): Array<string> {
+    const images = this.eyeImages.filter((o: { section: string; }) => o.section?.toLowerCase() === section?.toLowerCase())
+    console.log("images", images)
+    return images;
   }
 
 }
