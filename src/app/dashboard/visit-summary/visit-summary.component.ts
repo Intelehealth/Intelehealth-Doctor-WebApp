@@ -509,8 +509,12 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
                     if (obs.encounter.visit.uuid === this.visit.uuid && obs.value) {
                       // const result = (JSON.parse(obs.value)?.data.choices[0]?.message.content.trim()).match(/```json((.|[\n\r])*)```/);
                       // this.diagnosisSuggestions = JSON.parse(result[0].replace('```json','').replace('``json','').replace('```','').replace('``','').trim()).diagnosis;
-                      this.diagnosisSuggestions = JSON.parse(obs.value)?.data.choices[0]?.message.content.split('\n');
                       this.diagnosisSuggestionsObsUuid = obs.uuid;
+                      try{
+                        this.diagnosisSuggestions = JSON.parse(obs.value)?.data.choices[0]?.message.content.split('\n');
+                      } catch(err) {
+                        console.log("Data is not parseable")
+                      }
                     }
                   });
                 });
@@ -518,7 +522,11 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
                   response.results.forEach((obs: any) => {
                     if (obs.encounter.visit.uuid === this.visit.uuid && obs.value) {
                       // const result = (JSON.parse(obs.value)?.data.choices[0]?.message.content.trim()).match(/```json((.|[\n\r])*)```/);
-                      this.treatmentPlan = JSON.parse(obs.value)?.data?.choices[0]?.message?.content?.split('\n');
+                      try{
+                        this.treatmentPlan = JSON.parse(JSON.parse(obs.value)?.data?.choices[0]?.message?.content);
+                      } catch(err) {
+                        console.log("Data is not parseable")
+                      }
                     }
                   });
                 });
