@@ -483,24 +483,17 @@
             <div class="data-section-content">
               <div class="table-responsive">
                 <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">{{'Drug name'|translate}}</th>
-                      <th scope="col">{{'Strength'|translate}}</th>
-                      <th scope="col">{{'No. of days'|translate}}</th>
-                      <th scope="col">{{'Timing'|translate}}</th>
-                      <th scope="col">{{'Remarks'|translate}}</th>
-                    </tr>
-                  </thead>
                   <tbody>
-                    <ng-container *ngIf="medicines.length; else noMedicines">
-                      <tr *ngFor="let m of medicines; let i = index">
-                        <td>{{ m.drug }}</td>
-                        <td>{{ m.strength }}</td>
-                        <td>{{ m.days }}</td>
-                        <td>{{ m.timing }}</td>
-                        <td>{{ m.remark }}</td>
-                      </tr>
+                    <ng-container >
+                      <ul *ngIf="medicines.length; else noMedicines" class="items-list">
+                        <li *ngFor="let m of medicines">
+                          <div
+                            class="d-flex justify-content-between align-items-center"
+                          >
+                            <span>{{ m?.value }}</span>
+                          </div>
+                        </li>
+                      </ul>
                     </ng-container>
                     <ng-template #noMedicines>
                       <tr>

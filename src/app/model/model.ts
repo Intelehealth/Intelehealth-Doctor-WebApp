@@ -134,7 +134,9 @@ export interface DataItemModel {
   name: string,
   code?: string,
   text?: string,
-  shortName?: string
+  shortName?: string, 
+  strength?: string,
+  form?: string
 }
 
 export interface MindmapKeyModel {
@@ -488,8 +490,10 @@ export interface TestModel {
 }
 
 export interface MedicineModel {
-  drug?: string,
+  name?: string,
   strength?: string,
+  form?: string,
+  route?: string,
   days?: string,
   timing?: string,
   remark?: string,

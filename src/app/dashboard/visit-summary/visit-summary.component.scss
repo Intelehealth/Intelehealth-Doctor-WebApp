@@ -565,6 +565,17 @@ textarea.form-control {
   white-space: nowrap;
 }
 
+.tableBorder {
+  td {
+    border: none;
+  }
+}
+
+::ng-deep html .ng-dropdown-panel .ng-dropdown-panel-items {
+  max-height: 220px;
+  overflow: scroll;
+}
+
 .add-more-btn {
   border: none;
   background: transparent;

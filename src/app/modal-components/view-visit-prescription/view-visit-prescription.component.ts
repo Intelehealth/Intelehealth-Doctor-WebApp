@@ -36,7 +36,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   visitNotePresent: EncounterModel;
   spokenWithPatient: string = 'No';
   notes: ObsModel[] = [];
-  medicines: MedicineModel[] = [];
+  medicines = [];
   existingDiagnosis: DiagnosisModel[] = [];
   advices: ObsModel[] = [];
   additionalInstructions: ObsModel[] = [];
@@ -240,23 +240,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this.visit.uuid) {
           if (obs.value.includes(',')) {
-            this.medicines.push({
-              drug: obs.value?.split(':')[0],
-              strength: obs.value?.split(':')[1]?.split(',')[0],
-              days: obs.value?.split(":")[1]?.split(",")[2]?.split("for")[1],
-              timing: obs.value?.split(":")[1]?.split(",")[1],
-              remark: obs.value?.split(':')[4],
-              uuid: obs.uuid
-            });
-          } else if (obs.value.includes(':')) {
-            this.medicines.push({
-              drug: obs.value?.split(':')[0],
-              strength: obs.value?.split(':')[1],
-              days: obs.value?.split(':')[2],
-              timing: obs.value?.split(':')[3],
-              remark: obs.value?.split(':')[4],
-              uuid: obs.uuid
-            });
+            this.medicines.push({uuid: obs.uuid, value: obs.value});
           } else {
             this.additionalInstructions.push(obs);
           }
@@ -836,16 +820,10 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                       [
                         {
                           colSpan: 2,
-                          table: {
-                            widths: ['*', 'auto', 'auto', 'auto', 'auto'],
-                            headerRows: 1,
-                            body: [
-                              [{text: 'Drug name', style: 'tableHeader'}, {text: 'Strength', style: 'tableHeader'}, {text: 'No. of days', style: 'tableHeader'}, {text: 'Timing', style: 'tableHeader'}, {text: 'Remarks', style: 'tableHeader'}],
+                            ul: [
                               ...this.getRecords('medication')
                             ]
                           },
-                          layout: 'lightHorizontalLines'
-                        }
                       ],
                       [{ text: 'Additional Instructions:', style: 'sectionheader', colSpan: 2 }, ''],
                       [
@@ -1065,7 +1043,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       case 'medication':
         if (this.medicines.length) {
           this.medicines.forEach(m => {
-            records.push([m.drug, m.strength, m.days, m.timing, m.remark]);
+            records.push([m?.value]);
           });
         } else {
           records.push([{ text: 'No medicines added', colSpan: 5, alignment: 'center' }]);

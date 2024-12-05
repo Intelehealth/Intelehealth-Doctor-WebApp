@@ -1430,46 +1430,32 @@
 
               <form [formGroup]="addMedicineForm" (ngSubmit)="addMedicine()">
                 <div class="table-responsive medication-con">
-                  <table class="table" aria-describedby="">
-                    <thead>
-                      <tr>
-                        <th scope="col">{{'Drug name'|translate}}</th>
-                        <th scope="col">{{'Strength'|translate}}</th>
-                        <th scope="col">{{'No. of days'|translate}}</th>
-                        <th scope="col">{{'Timing'|translate}}</th>
-                        <th scope="col">{{'Remarks'|translate}}</th>
-                        <th scope="col"></th>
-                      </tr>
-                    </thead>
+                  <ng-container *ngIf="medicines.length">
+                    <ul class="items-list" *ngIf="medicines.length">
+                      <li *ngFor="let m of medicines; let i = index">
+                        <div class="d-flex justify-content-between">
+                          <span>{{ m.value }}</span>
+                          <button
+                            mat-icon-button
+                            (click)="deleteMedicine(i, m.uuid)"
+                            data-test-id="btnDeleteMedVisitSummary"
+                            *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
+                          >
+                            <img src="assets/svgs/delete-icon.svg" alt="" />
+                          </button>
+                        </div>
+                      </li>
+                    </ul>
+                  </ng-container>
+                  <ng-template #noMedicines>
+                    <tr>
+                      <td colspan="6" class="text-center font-weight-bold">
+                        {{'No medicines added!'|translate}}
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <table class="table tableBorder" aria-describedby="">
                     <tbody>
-                      <ng-container *ngIf="medicines.length">
-                        <tr *ngFor="let m of medicines; let i = index">
-                          <td>{{ m.drug }}</td>
-                          <td>{{ m.strength }}</td>
-                          <td>{{ m.days }}</td>
-                          <td>{{ m.timing }}</td>
-                          <td>{{ m.remark }}</td>
-                          <td class="pr-0">
-                            <button
-                              type="button"
-                              mat-icon-button
-                              class="float-right"
-                              *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted"
-                              (click)="deleteMedicine(i, m.uuid)"
-                              data-test-id="{{'btnDeleteMedVisitSummary'+i}}"
-                            >
-                              <img src="assets/svgs/delete-icon.svg" alt="" />
-                            </button>
-                          </td>
-                        </tr>
-                      </ng-container>
-                      <ng-template #noMedicines>
-                        <tr>
-                          <td colspan="6" class="text-center font-weight-bold">
-                            {{'No medicines added!'|translate}}
-                          </td>
-                        </tr>
-                      </ng-template>
                       <ng-container *ngIf="isVisitNoteProvider && !visitEnded && !visitCompleted">
                         <tr *ngIf="addMoreMedicine">
                           <td colspan="6" class="px-0">
@@ -1488,15 +1474,17 @@
                         </tr>
                         <tr *ngIf="!addMoreMedicine">
                           <td>
-                            <div class="form-group mb-0">
+                            <div class="mb-0">
                               <input
-                                formControlName="drug"
-                                type="text"
-                                class="form-control"
-                                placeholder="{{'Enter drug'|translate}}*"
-                                [ngbTypeahead]="search3"
-                                data-test-id="etDrugName"
-                              />
+                              formControlName="medObj"
+                              type="text"
+                              class="form-control"
+                              placeholder="{{'Medication name'|translate}}*"
+                              [ngbTypeahead]="search10"
+                              [resultFormatter]="resultFormatBandListValue"
+                              [inputFormatter]="inputFormatBandListValue"
+                              data-test-id="etDrugStrength"
+                            />
                             </div>
                           </td>
                           <td>
@@ -1505,9 +1493,35 @@
                                 formControlName="strength"
                                 type="text"
                                 class="form-control"
-                                placeholder="{{'Enter strength'|translate}}*"
+                                placeholder="{{'Strength'|translate}}*"
                                 [ngbTypeahead]="search4"
                                 data-test-id="etDrugStrength"
+                              />
+                            </div>
+                          </td>
+                          <td>
+                            <div class="form-group mb-0">
+                              <input
+                                formControlName="form"
+                                type="text"
+                                class="form-control"
+                                placeholder="{{'Form'|translate}}"
+                                [ngbTypeahead]="search9"
+                                data-test-id="etForm"
+                              />
+                            </div>
+                          </td>
+                        </tr>  
+                        <tr *ngIf="!addMoreMedicine">
+                          <td>
+                            <div class="form-group mb-0">
+                              <input
+                                formControlName="route"
+                                type="text"
+                                class="form-control"
+                                placeholder="{{'Route'|translate}}"
+                                [ngbTypeahead]="search8"
+                                data-test-id="etRoute"
                               />
                             </div>
                           </td>
@@ -1517,7 +1531,7 @@
                                 formControlName="days"
                                 type="text"
                                 class="form-control"
-                                placeholder="{{'Enter days'|translate}}*"
+                                placeholder="{{'No. of days'|translate}}*"
                                 [ngbTypeahead]="search5"
                                 data-test-id="etDays"
                               />
@@ -1534,19 +1548,22 @@
                               [clearable]="false"
                               [searchable]="true"
                               [addTag]="true"
-                              placeholder="{{'Select timing'|translate}}*"
+                              placeholder="{{'Timing'|translate}}*"
                               data-test-id="selectTiming"
                             >
                             </ng-select>
                           </td>
-                          <td colspan="2">
-                            <div class="form-group mb-0">
+                        </tr>
+                        <tr *ngIf="!addMoreMedicine">  
+                          <td colspan="3">
+                           <div class="form-group mb-0">
                               <input
                                 formControlName="remark"
                                 type="text"
                                 class="form-control"
-                                placeholder="{{'Enter Remark'|translate}}*"
-                                data-test-id="etRemarkMed"
+                                placeholder="{{'Remark'|translate}}"
+                                [ngbTypeahead]="search7"
+                                data-test-id="etRemark"
                               />
                             </div>
                           </td>
