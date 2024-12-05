@@ -59,7 +59,7 @@ export class ChatService {
   }
 
   readMessageById(messageId) {
-    return this.http.post(`${this.baseURL}/messages/read/${messageId}?ngsw-bypass=true`, null);
+    return this.http.put(`${this.baseURL}/messages/read/${messageId}?ngsw-bypass=true`, "");
   }
 
   public get user() {

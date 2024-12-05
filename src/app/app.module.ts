@@ -117,8 +117,8 @@ registerLocaleData(localeEn);
     NgxUiLoaderHttpModule.forRoot({
       showForeground: true,
       exclude: [
-        'https://tele.med.kg:3004/api/messages/',
-        'https://tele.med.kg:3004/api/support/',
+        'https://uniceftraining.intelehealth.org:3004/api/messages/',
+        'https://uniceftraining.intelehealth.org:3004/api/support/',
       ]
     }),
     NgxPermissionsModule.forRoot({
