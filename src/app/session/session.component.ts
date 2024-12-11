@@ -15,15 +15,15 @@ export class SessionComponent implements OnInit {
 
   slides: SlideModel[] = [
     {
-      img_url: "assets/svgs/slide-1.svg",
+      img_url: "assets/images/ekal1.jpg",
       title: "Deliver quality health care where there is no doctor",
       description: "",
       heartbeat1: "assets/images/login/right_red_heartbeat.png",
       heartbeat2: "assets/images/login/right_green_heartbeat.png"
     },
     {
-      img_url: "assets/svgs/slide-2.svg",
-      title: "2,75,000 population covered from 215 villages in 2 countries",
+      img_url: "assets/images/ekal2.png",
+      title: "4,00,000 population covered from 1400 villages in 13 states",
       description: "",
       heartbeat1: "assets/images/login/right_green_heartbeat.png",
       heartbeat2: "assets/images/login/right_red_heartbeat.png"

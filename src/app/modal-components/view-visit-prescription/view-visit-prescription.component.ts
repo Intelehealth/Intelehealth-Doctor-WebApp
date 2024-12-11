@@ -694,9 +694,9 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               [
                 this.getAddress()
               ],
-              [
-                this.getOtherInfo()
-              ],
+              // [
+              //   this.getOtherInfo()
+              // ],
               [
                 {
                   colSpan: 4,
@@ -1113,7 +1113,8 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         spO2 = this.getObsValue('BLOOD OXYGEN SATURATION') ? this.getObsValue('BLOOD OXYGEN SATURATION') : 'No information';
         respRate = this.getObsValue('Respiratory rate') ? this.getObsValue('Respiratory rate') : 'No information';
         hgb = this.getObsValue("HGB")? this.getObsValue('HGB') : 'No information';
-        bloodg = this.getObsValue("Blood group") ?  this.getObsValue("Blood group") : 'No information';
+        bloodg = this.getObsValue("Blood group") || this.getObsValue("BLOOD TYPING") ?  this.getObsValue("Blood group")
+        || this.getObsValue("BLOOD TYPING")?.display : 'No information';
         sugarF = this. getObsValue("sugar fasting") ? this. getObsValue("sugar fasting") :'No information'
         sugarR = this. getObsValue("sugar random") ? this. getObsValue("sugar random") :'No information'
         records.push({ text: [{ text: `Height (cm) : `, bold: true }, `${heightValue}`], margin: [0, 5, 0, 5] });

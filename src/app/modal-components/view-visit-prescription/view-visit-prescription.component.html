@@ -125,14 +125,14 @@
             </div>
           </mat-tab>
 
-          <mat-tab label="{{'Other' | translate}}">
+          <!-- <mat-tab label="{{'Other' | translate}}">
             <div class="rows patient-info-wrapper">
-              <!-- <div class="col-md-3 patient-info-section p-3">
+              <div class="col-md-3 patient-info-section p-3">
                 <div class="patient-info-item mb-3">
                   <h6 data-test-id="etPatient">{{'Occupation' | translate}}</h6>
                   <p data-test-id="etPatient">{{ getPersonAttributeValue('occupation') }}</p>
                 </div>
-              </div> -->
+              </div>
 
               <div class="col-md-3 patient-info-section p-3">
                 <div class="patient-info-item mb-3">
@@ -141,12 +141,12 @@
                 </div>
               </div>
 
-              <!-- <div class="col-md-3 patient-info-section p-3" *ngIf="getPersonAttributeValue('NationalID') !== 'NA'">
+               <div class="col-md-3 patient-info-section p-3" *ngIf="getPersonAttributeValue('NationalID') !== 'NA'">
                 <div class="patient-info-item mb-3">
                   <h6 data-test-id="etPatient">{{'National ID' | translate}}</h6>
                   <p data-test-id="etPatient">{{ getPersonAttributeValue('NationalID') }}</p>
                 </div>
-              </div> -->
+              </div>
 
               <div class="col-md-3 patient-info-section p-3" *ngIf="getPersonAttributeValue('Economic Status') !== 'NA'">
                 <div class="patient-info-item mb-3">
@@ -155,7 +155,7 @@
                 </div>
               </div>
             </div>
-          </mat-tab>
+          </mat-tab> -->
         </mat-tab-group>
       </div>  
 
@@ -343,8 +343,9 @@
                 <li>
                   <div class="list-item">
                     <label>{{'Blood group'|translate}}</label>
-                    <div class="list-item-content" [class.text-muted]="!getObsValue('Blood group')">
-                      {{(getObsValue('Blood group'))?getObsValue('Blood group'):'No information' | translate}}
+                    <div class="list-item-content" [class.text-muted]="!getObsValue('Blood group') && !getObsValue('BLOOD TYPING')">
+                      {{(getObsValue('Blood group') || getObsValue("BLOOD TYPING") )
+                      ?(getObsValue('Blood group') || getObsValue("BLOOD TYPING")?.display):'No information' | translate}}
                     </div>
                   </div>
                 </li>

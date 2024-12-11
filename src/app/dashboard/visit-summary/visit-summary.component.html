@@ -136,7 +136,7 @@
               </div>
             </div>
           </mat-tab>
-
+<!-- 
           <mat-tab label="{{'Other' | translate}}">
             <div class="rows patient-info-wrapper">
               <div class="col-md-3 patient-info-section p-3">
@@ -167,7 +167,7 @@
                 </div>
               </div>
             </div>
-          </mat-tab>
+          </mat-tab> -->
         </mat-tab-group>
       </div>
     </div>
@@ -467,16 +467,18 @@
                       </div>
                     </div>
                   </li>
-                  <li *ngIf='getObsValue("Blood group")'>
+                  <li *ngIf='getObsValue("Blood group") || getObsValue("BLOOD TYPING")'>
                     <div class="list-item">
                       <label data-test-id="etBloodGroupVitals">{{'Blood Group'|translate}}</label>
                       <div
                         class="list-item-content"
                         data-test-id="etBloodGroupVitals"
-                        [class.text-muted]="!getObsValue('Blood group')"
+                        [class.text-muted]="!getObsValue('Blood group') && !getObsValue('BLOOD TYPING')"
                       >
                         {{
                           getObsValue("Blood group")
+                            ? getObsValue("Blood group")
+                            : getObsValue("BLOOD TYPING")?.display
                         }}
                       </div>
                     </div>

@@ -119,7 +119,7 @@ export class PrescriptionComponent implements OnInit {
           visit.visit_created = this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
           visit.prescription_sent = (vcenc) ? this.checkIfDateOldThanOneDay(vcenc.encounter_datetime) : null;
           visit.person.age = this.calculateAge(visit.person.birthdate);
-          if(vcenc.encounter_provider.provider.uuid === uuid) {
+          if(vcenc?.encounter_provider?.provider.uuid === uuid) {
             record.push(visit);
           }
         }
