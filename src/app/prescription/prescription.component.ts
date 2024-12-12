@@ -57,7 +57,7 @@ export class PrescriptionComponent implements OnInit {
           let pesenc = this.checkIfEncounterExists(visit.encounters, visitTypes.PATIENT_EXIT_SURVEY);
           visit.cheif_complaint = this.getCheifComplaint(visit);
           visit.visit_created = this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
-          visit.prescription_sent = (vcenc) ? this.checkIfDateOldThanOneDay(vcenc.encounter_datetime) : null;
+          visit.prescription_sent = (vcenc) ? this.checkIfDateOldThanOneDay(vcenc.encounter_datetime) : '-';
           if (pesenc) {
             visit.visit_ended = this.checkIfDateOldThanOneDay(pesenc.encounter_datetime);
           } else {

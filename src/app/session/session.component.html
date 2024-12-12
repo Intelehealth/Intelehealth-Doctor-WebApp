@@ -13,10 +13,10 @@
         </div>
         <div class="carousel-container flex-fill">
           <ngb-carousel [showNavigationArrows]="false" [showNavigationIndicators]="true">
-            <ng-template ngbSlide *ngFor="let slide of slides">
+            <ng-template ngbSlide *ngFor="let slide of slides,let i=index">
               <div class="picsum-img-wrapper">
                 <img class="hb1" [src]="slide.heartbeat1" alt="">
-                <img class="main" [src]="slide.img_url" alt="Random slide">
+                <img class="main" [class.my_class] = "i === 1 || i === 2" [src]="slide.img_url" alt="Random slide">
                 <img class="hb2" [src]="slide.heartbeat2" alt="">
               </div>
               <div class="carousel-caption">
