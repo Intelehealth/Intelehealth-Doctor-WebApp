@@ -21,7 +21,7 @@
   <mat-form-field class="example-full-width">
     <input matInput placeholder="Qualification" formControlName="qualification" />
   </mat-form-field>
-  <mat-form-field class="example-full-width" *ngIf='userDetails.roles[0].display != "Organizational: Nurse"'>
+  <mat-form-field class="example-full-width" *ngIf='userDetails.roles[0].display != "Organizational: Nurse" && isNotNamcoDr'>
     <mat-select placeholder="Specialization" formControlName="specialization">
       <mat-option *ngFor="let specialization of specializations" [value]="specialization">{{ specialization }}
       </mat-option>

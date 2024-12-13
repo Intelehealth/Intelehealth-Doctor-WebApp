@@ -31,7 +31,15 @@ export class ReassignSpecialityComponent implements OnInit {
     "Dermatologist",
     "Physiotherapist",
     "Gynecologist",
-    "Pediatrician"
+    "Pediatrician",
+    /** Namco */
+    "Namco_Dermatology",
+    "Namco_Physician",
+    "Namco_Pediatrician",
+    "Namco_Orthopaedic",
+    "Namco_Gynecologist",
+    "Namco_ENT",
+    "Namco_General Surgeon",
   ];
   errorText: string;
 

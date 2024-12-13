@@ -61,6 +61,10 @@ export class EditDetailsComponent implements OnInit {
     this.providerDetails = getFromStorage("provider");
   }
 
+  get isNotNamcoDr() {
+    return !this.userDetails?.username?.includes?.('namco_');
+  }
+
   get attributes() {
     try {
       return this.providerDetails.attributes;
