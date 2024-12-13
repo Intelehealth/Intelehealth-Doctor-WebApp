@@ -14,7 +14,7 @@ import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { getCacheData, checkIfDateOldThanOneDay } from '../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from 'src/config/constant';
-import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../model/model';
+import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, EncounterModel, EncounterProviderModel, ObsModel, ProviderAttributeModel, RecentVisitsApiResponseModel, RescheduleAppointmentModalResponseModel, VisitModel } from '../model/model';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,29 +27,34 @@ export class DashboardComponent implements OnInit {
   displayedColumns1: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'actions'];
   displayedColumns2: string[] = ['name', 'age', 'location', 'cheif_complaint', 'visit_created'];
   displayedColumns3: string[] = ['name', 'age', 'location', 'cheif_complaint', 'visit_created'];
-  displayedColumns4: string[] = ['name', 'age', 'location', 'cheif_complaint', 'prescription_started'];
+  displayedColumns4: string[] = ['name', 'age', 'location', 'provided_by','cheif_complaint', 'prescription_started'];
+  displayedColumns5: string[] = ['name', 'age', 'location', 'provided_by','cheif_complaint', 'followup_date'];
 
   dataSource1 = new MatTableDataSource<any>();
   dataSource2 = new MatTableDataSource<any>();
   dataSource3 = new MatTableDataSource<any>();
   dataSource4 = new MatTableDataSource<any>();
+  dataSource5 = new MatTableDataSource<any>();
 
   baseUrl: string = environment.baseURL;
   appointments: AppointmentModel[] = [];
   priorityVisits: CustomVisitModel[] = [];
   awaitingVisits: CustomVisitModel[] = [];
   inProgressVisits: CustomVisitModel[] = [];
+  followupVisits: CustomVisitModel[] = [];
 
   specialization: string = '';
   priorityVisitsCount: number = 0;
   awaitingVisitsCount: number = 0;
   inprogressVisitsCount: number = 0;
+  followupVisitsCount: number = 0;
 
   @ViewChild(MatAccordion) accordion: MatAccordion;
   @ViewChild('appointmentPaginator') appointmentPaginator: MatPaginator;
   @ViewChild('priorityPaginator') priorityPaginator: MatPaginator;
   @ViewChild('awaitingPaginator') awaitingPaginator: MatPaginator;
   @ViewChild('inprogressPaginator') inprogressPaginator: MatPaginator;
+  @ViewChild('followupPaginator') followupPaginator: MatPaginator;
 
   offset: number = environment.recordsPerPage;
   awatingRecordsFetched: number = 0;
@@ -72,14 +77,21 @@ export class DashboardComponent implements OnInit {
   pageIndex4:number = 0;
   pageSize4:number = 5;
 
+  followupVisitsRecordsFetched: number = 0;
+  pageEvent5: PageEvent;
+  pageIndex5:number = 0;
+  pageSize5:number = 5;
+
   @ViewChild('tempPaginator1') tempPaginator1: MatPaginator;
   @ViewChild('tempPaginator2') tempPaginator2: MatPaginator;
   @ViewChild('tempPaginator3') tempPaginator3: MatPaginator;
+  @ViewChild('tempPaginator4') tempPaginator4: MatPaginator;
 
   @ViewChild('apSearchInput', { static: true }) apSearchElement: ElementRef;
   @ViewChild('prSearchInput', { static: true }) prSearchElement: ElementRef;
   @ViewChild('awSearchInput', { static: true }) awSearchElement: ElementRef;
   @ViewChild('ipSearchInput', { static: true }) ipSearchElement: ElementRef;
+  @ViewChild('fuSearchInput', { static: true }) fuSearchElement: ElementRef;
 
   constructor(
     private pageTitleService: PageTitleService,
@@ -120,17 +132,24 @@ export class DashboardComponent implements OnInit {
       this.awaitingVisits = [];
       this.awatingRecordsFetched = 0;
     }
+    let newfollowupVisits = [];
     this.visitService.getAwaitingVisits(this.specialization, page).subscribe((av: ApiResponseModel) => {
       if (av.success) {
-        this.awaitingVisitsCount = av.totalCount;
+        //this.awaitingVisitsCount = av.totalCount;
         this.awatingRecordsFetched += this.offset;
         for (let i = 0; i < av.data.length; i++) {
           let visit = av.data[i];
           visit.cheif_complaint = this.getCheifComplaint(visit);
           visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z','+0530')) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
           visit.person.age = this.calculateAge(visit.person.birthdate);
-          this.awaitingVisits.push(visit);
+          if(visit.cheif_complaint.filter(f => f.includes('Follow')).length > 0) {
+            newfollowupVisits.push(visit);
+          } else {
+            this.awaitingVisits.push(visit);
+          }
         }
+        this.awaitingVisitsCount = this.awaitingVisits.length;
+        this.getFollowUpVisits(newfollowupVisits);
         this.dataSource3.data = [...this.awaitingVisits];
         if (page == 1) {
           this.dataSource3.paginator = this.tempPaginator2;
@@ -241,6 +260,7 @@ export class DashboardComponent implements OnInit {
           visit.cheif_complaint = this.getCheifComplaint(visit);
           visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
           visit.prescription_started = this.getEncounterCreated(visit, visitTypes.VISIT_NOTE);
+          visit.encounter_provider = this.getEncounterProviderName(visit, visitTypes.VISIT_NOTE);
           visit.person.age = this.calculateAge(visit.person.birthdate);
           this.inProgressVisits.push(visit);
         }
@@ -257,6 +277,25 @@ export class DashboardComponent implements OnInit {
   }
 
   /**
+  * Get inprogress visits for a given page number
+  * @param {number} page - Page number
+  * @return {void}
+  */
+  getFollowUpVisits(visits, page: number = 1) {
+       this.followupVisits = [];
+        this.followupVisitsCount = visits.length;
+       for (let i = 0; i < visits.length; i++) {
+          let visit = visits[i];
+          visit.cheif_complaint = this.getCheifComplaint(visit);
+          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
+          visit.encounter_provider = this.getEncounterProviderName(visit, visitTypes.ADULTINITIAL);
+          visit.person.age = this.calculateAge(visit.person.birthdate);
+          this.followupVisits.push(visit);
+        }
+      this.dataSource5.data = [...this.followupVisits];
+  }
+
+  /**
   * Callback for page change event and Get inprogress visit for a selected page index and page size
   * @param {PageEvent} event - onerror event
   * @return {void}
@@ -266,7 +305,7 @@ export class DashboardComponent implements OnInit {
     this.pageSize3 = event.pageSize;
     if (this.dataSource4.filter) {
       this.inprogressPaginator.firstPage();
-    }
+    } 
     if (((event.pageIndex+1)*this.pageSize3) > this.inprogressRecordsFetched) {
       this.getInProgressVisits((this.inprogressRecordsFetched+this.offset)/this.offset);
     } else {
@@ -274,6 +313,29 @@ export class DashboardComponent implements OnInit {
         this.tempPaginator3.nextPage();
       } else {
         this.tempPaginator3.previousPage();
+      }
+    }
+    return event;
+  }
+
+   /**
+  * Callback for page change event and Get Follow-Up visit for a selected page index and page size
+  * @param {PageEvent} event - onerror event
+  * @return {void}
+  */
+   public getFollowUpData(event?:PageEvent){
+    this.pageIndex3 = event.pageIndex;
+    this.pageSize3 = event.pageSize;
+    if (this.dataSource5.filter) {
+      this.followupPaginator.firstPage();
+    }
+    if (((event.pageIndex+1)*this.pageSize3) > this.followupVisitsRecordsFetched) {
+      this.getFollowUpVisits((this.followupVisitsRecordsFetched+this.offset)/this.offset);
+    } else {
+      if (event.previousPageIndex < event.pageIndex) {
+        this.tempPaginator4.nextPage();
+      } else {
+        this.tempPaginator4.previousPage();
       }
     }
     return event;
@@ -319,6 +381,24 @@ export class DashboardComponent implements OnInit {
       }
     });
     return created_at;
+  }
+
+  /**
+  * Get encounter Provider Name for a given encounter type
+  * @param {CustomVisitModel} visit - Visit
+  * @param {string} encounterName - Encounter type
+  * @return {string} - Encounter ProviderName
+  */
+  getEncounterProviderName(visit: CustomVisitModel, encounterName: string) {
+    let providerName = '';
+    const encounters = visit.encounters;
+    encounters.forEach((encounter: CustomEncounterModel) => {
+      const display = encounter.type?.name;
+      if (display.match(encounterName) !== null) {
+        providerName =  encounter.encounter_provider.provider.person.person_name.given_name.concat(' ',encounter.encounter_provider.provider.person.person_name.family_name);
+      }
+    });
+    return providerName;
   }
 
   /**
@@ -498,6 +578,17 @@ export class DashboardComponent implements OnInit {
     this.inprogressPaginator.firstPage();
   }
 
+    /**
+  * Clear filter from a datasource 5
+  * @return {void}
+  */
+    applyFilter5(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource5.filter = filterValue.trim().toLowerCase();
+      this.tempPaginator4.firstPage();
+      this.followupPaginator.firstPage();
+    }
+
   /**
   * Clear filter from a given datasource
   * @param {string} dataSource - Datasource name
@@ -520,6 +611,10 @@ export class DashboardComponent implements OnInit {
       case 'In-progress':
         this.dataSource4.filter = null;
         this.ipSearchElement.nativeElement.value = "";
+        break;
+      case 'Follow-up':
+        this.dataSource5.filter = null;
+        this.fuSearchElement.nativeElement.value = "";
         break;
       default:
         break;

@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-3 p-1">
+    <div class="col p-1">
       <div class="chip-item chip-item-blue" title="{{'Appointments' | translate}}">
         <img class="chip-img" src="assets/svgs/video-frame.svg" alt="" />
         <div class="chip-info">
@@ -9,7 +9,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3 p-1">
+    <div class="col p-1">
       <div class="chip-item chip-item-red" title="{{'Priority visits' | translate}}">
         <img class="chip-img" src="assets/svgs/red-profile.svg" alt="" />
         <div class="chip-info">
@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3 p-1">
+    <div class="col p-1">
       <div class="chip-item chip-item-green" title="{{'Awaiting visits' | translate}}">
         <img class="chip-img" src="assets/svgs/green-profile.svg" alt="" />
         <div class="chip-info">
@@ -27,7 +27,16 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3 p-1">
+    <div class="col p-1">
+      <div class="chip-item chip-item-orange" title="{{'Followup visits' | translate}}">
+        <img class="chip-img" src="assets/svgs/followUp.svg" alt="" />
+        <div class="chip-info">
+          <h6>{{ followupVisitsCount}}</h6>
+          <span>{{'Follow-Up visits' | translate}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col p-1">
       <div class="chip-item chip-item-green" title="{{'In-progress visits' | translate}}">
         <img class="chip-img" src="assets/svgs/pen-board.svg" alt="" />
         <div class="chip-info">
@@ -297,6 +306,95 @@
 
         </mat-expansion-panel>
 
+        <mat-expansion-panel [expanded]="true" data-test-id="matExpFollowup">
+          <mat-expansion-panel-header data-test-id="matExpHeaderFollowup">
+            <mat-panel-title>
+              <div class="intel-accordion-title">
+                <img src="assets/svgs/followUp.svg" alt="" width="44px">
+                <h6 class="mb-0 ml-2">  {{'Follow-Up visits'| translate }} ({{followupVisitsCount ? followupVisitsCount : 0}})</h6>
+                <mat-icon aria-hidden="false" class="info-icon" aria-label="help icon" matTooltip="{{'Visits which have follow-up' | translate}}" matTooltipPosition="right" data-test-id="matIcoHelpFollowup">help_outline</mat-icon>
+                <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
+                  <input type="text" #fuSearchInput class="form-control" placeholder="Search follow-up visits" aria-label="Username" aria-describedby="basic-addon1" (keyup)="applyFilter5($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchFollowupDashboard">
+                  <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon1" *ngIf="!dataSource5.filter">
+                      <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
+                    </span>
+                    <button data-test-id="btnResetFuSerach" mat-icon-button aria-label="Reset follow-up search" *ngIf="dataSource5.filter" (click)="clearFilter('Follow-up')">
+                      <mat-icon class="ml-0" style="line-height: normal;">close</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource5">
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef> {{'Patient' | translate}} </th>
+                <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'fuPatient'+j">
+                  <div class="d-flex align-items-center">
+                    <img src="{{ baseUrl + '/personimage/' + element.person.uuid }}" alt="" width="32px" height="32px" style="border-radius: 50%;">
+                    <span class="font-bold ml-2">{{element.patient_name.given_name}} {{element.patient_name?.middle_name ? element.patient_name?.middle_name+" " : ""}}{{element.patient_name.family_name}} ({{(element.person.gender) | translate}})</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Age Column -->
+              <ng-container matColumnDef="age">
+                <th mat-header-cell *matHeaderCellDef> {{'Age' | translate}} </th>
+                <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'fuAge'+j"> {{element.person.age}} {{'y'| translate}} </td>
+              </ng-container>
+
+              <!-- Location Column -->
+              <ng-container matColumnDef="location">
+                <th mat-header-cell *matHeaderCellDef> {{'Location'|translate}} </th>
+                <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'fuLocation'+j"> {{element.location.name}} </td>
+              </ng-container>
+
+              <!-- Provided by Column -->
+              <ng-container matColumnDef="provided_by">
+                <th mat-header-cell *matHeaderCellDef> {{'Provided by'|translate}} </th>
+                <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'fuProvidedby'+j"> {{element.encounter_provider}} </td>
+              </ng-container>
+
+              <!-- Chief complaint Column -->
+              <ng-container matColumnDef="cheif_complaint">
+                <th mat-header-cell *matHeaderCellDef> {{'Chief Complaint'|translate}} </th>
+                <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'fuComplaint'+j"> {{element.cheif_complaint}} </td>
+              </ng-container>
+
+              <!-- Prescription Started Column -->
+              <ng-container matColumnDef="followup_date">
+                <th mat-header-cell *matHeaderCellDef> {{'Follow-Up Date' | translate}} </th>
+                <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'fuFollowup'+j">
+                  <div class="red-pill">
+                    <img src="assets/svgs/red-pad.svg" alt="">
+                    <span class="ml-2">{{element.visit_created}}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell text-center" [attr.colspan]="displayedColumns5.length">
+                  {{'No any follow-up visits.' | translate}}
+                </td>
+              </tr>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns5"></tr>
+              <tr mat-row *matRowDef="let row; let x=index; columns: displayedColumns5;" [attr.data-test-id]="'ip'+x" [routerLink]="['/dashboard/visit-summary', row.uuid]"></tr>
+            </table>
+
+            <mat-paginator #tempPaginator4 hidePageSize [pageSizeOptions]="[5, 10, 20]" hidden aria-label="Select page of periodic elements"></mat-paginator>
+            <mat-paginator #followupPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]"
+            [length]="followupVisitsCount" [pageIndex]="pageIndex3" [pageSize]="pageSize3" (page)="pageEvent3 = getFollowUpData($event)" aria-label="Select page of periodic elements" data-test-id="matPaginatorFollowup">
+            </mat-paginator>
+          </div>
+
+        </mat-expansion-panel>
+        
         <mat-expansion-panel [expanded]="true" data-test-id="matExpInprogress">
           <mat-expansion-panel-header data-test-id="matExpHeaderInprogress">
             <mat-panel-title>
@@ -345,6 +443,12 @@
                 <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'ipLocation'+j"> {{element.location.name}} </td>
               </ng-container>
 
+              <!-- Provided by Column -->
+              <ng-container matColumnDef="provided_by">
+                <th mat-header-cell *matHeaderCellDef> {{'Provided by'|translate}} </th>
+                <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'ipProvidedby'+j"> {{element.encounter_provider}} </td>
+              </ng-container>
+
               <!-- Chief complaint Column -->
               <ng-container matColumnDef="cheif_complaint">
                 <th mat-header-cell *matHeaderCellDef> {{'Chief Complaint'|translate}} </th>
@@ -379,6 +483,8 @@
           </div>
 
         </mat-expansion-panel>
+
+        
 
       </mat-accordion>
     </div>
