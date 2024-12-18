@@ -6078,6 +6078,9 @@
   "Doctors Mapped": "Врачи нанесли на карту",
   "List of Patients between two dates": "Список пациентов между двумя датами",
   "Create Report": "Создать отчет",
+  "Diagnosis at Secondary Level": "Диагностика на вторичном уровне",
+  "Diagnosis after telemedicine consultation": "Диагностика после телемедицинской консультации",
+  "Enter Diagnosis": "Введите диагноз",
   "Under Evaluation": "На стадии оценки",
   "TMH Patient ID": "Идентификатор пациента ТМХ",
   "Visit Completed": "Посещение завершено",
@@ -6104,5 +6107,6 @@
   "Follow Up Instructions": "Последующие инструкции",
   "No Follow Up Instructions added": "No Follow Up Instructions added",
   "No followup added": "Продолжение не добавлено",
-  "Doctor's Recommendation": "Рекомендация врача"
+  "Doctor's Recommendation": "Рекомендация врача",
+  "No data available!": "Нет данных!"
 }

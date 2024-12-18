@@ -6095,6 +6095,9 @@
   "Doctors Mapped": "Doctors Mapped",
   "List of Patients between two dates": "List of Patients between two dates",
   "Create Report": "Create Report",
+  "Diagnosis at Secondary Level": "Diagnosis at Secondary Level",
+  "Diagnosis after telemedicine consultation": "Diagnosis after telemedicine consultation",
+  "Enter Diagnosis": "Enter Diagnosis",
   "Department": "Department",
   "Relative Phone Number": "Relative Phone Number",
   "Discipline": "Discipline",
@@ -6103,5 +6106,6 @@
   "Follow Up Instructions": "Follow Up Instructions",
   "No Follow Up Instructions added": "No Follow Up Instructions added",
   "No followup added": "No followup added",
-  "Doctor's Recommendation": "Doctor's Recommendation"
+  "Doctor's Recommendation": "Doctor's Recommendation",
+  "No data available!": "No data available!"
 }

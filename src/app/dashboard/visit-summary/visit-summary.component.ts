@@ -97,6 +97,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   isVisitNoteProvider = false;
   referSpecialityForm: FormGroup;
   provider: ProviderModel;
+  diagnosisAtSecondaryLevel: any;
   showAll = true;
   @ViewChild(MatAccordion) accordion: MatAccordion;
 
@@ -418,6 +419,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
             if (this.patientVisitSummary.attachment_section) {
               this.getVisitAdditionalDocs(visit);
             }
+            this.diagnosisAtSecondaryLevel = this.visitSummaryService.checkIfAttributeExists(visit.attributes, 'DiagnosisSecondaryLevel');
           }
           this.checkOpenChatBoxFlag();
         });
