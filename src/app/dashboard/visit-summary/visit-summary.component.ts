@@ -24,13 +24,14 @@ import { ChatBoxComponent } from 'src/app/modal-components/chat-box/chat-box.com
 import { VideoCallComponent } from 'src/app/modal-components/video-call/video-call.component';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslationService } from 'src/app/services/translation.service';
-import { calculateBMI, deleteCacheData, getCacheData, getFieldValueByLanguage, setCacheData } from 'src/app/utils/utility-functions';
+import { calculateBMI, deleteCacheData, getCacheData, getFieldValueByLanguage, setCacheData, isFeaturePresent } from 'src/app/utils/utility-functions';
 import { doctorDetails, languages, visitTypes, facility, refer_specialization, refer_prioritie, strength, days, timing, PICK_FORMATS, conceptIds } from 'src/config/constant';
 import { VisitSummaryHelperService } from 'src/app/services/visit-summary-helper.service';
 import { ApiResponseModel, DataItemModel, DiagnosisModel, DocImagesModel, EncounterModel, EncounterProviderModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientHistoryModel, PatientIdentifierModel, PatientModel, PatientVisitSection, PatientVisitSummaryConfigModel, PersonAttributeModel, ProviderAttributeModel, ProviderModel, RecentVisitsApiResponseModel, ReferralModel, SpecializationModel, TestModel, VisitAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { checkIsEnabled, VISIT_SECTIONS } from 'src/app/utils/visit-sections';
 import { NgSelectComponent } from '@ng-select/ng-select';
+import { NgxRolesService } from 'ngx-permissions';
 
 class PickDateAdapter extends NativeDateAdapter {
   format(date: Date, displayFormat: Object): string {
@@ -148,6 +149,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   hasPatientOtherEnabled: boolean = false;
 
   collapsed: boolean = true;
+  isMCCUser: boolean = false;
 
   reasons = {
     'Completed': [
@@ -172,6 +174,8 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('reasonSelect', { static: false }) reasonSelectComponent: NgSelectComponent;
   reasonsList: { name: string }[] = [];
   patientInteraction: PatientVisitSection[] = [];
+
+  frequencyList = ["Once daily", "Twice daily", "Three times daily", "Four times daily", "Every 30 minutes", "Every hour", "Every four hours", "Every eight hours"];
 
   mainSearch = (text$: Observable<string>, list: string[]) =>
     text$.pipe(
@@ -202,8 +206,8 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     private translationService: TranslationService,
     private visitSummaryService: VisitSummaryHelperService,
     private mindmapService: MindmapService,
-    public appConfigService: AppConfigService) {
-
+    public appConfigService: AppConfigService,
+    private rolesService: NgxRolesService) {
     Object.keys(this.appConfigService.patient_registration).forEach(obj => {
       this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter((e: { is_enabled: any; }) => e.is_enabled).map((e: { name: any; }) => e.name));
     });
@@ -241,7 +245,8 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.diagnosisForm = new FormGroup({
       diagnosisName: new FormControl(null, Validators.required),
       diagnosisType: new FormControl(null, Validators.required),
-      diagnosisStatus: new FormControl(null, Validators.required)
+      diagnosisStatus: new FormControl(null, Validators.required),
+      diagnosisTNMStaging: new FormControl(null)
     });
 
     this.addMedicineForm = new FormGroup({
@@ -249,6 +254,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       strength: new FormControl(null, [Validators.required]),
       days: new FormControl(null, [Validators.required]),
       timing: new FormControl(null, [Validators.required]),
+      frequency: new FormControl(null),
       remark: new FormControl(null, [Validators.required])
     });
 
@@ -265,9 +271,9 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     });
 
     this.addReferralForm = new FormGroup({
-      facility: new FormControl(null, [Validators.required]),
+      facility: new FormControl(null, !this.isFeatureAvailable('referralFacility') ? [Validators.required]: []),
       speciality: new FormControl(null, [Validators.required]),
-      priority_refer: new FormControl('Elective', [Validators.required]),
+      priority_refer: new FormControl('Elective', !this.isFeatureAvailable('priorityOfReferral') ? [Validators.required]: []),
       reason: new FormControl(null)
     });
 
@@ -277,7 +283,8 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       followUpDate: new FormControl(null),
       followUpTime: new FormControl(null),
       followUpReason: new FormControl(null),
-      uuid: new FormControl(null)
+      uuid: new FormControl(null),
+      followUpType: new FormControl(null)
     });
 
     this.diagnosisSubject = new BehaviorSubject<any[]>([]);
@@ -292,7 +299,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
 
     this.pvsConfigs = this.appConfigService.patient_visit_sections;
     this.patientInteraction = this.appConfigService.patient_visit_sections;
-
+    this.isMCCUser = !!this.rolesService.getRole('ORGANIZATIONAL:MCC');
   }
 
   ngOnInit(): void {
@@ -1055,11 +1062,14 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.diagnosisService.getObs(this.visit.patient.uuid, conceptIds.conceptDiagnosis).subscribe((response: ObsApiResponseModel) => {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this.visit.uuid) {
+          const obsValues = obs.value.split(':');
+          const obsValuesOne = obsValues[1]?.split('&');
           this.existingDiagnosis.push({
-            diagnosisName: obs.value.split(':')[0].trim(),
-            diagnosisType: obs.value.split(':')[1].split('&')[0].trim(),
-            diagnosisStatus: obs.value.split(':')[1].split('&')[1].trim(),
-            uuid: obs.uuid
+            diagnosisName: obsValues[0]?.trim(),
+            diagnosisType: obsValuesOne[0]?.trim(),
+            diagnosisStatus: obsValuesOne[1]?.trim(),
+            uuid: obs.uuid,
+            diagnosisTNMStaging: obsValuesOne[2]?.trim() !== 'null' ? obsValuesOne[2]?.trim() : null,
           });
         }
       });
@@ -1116,7 +1126,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       concept: conceptIds.conceptDiagnosis,
       person: this.visit.patient.uuid,
       obsDatetime: new Date(),
-      value: `${diagnosisName}:${this.diagnosisForm.value.diagnosisType} & ${this.diagnosisForm.value.diagnosisStatus}`,
+      value: `${diagnosisName}:${this.diagnosisForm.value.diagnosisType} & ${this.diagnosisForm.value.diagnosisStatus} & ${this.diagnosisForm.value.diagnosisTNMStaging}`,
       encounter: this.visitNotePresent.uuid
     }).subscribe((res: ObsModel) => {
       if (res) {
@@ -1172,6 +1182,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
               days: obs.value?.split(':')[2],
               timing: obs.value?.split(':')[3],
               remark: obs.value?.split(':')[4],
+              frequency: obs.value?.split(':')[5] ? obs.value?.split(':')[5] : "",
               uuid: obs.uuid
             });
           } else {
@@ -1198,7 +1209,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       concept: conceptIds.conceptMed,
       person: this.visit.patient.uuid,
       obsDatetime: new Date(),
-      value: `${this.addMedicineForm.value.drug}:${this.addMedicineForm.value.strength}:${this.addMedicineForm.value.days}:${this.addMedicineForm.value.timing}:${this.addMedicineForm.value.remark}`,
+      value: `${this.addMedicineForm.value.drug}:${this.addMedicineForm.value.strength}:${this.addMedicineForm.value.days}:${this.addMedicineForm.value.timing}:${this.addMedicineForm.value.remark}:${this.addMedicineForm.value.frequency}`,
       encounter: this.visitNotePresent.uuid
     }).subscribe((response: ObsModel) => {
       this.medicines.push({ ...this.addMedicineForm.value, uuid: response.uuid });
@@ -1478,11 +1489,12 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.diagnosisService.getObs(this.visit.patient.uuid, conceptIds.conceptFollow).subscribe((response: ObsApiResponseModel) => {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this.visit.uuid) {
-          let followUpDate: string, followUpTime: any, followUpReason: any, wantFollowUp: string;
+          let followUpDate: string, followUpTime: any, followUpReason: any, wantFollowUp: string, followUpType: any;
           if (obs.value.includes('Time:')) {
             followUpDate = (obs.value.includes('Time:')) ? moment(obs.value.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.value.split(', Remark: ')[0]).format('YYYY-MM-DD');
             followUpTime = (obs.value.includes('Time:')) ? obs.value.split(', Time: ')[1].split(', Remark: ')[0] : null;
-            followUpReason = (obs.value.split(', Remark: ')[1]) ? obs.value.split(', Remark: ')[1] : null;
+            followUpReason = (obs.value.split(', Remark: ')[1]) ? obs.value.split(', Remark: ')[1].split(', ')[0] : null;
+            followUpType = obs.value.split('Type: ').length > 1 && obs.value.split('Type: ')[1].split(', Time: ')[0] !== 'null' ? obs.value.split('Type: ')[1].split(', Time: ')[0] : null;
             wantFollowUp = 'Yes';
           } else {
             wantFollowUp = 'No';
@@ -1494,7 +1506,8 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
             followUpDate,
             followUpTime,
             followUpReason,
-            uuid: obs.uuid
+            uuid: obs.uuid,
+            followUpType
           });
         }
       });
@@ -1520,7 +1533,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
         return;
       }
       body.value = (this.followUpForm.value.followUpReason) ?
-        `${moment(this.followUpForm.value.followUpDate).format('YYYY-MM-DD')}, Time: ${this.followUpForm.value.followUpTime}, Remark: ${this.followUpForm.value.followUpReason}` : `${moment(this.followUpForm.value.followUpDate).format('YYYY-MM-DD')}, Time: ${this.followUpForm.value.followUpTime}`;
+        `${moment(this.followUpForm.value.followUpDate).format('YYYY-MM-DD')}, Time: ${this.followUpForm.value.followUpTime}, Remark: ${this.followUpForm.value.followUpReason},  Type: ${this.followUpForm.value.followUpType}` : `${moment(this.followUpForm.value.followUpDate).format('YYYY-MM-DD')}, Time: ${this.followUpForm.value.followUpTime}`;
     }
     this.encounterService.postObs(body).subscribe((res: ObsModel) => {
       if (res) {
@@ -1538,7 +1551,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   */
   deleteFollowUp(): void {
     this.diagnosisService.deleteObs(this.followUpForm.value.uuid).subscribe(() => {
-      this.followUpForm.patchValue({ present: false, uuid: null, wantFollowUp: '', followUpDate: null, followUpTime: null, followUpReason: null });
+      this.followUpForm.patchValue({ present: false, uuid: null, wantFollowUp: '', followUpDate: null, followUpTime: null, followUpReason: null, followUpType: null });
       this.followUpDatetime = null;
     });
   }
@@ -1884,4 +1897,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     return subSection ? subSection.is_enabled : false;
   }
 
+  isFeatureAvailable(featureName: string, notInclude = false): boolean {
+    return isFeaturePresent(featureName, notInclude);
+  }
 }

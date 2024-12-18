@@ -54,7 +54,7 @@
 
         <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Date of Birth') && patient?.person.birthdate !== 'NA'">
           <div class="patient-info-item mb-3">
-            <h6 data-test-id="etPatientAge">{{'Date of Birth'|translate}}</h6>
+            <h6 data-test-id="etPatientAge">{{'Date of birth'|translate}}</h6>
             <p data-test-id="etPatient">{{ patient?.person.birthdate | date : "dd MMM, yyyy" }}</p>
           </div>
         </div>
@@ -103,6 +103,13 @@
           <div class="patient-info-item mb-3">
             <h6 data-test-id="etPatient">{{'Contact Type' | translate}}</h6>
             <p data-test-id="etPatient">{{ getPersonAttributeValue('Emergency Contact Type') }}</p>
+          </div>
+        </div>
+
+        <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Email') && getPersonAttributeValue('Email') !== 'NA'">
+          <div class="patient-info-item mb-3">
+            <h6 data-test-id="etPatient">{{'Email' | translate}}</h6>
+            <p data-test-id="etPatient">{{ getPersonAttributeValue('Email') }}</p>
           </div>
         </div>
       </div>
@@ -251,11 +258,39 @@
                 <p data-test-id="etPatient">{{ getPersonAttributeValue('INN') }}</p>
               </div>
             </div>
+            
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('TMH Case Number') && getPersonAttributeValue('TMH Case Number') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'TMH Case Number' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('TMH Case Number') }}</p>
+              </div>
+            </div>
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Request ID') && getPersonAttributeValue('Request ID') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Request ID' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Request ID') }}</p>
+              </div>
+            </div>
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Discipline') && getPersonAttributeValue('Discipline') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Discipline' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Discipline') }}</p>
+              </div>
+            </div>
 
             <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Department') && getPersonAttributeValue('Department') !== 'NA'">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatient">{{'Department' | translate}}</h6>
                 <p data-test-id="etPatient">{{ getPersonAttributeValue('Department') }}</p>
+              </div>
+            </div>
+            
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Relative Phone Number') && getPersonAttributeValue('Relative Phone Number') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Relative Phone Number' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Relative Phone Number') }}</p>
               </div>
             </div>
           </div>

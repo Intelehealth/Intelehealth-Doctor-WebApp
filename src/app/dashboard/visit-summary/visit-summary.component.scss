@@ -380,7 +380,7 @@
 
 .no-docs {
   padding: 24px 0px;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .refer-form {
@@ -408,7 +408,7 @@
 
 .form-group {
   label {
-    font-size: 14px;
+    font-size: inherit;
     color: var(--color-darkestBlue);
   }
 

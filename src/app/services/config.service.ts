@@ -173,7 +173,7 @@ export class ConfigService {
   */
   updateHelpTour(help_tour_config: string): Observable<any> {
     const url = `${this.baseURL}/theme_config/updateHelpTour`;
-    return this.http.put(url, {help_tour_config});
+    return this.http.put(url, { help_tour_config });
   }
 
   /**
@@ -351,7 +351,7 @@ export class ConfigService {
     return this.http.put(url, { is_enabled });
   }
 
-  
+
   /**
   * Update Patient Visit Sections Name
   * @param {boolean} id - id of section
@@ -363,12 +363,12 @@ export class ConfigService {
     return this.http.put(url, { lang });
   }
 
-   /**
-  * Update Patient Visit Sections Order
-  * @param {any} newOrder - update newOrder
-  * @return {Observable<any>}
-  */
-   updatePVSOrder(newOrder: any): Observable<any> {
+  /**
+ * Update Patient Visit Sections Order
+ * @param {any} newOrder - update newOrder
+ * @return {Observable<any>}
+ */
+  updatePVSOrder(newOrder: any): Observable<any> {
     const url = `${this.baseURL}/patient-visit-sections/update-order`;
     return this.http.put(url, { order: newOrder });
   }
@@ -384,7 +384,15 @@ export class ConfigService {
     const url = `${this.baseURL}/patient-visit-sections/updateSubSectionIsEnabled/${id}`;
     return this.http.put(url, { sub_section, is_enabled });
   }
-  
+
+  /**
+   * Get Patient Details Sections
+   * @returns {Observable<any>}
+   */
+  getPatientDetailsSections(): Observable<any> {
+    const url = `${this.baseURL}/pds/all`;
+    return this.http.get(url);
+  }
 }
 
 

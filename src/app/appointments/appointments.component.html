@@ -61,6 +61,12 @@
                 <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'apComplaint'+j" [routerLink]="['/dashboard/visit-summary', element?.visitUuid]"> {{element?.cheif_complaint}} </td>
               </ng-container>
 
+              <!-- Doctor Column -->
+              <ng-container matColumnDef="drName">
+                <th mat-header-cell *matHeaderCellDef> {{'Doctor' | translate}} </th>
+                <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'apComplaint'+j" [routerLink]="['/dashboard/visit-summary', element?.visitUuid]"> {{element?.drName}} </td>
+              </ng-container>
+            
               <!-- Contact Column -->
               <ng-container matColumnDef="telephone">
                 <th mat-header-cell *matHeaderCellDef> {{'Contact' | translate}} </th>

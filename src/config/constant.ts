@@ -238,6 +238,7 @@ export const conceptIds = {
   conceptDiagnosisClass : '8d4918b0-c2cc-11de-8d13-0010c6dffd0f',
   conceptPastMedicalHistoryNotes: 'dc27d56c-f970-4eaa-88d0-46d55c2ab24c',
   conceptFamilyHistoryNotes: '675bafa3-2d9b-4cd1-9d38-55a2f47a69a5',
+  conceptFollowUpInstruction: 'e444b5e9-e3b9-4cb1-92ee-29bba00b33d0'
 }
 
 export const WEBRTC = {

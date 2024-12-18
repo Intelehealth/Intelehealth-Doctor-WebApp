@@ -160,6 +160,10 @@
       display: flex;
     }
   }
+
+  .mat-expansion-panel.mat-expanded .mat-expansion-panel-header .input-group {
+    display: flex !important;
+  }
   
   .input-group {
     background: var(--color-white);

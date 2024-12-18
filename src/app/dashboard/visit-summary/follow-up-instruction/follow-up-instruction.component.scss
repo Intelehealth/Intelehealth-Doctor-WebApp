@@ -104,3 +104,19 @@
     color: var(--color-darkestBlue);
     padding: 0px;
   }
+
+  .mat-expansion-panel.bg-gray {
+    background: var(--color-offWhite);
+
+    .input-group {
+      background: var(--color-white);
+    }
+
+    .form-control {
+      background: var(--color-white);
+    }
+
+    textarea.form-control {
+      background: var(--color-white);
+    }
+  }

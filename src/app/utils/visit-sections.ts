@@ -77,7 +77,9 @@ export const checkIsEnabled = (
         case VISIT_SECTIONS['physical_examination'].key:
             is_enabled = is_enabled;
             break;
-    
+        case 'patient_interaction':
+            is_enabled = false;
+        break;
 
         default:
             // For other sections, return the initial is_enabled and expanded
