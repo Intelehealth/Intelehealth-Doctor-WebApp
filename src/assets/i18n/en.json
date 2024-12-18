@@ -6079,5 +6079,8 @@
   "Maximum 20 charactors allowed":"Maximum 20 charactors allowed",
   "Doctors Mapped": "Doctors Mapped",
   "List of Patients between two dates": "List of Patients between two dates",
-  "Create Report": "Create Report"
+  "Create Report": "Create Report",
+  "Diagnosis at Secondary Level": "Diagnosis at Secondary Level",
+  "Diagnosis after telemedicine consultation": "Diagnosis after telemedicine consultation",
+  "Enter Diagnosis": "Enter Diagnosis"
 }

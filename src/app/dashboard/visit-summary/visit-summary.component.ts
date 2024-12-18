@@ -96,6 +96,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   isVisitNoteProvider = false;
   referSpecialityForm: FormGroup;
   provider: ProviderModel;
+  diagnosisAtSecondaryLevel: any;
   showAll = true;
   @ViewChild(MatAccordion) accordion: MatAccordion;
 
@@ -359,6 +360,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   getVisit(uuid: string): void {
     this.visitService.fetchVisitDetails(uuid).subscribe((visit: VisitModel) => {
       if (visit) {
+        console.log("visit.attributes", visit.attributes)
         this.visit = visit;
         if (this.visitSummaryService.checkIfEncounterExists(visit.encounters, visitTypes.FLAGGED)) {
           this.visit['visitUploadTime'] = this.visitSummaryService.checkIfEncounterExists(visit.encounters, visitTypes.FLAGGED) ? this.visitSummaryService.checkIfEncounterExists(visit.encounters, visitTypes.FLAGGED)['encounterDatetime'] : null;
@@ -411,6 +413,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
             if (this.patientVisitSummary.attachment_section) {
               this.getVisitAdditionalDocs(visit);
             }
+            this.diagnosisAtSecondaryLevel = this.visitSummaryService.checkIfAttributeExists(visit.attributes, 'DiagnosisSecondaryLevel');
           }
           this.checkOpenChatBoxFlag();
         });

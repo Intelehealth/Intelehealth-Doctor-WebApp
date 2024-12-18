@@ -1098,12 +1098,20 @@
                 </table>
               </div>
 
+              <ng-container *ngIf="patientVisitSummary?.diagnosis_at_secondary_level && diagnosisAtSecondaryLevel">
+                <h4 class="mb-0">{{'Diagnosis at Secondary Level'| translate}}</h4>
+                <ul class="items-list pb-4">
+                  <li>{{diagnosisAtSecondaryLevel?.display}}</li>
+                </ul>
+              </ng-container>
+
               <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
                 <form
                   [formGroup]="diagnosisForm"
                   (ngSubmit)="saveDiagnosis()"
                   *ngIf="!addMoreDiagnosis"
                 >
+                  <h4 class="mb-0">Diagnosis after telemedicine consultation</h4>
                   <ul class="items-list">
                     <li>
                       <div class="row">
@@ -1113,21 +1121,8 @@
                           >{{'Select diagnosis'|translate}}*</label
                         >
                         <div class="col-sm-3">
-                          <ng-select
-                            appendTo=".visit-summary-tab-group"
-                            class="visit-select custom"
-                            formControlName="diagnosisName"
-                            (search)="onKeyUp($event)"
-                            [items]="diagnosis$ | async"
-                            bindLabel="name"
-                            bindValue="name"
-                            [clearable]="true"
-                            [searchable]="true"
-                            placeholder="{{'Select diagnosis'|translate}}"
-                            [addTag]="true"
-                            data-test-id="selectDiagnosisName"
-                          >
-                          </ng-select>
+                          <input formControlName="diagnosisName" type="text" class="form-control" placeholder="{{'Enter Diagnosis'|translate}}*"
+                            data-test-id="selectDiagnosisName" />
                         </div>
                       </div>
                     </li>
