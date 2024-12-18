@@ -236,8 +236,9 @@ export interface AppointmentModel {
   visitStatus: string,
   cheif_complaint?: string[],
   starts_in?: string,
-  appointmentId?: number
-  telephone?: string
+  appointmentId?: number,
+  telephone?: string,
+  TMH_patient_id?: any
 }
 
 export interface CustomVisitModel {
@@ -509,6 +510,7 @@ export interface MedicineModel {
   days?: string,
   timing?: string,
   remark?: string,
+  frequency?: string,
   uuid?: string
 }
 
@@ -526,7 +528,8 @@ export interface DiagnosisModel {
   diagnosisName?: string,
   diagnosisType?: string,
   diagnosisStatus?: string,
-  uuid?: string
+  uuid?: string,
+  diagnosisTNMStaging?: string
 }
 
 export interface DocImagesModel {
@@ -553,7 +556,8 @@ export interface FollowUpDataModel {
   wantFollowUp?: string,
   followUpDate?: string,
   followUpTime?: string,
-  followUpReason?: string
+  followUpReason?: string,
+  followUpType?: string
 }
 
 export interface HwModel {
@@ -670,6 +674,7 @@ export interface PatientVisitSummaryConfigModel {
   follow_up_visit_section: boolean
   hw_interaction: boolean
   awaiting_visits_patient_type_demarcation: boolean
+  awaiting_visit_section: boolean
 }
 
 export interface PagerdutyList {

@@ -8,28 +8,29 @@ import { EncounterService } from 'src/app/services/encounter.service';
 import { conceptIds } from 'src/config/constant';
 
 @Component({
-  selector: 'app-notes',
-  templateUrl: './notes.component.html',
-  styleUrls: ['./notes.component.scss']
+  selector: 'app-follow-up-instruction',
+  templateUrl: './follow-up-instruction.component.html',
+  styleUrls: ['./follow-up-instruction.component.scss']
 })
-export class NotesComponent implements OnInit {
-  notes: ObsModel[] = [];
+export class FollowUpInstructionComponent {
+  followUpInstructions: ObsModel[] = [];
   @Input() isVisitNoteProvider = false;
   @Input() visitEnded: EncounterModel | string;
   @Input() set visit(_visit: VisitModel) {
     this._visit = _visit;
     if (this._visit)
-      this.checkIfNotePresent();
+      this.checkIfFollowUpInstructionsPresent();
   }
   @Input() visitNotePresent: EncounterModel;
   @Input() title: string = 'notes';
   @Input() isMCCUser: boolean = false;
  
   _visit: VisitModel;
-  addNoteForm: FormGroup = new FormGroup({
-    note: new FormControl(null, [Validators.required])
+  addInstructionForm: FormGroup = new FormGroup({
+    instructions: new FormControl(null, [Validators.required])
   });
-  addMoreNote = false;
+  addMoreInstruction = false;
+  conceptId = conceptIds.conceptFollowUpInstruction;
 
   constructor(
     private diagnosisSvc: DiagnosisService,
@@ -41,78 +42,64 @@ export class NotesComponent implements OnInit {
   ngOnInit(): void { }
 
   /**
-   * Get notes for the visit
+   * Get followUpInstructions for the visit
    * @returns {void}
    */
-  checkIfNotePresent(): void {
-    this.notes = [];
+  checkIfFollowUpInstructionsPresent(): void {
+    this.followUpInstructions = [];
     this.diagnosisSvc.getObs(this._visit.patient.uuid, this.conceptId).subscribe((response: ObsApiResponseModel) => {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this._visit.uuid) {
-          this.notes.push(obs);
+          this.followUpInstructions.push(obs);
         }
       });
     });
   }
 
-  get conceptId(): string {
-    switch (this.title) {
-      case 'Family History Notes':
-        return conceptIds.conceptFamilyHistoryNotes;
 
-      case 'Past Medical History Notes':
-        return conceptIds.conceptPastMedicalHistoryNotes;
-
-      default:
-        return conceptIds.conceptNote
-    }
-  }
-
-
-    /**
-    * Save note
-    * @returns {void}
-    */
-    addNote(): void {
-      if(this.addNoteForm.invalid) {
-      this.toastr.warning(this.translateSvc.instant('Please enter note text to add'), this.translateSvc.instant('Invalid note'));
+  /**
+  * Save addInstruction
+  * @returns {void}
+  */
+  addInstructions(): void {
+      if(this.addInstructionForm.invalid) {
+      this.toastr.warning(this.translateSvc.instant('Please enter instructions to add'), this.translateSvc.instant('Invalid Instructions'));
       return;
     }
-    if (this.notes.find((o: ObsModel) => o.value === this.addNoteForm.value.note)) {
-      this.toastr.warning(this.translateSvc.instant('Note already added, please add another note.'), this.translateSvc.instant('Already Added'));
+    if (this.followUpInstructions.find((o: ObsModel) => o.value === this.addInstructionForm.value.instructions)) {
+      this.toastr.warning(this.translateSvc.instant('Instructions already added, please add another Instructions.'), this.translateSvc.instant('Already Added'));
       return;
     }
     this.encounterSvc.postObs({
       concept: this.conceptId,
       person: this._visit.patient.uuid,
       obsDatetime: new Date(),
-      value: this.addNoteForm.value.note,
+      value: this.addInstructionForm.value.instructions,
       encounter: this.visitNotePresent.uuid
     }).subscribe((res: ObsModel) => {
-      this.notes.push({ uuid: res.uuid, value: this.addNoteForm.value.note });
-      this.addNoteForm.reset();
+      this.followUpInstructions.push({ uuid: res.uuid, value: this.addInstructionForm.value.instructions });
+      this.addInstructionForm.reset();
     });
   }
 
   /**
-  * Delete note for a given index and uuid
+  * Delete Instructions for a given index and uuid
   * @param {number} index - Index
   * @param {string} uuid - Note obs uuid
   * @returns {void}
   */
-  deleteNote(index: number, uuid: string): void {
+  deleteInstructions(index: number, uuid: string): void {
     this.diagnosisSvc.deleteObs(uuid).subscribe(() => {
-      this.notes.splice(index, 1);
+      this.followUpInstructions.splice(index, 1);
     });
   }
 
   /**
-   * Toggle notes add form, show/hide add more notes button
+   * Toggle follow Up Instructions add form, show/hide add more notes button
    * @returns {void}
    */
-  toggleNote(): void {
-    this.addMoreNote = !this.addMoreNote;
-    this.addNoteForm.reset();
+  toggleInstructions(): void {
+    this.addMoreInstruction = !this.addMoreInstruction;
+    this.addInstructionForm.reset();
   }
-  
 }
