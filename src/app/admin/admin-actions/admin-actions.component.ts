@@ -64,6 +64,13 @@ export class AdminActionsComponent implements OnInit {
       isLocalPath: true
     },
     {
+      title: "Patient Details",
+      desc: "Manage features/fields to be shown during patient details",
+      icon: "assets/svgs/patient-reg.svg",
+      path: "admin/actions/patient-details",
+      isLocalPath: true
+    },
+    {
       title: "Partner White Labelling",
       desc: "Upload partner logo and manage color theme",
       icon: "assets/svgs/partner-label.svg",

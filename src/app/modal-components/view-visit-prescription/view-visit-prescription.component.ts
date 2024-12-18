@@ -9,12 +9,12 @@ import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { doctorDetails, visitTypes } from 'src/config/constant';
+import { conceptIds, doctorDetails, visitTypes } from 'src/config/constant';
 import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PatientRegistrationFieldsModel, PatientVisitSection, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 import { precription } from "../../utils/base64"
 import { AppConfigService } from 'src/app/services/app-config.service';
-import { calculateBMI, getFieldValueByLanguage } from 'src/app/utils/utility-functions';
+import { calculateBMI, getFieldValueByLanguage, isFeaturePresent } from 'src/app/utils/utility-functions';
 import { checkIsEnabled, VISIT_SECTIONS } from 'src/app/utils/visit-sections';
 
 @Component({
@@ -47,6 +47,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   referrals: ReferralModel[] = [];
   followUp: FollowUpDataModel;
   consultedDoctor: any;
+  followUpInstructions: ObsModel[] = [];
 
   conceptDiagnosis = '537bb20d-d09d-4f88-930b-cc45c7d662df';
   conceptNote = '162169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
@@ -55,6 +56,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   conceptTest = '23601d71-50e6-483f-968d-aeef3031346d';
   conceptReferral = '605b6f15-8f7a-4c45-b06d-14165f6974be';
   conceptFollow = 'e8caffd6-5d22-41c4-8d6a-bc31a44d0c86';
+  conceptFollowUpInstruction = conceptIds.conceptFollowUpInstruction;
 
   signaturePicUrl: string = null;
   signatureFile = null;
@@ -135,6 +137,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               this.checkIfTestPresent();
               this.checkIfReferralPresent();
               this.checkIfFollowUpPresent();
+              this.checkIfFollowUpInstructionsPresent();
             }
             this.getCheckUpReason(visit.encounters);
             this.getVitalObs(visit.encounters);
@@ -230,7 +233,8 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
             diagnosisName: obs.value.split(':')[0].trim(),
             diagnosisType: obs.value.split(':')[1].split('&')[0].trim(),
             diagnosisStatus: obs.value.split(':')[1].split('&')[1].trim(),
-            uuid: obs.uuid
+            uuid: obs.uuid,
+            diagnosisTNMStaging: obs.value.split(':')[1]?.split('&')[2]?.trim() !== 'null' ? obs.value.split(':')[1]?.split('&')[2]?.trim() : null,
           });
         }
       });
@@ -268,6 +272,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               days: obs.value?.split(':')[2],
               timing: obs.value?.split(':')[3],
               remark: obs.value?.split(':')[4],
+              frequency: obs.value?.split(':')[5] ? obs.value?.split(':')[5] : '',
               uuid: obs.uuid
             });
           } else {
@@ -337,11 +342,12 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     this.diagnosisService.getObs(this.visit.patient.uuid, this.conceptFollow).subscribe((response: ObsApiResponseModel) => {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this.visit.uuid) {
-          let followUpDate: string, followUpTime: any, followUpReason: any,wantFollowUp: string;
+          let followUpDate: string, followUpTime: any, followUpReason: any, wantFollowUp: string, followUpType: string;
           if(obs.value.includes('Time:')) {
              followUpDate = (obs.value.includes('Time:')) ? moment(obs.value.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.value.split(', Remark: ')[0]).format('YYYY-MM-DD');
              followUpTime = (obs.value.includes('Time:')) ? obs.value.split(', Time: ')[1].split(', Remark: ')[0] : null;
-             followUpReason = (obs.value.split(', Remark: ')[1]) ? obs.value.split(', Remark: ')[1] : null;
+             followUpReason = obs.value.split(', Remark: ') && (obs.value.split(', Remark: ')[1]) ? obs.value.split(', Remark: ')[1].split(', ')[0] : null;
+             followUpType = obs.value.split('Type: ').length > 1 && obs.value.split('Type: ')[1].split(', Time: ')[0] !== 'null' ? obs.value.split('Type: ')[1].split(', Time: ')[0] : null;
              wantFollowUp ='Yes';
           } else {
              wantFollowUp ='No';
@@ -351,7 +357,8 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
             wantFollowUp,
             followUpDate,
             followUpTime,
-            followUpReason
+            followUpReason,
+            followUpType
           };
         }
       });
@@ -772,7 +779,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                         {
                           colSpan: 2,
                           ul: [
-                            {text: [{text: 'Patient ID:', bold: true}, ` ${this.patient?.identifiers?.[0]?.identifier}`], margin: [0, 5, 0, 5]},
+                            {text: [{text: 'Patient ID:', bold: true}, ` ${this.getPersonAttributeValue('TMH Case Number') !== 'NA' ? this.getPersonAttributeValue('TMH Case Number') : this.patient?.identifiers?.[0]?.identifier}`], margin: [0, 5, 0, 5]},
                             {text: [{text: 'Date of Consultation:', bold: true}, ` ${moment(this.completedEncounter?.encounterDatetime).format('DD MMM yyyy')}`],  margin: [0, 5, 0, 5]}
                           ]
                         }
@@ -799,10 +806,10 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                         {
                           colSpan: 2,
                           table: {
-                            widths: ['*', '*', '*'],
+                            widths: ['*', '*', '*', '*'],
                             headerRows: 1,
                             body: [
-                              [{text: 'Diagnosis', style: 'tableHeader'}, {text: 'Type', style: 'tableHeader'}, {text: 'Status', style: 'tableHeader'}],
+                              [{text: 'Diagnosis', style: 'tableHeader'}, (this.isFeatureAvailable('tnmStaging') ? {text: 'TNM Staging', style: 'tableHeader'} : []), {text: 'Type', style: 'tableHeader'}, {text: 'Status', style: 'tableHeader'}],
                               ...this.getRecords('diagnosis')
                             ]
                           },
@@ -822,47 +829,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               [
                 {
                   colSpan: 4,
-                  table: {
-                    widths: [30, '*'],
-                    headerRows: 1,
-                    body: [
-                      [ {image: 'medication', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Medication', style: 'sectionheader', border: [false, false, false, true] }],
-                      [
-                        {
-                          colSpan: 2,
-                          table: {
-                            widths: ['*', 'auto', 'auto', 'auto', 'auto'],
-                            headerRows: 1,
-                            body: [
-                              [{text: 'Drug name', style: 'tableHeader'}, {text: 'Strength', style: 'tableHeader'}, {text: 'No. of days', style: 'tableHeader'}, {text: 'Timing', style: 'tableHeader'}, {text: 'Remarks', style: 'tableHeader'}],
-                              ...this.getRecords('medication')
-                            ]
-                          },
-                          layout: 'lightHorizontalLines'
-                        }
-                      ],
-                      [{ text: 'Additional Instructions:', style: 'sectionheader', colSpan: 2 }, ''],
-                      [
-                        {
-                          colSpan: 2,
-                          ul: [
-                            ...this.getRecords('additionalInstruction')
-                          ]
-                        }
-                      ]
-                    ]
-                  },
-                  layout: {
-                    defaultBorder: false
-                  }
-                },
-                '',
-                '',
-                ''
-              ],
-              [
-                {
-                  colSpan: 4,
+                  sectionName: "advice",
                   table: {
                     widths: [30, '*'],
                     headerRows: 1,
@@ -886,52 +853,21 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                 '',
                 ''
               ],
-              [
-                {
+              ...this.getDoctorRecommandation(),
+              [{
                   colSpan: 4,
+                  sectionName:'followUpInstructions',
                   table: {
                     widths: [30, '*'],
                     headerRows: 1,
                     body: [
-                      [ {image: 'test', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Test', style: 'sectionheader', border: [false, false, false, true] }],
+                      [ {image: 'test', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Follow up Instructions', style: 'sectionheader', border: [false, false, false, true] }],
                       [
                         {
                           colSpan: 2,
                           ul: [
-                            ...this.getRecords('test')
+                            ...this.getRecords('followUpInstructions')
                           ]
-                        }
-                      ]
-                    ]
-                  },
-                  layout: {
-                    defaultBorder: false
-                  }
-                },
-                '',
-                '',
-                ''
-              ],
-              [
-                {
-                  colSpan: 4,
-                  table: {
-                    widths: [30, '*'],
-                    headerRows: 1,
-                    body:  [
-                      [ {image: 'referral', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Referral Out', style: 'sectionheader', border: [false, false, false, true] }],
-                      [
-                        {
-                          colSpan: 2,
-                          table: {
-                            widths: ['30%', '30%', '10%', '30%'],
-                            headerRows: 1,
-                            body: [
-                              [{text: 'Referral to', style: 'tableHeader'}, {text: 'Referral facility', style: 'tableHeader'}, {text: 'Priority', style: 'tableHeader'}, {text: 'Referral for (Reason)', style: 'tableHeader'}],
-                              ...this.getRecords('referral')
-                            ]
-                          },
-                          layout: 'lightHorizontalLines'
                         }
                       ]
                     ]
@@ -956,10 +892,10 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                         {
                           colSpan: 2,
                           table: {
-                            widths: ['30%', '30%', '10%', '30%'],
+                            widths:['*', '*', '*', '*', '*'],
                             headerRows: 1,
                             body: [
-                              [{text: 'Follow-up Requested', style: 'tableHeader'}, {text: 'Date', style: 'tableHeader'}, {text: 'Time', style: 'tableHeader'}, {text: 'Reason', style: 'tableHeader'}],
+                              [{text: 'Follow-up Requested', style: 'tableHeader'}, (this.isFeatureAvailable('followUpType') ? {text: 'Type', style: 'tableHeader'} : []), {text: 'Date', style: 'tableHeader'}, {text: 'Time', style: 'tableHeader'}, {text: 'Reason', style: 'tableHeader'}],
                               ...this.getRecords('followUp')
                             ]
                           },
@@ -1039,8 +975,11 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     pdfObj.content[0].table.body = pdfObj.content[0].table.body.filter((section:any)=>{
       if(section[0].sectionName === 'vitals' && (!this.hasVitalsEnabled || !vitalsConfig?.is_enabled )) return false;
       if(section[0].sectionName === 'cheifComplaint' && !checkUpReasonConfig?.is_enabled) return false;
+      if(section[0].sectionName === 'followUpInstructions' && !this.isFeatureAvailable('follow-up-instruction')) return false;
+      if(section[0].sectionName === 'advice' && !this.isFeatureAvailable('advice')) return false;
       return true;
     });
+    console.log(JSON.stringify(pdfObj))
     pdfMake.createPdf(pdfObj).download('e-prescription');
   }
 
@@ -1055,7 +994,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       case 'diagnosis':
         if (this.existingDiagnosis.length) {
           this.existingDiagnosis.forEach(d => {
-            records.push([d.diagnosisName, d.diagnosisType, d.diagnosisStatus]);
+            records.push([d.diagnosisName, (this.isFeatureAvailable('tnmStaging') ? d.diagnosisTNMStaging ?? '-' : []), d.diagnosisType, d.diagnosisStatus]);
           });
         } else {
           records.push([{ text: 'No diagnosis added', colSpan: 3, alignment: 'center' }]);
@@ -1064,10 +1003,10 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       case 'medication':
         if (this.medicines.length) {
           this.medicines.forEach(m => {
-            records.push([m.drug, m.strength, m.days, m.timing, m.remark]);
+            records.push([m.drug, m.strength, m.days, m.timing, m.frequency, m.remark]);
           });
         } else {
-          records.push([{ text: 'No medicines added', colSpan: 5, alignment: 'center' }]);
+          records.push([{ text: 'No medicines added', colSpan: 6, alignment: 'center' }]);
         }
         break;
       case 'additionalInstruction':
@@ -1098,20 +1037,30 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         }
         break;
       case 'referral':
+        const referralFacility = this.isFeatureAvailable('referralFacility', true)
+        const priorityOfReferral = this.isFeatureAvailable('priorityOfReferral', true)
+        let length = 2;
         if (this.referrals.length) {
           this.referrals.forEach(r => {
-            records.push([r.speciality, r.facility, r.priority, r.reason? r.reason : '-' ]);
+            const referral = [r.speciality];
+            if(referralFacility) referral.push(r.facility)
+            if(priorityOfReferral) referral.push(r.priority)
+            referral.push(r.reason? r.reason : '-')
+            records.push(referral);
+            length = referral.length
           });
         } else {
-          records.push([{ text: 'No referrals added', colSpan: 4, alignment: 'center' }]);
+          if(referralFacility) length += 1;
+          if(priorityOfReferral) length += 1;
+          records.push([{ text: 'No referrals added', colSpan: length, alignment: 'center' }]);
         }
         break;
       case 'followUp':
           if (this.followUp) {
-            records.push([this.followUp.wantFollowUp, this.followUp.followUpDate ? moment(this.followUp.followUpDate).format('DD MMM YYYY'): '-',
-             this.followUp.followUpTime ? this.followUp.followUpTime : '-', this.followUp.followUpReason ? this.followUp.followUpReason : '-']);
+            records.push([this.followUp.wantFollowUp, (this.isFeatureAvailable('followUpType') ? [this.followUp.followUpType ?? '-'] : []), this.followUp.followUpDate ? moment(this.followUp.followUpDate).format('DD MMM YYYY') : '-', 
+             this.followUp.followUpTime ?? '-', this.followUp.followUpReason ?? '-']);
           } else {
-            records.push([{text: 'No followup added', colSpan: 4, alignment: 'center'}]);
+            records.push([{ text: 'No follow-up added', colSpan: this.isFeatureAvailable('followUpType') ? 5 : 4, alignment: 'center' }]);
           }
           break;
       case 'cheifComplaint':
@@ -1124,6 +1073,15 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       case visitTypes.VITALS:
         this.vitals.forEach((v: VitalModel) => {
           records.push({ text: [{ text: `${v.lang !== null ? this.getLanguageValue(v) : v.name } : `, bold: true }, `${this.getObsValue(v.uuid, v.key) ? this.getObsValue(v.uuid, v.key) : `No information`}`], margin: [0, 5, 0, 5] });        });
+        break;
+      case 'followUpInstructions':
+        if (this.followUpInstructions) {
+          this.followUpInstructions.forEach(t => {
+            records.push({ text: t.value, margin: [0, 5, 0, 5] });
+          });
+        } else {
+          records.push([{ text: 'No Follow Up Instructions added'}]);
+        }
         break;
     }
     return records;
@@ -1222,6 +1180,9 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
           break;
         case 'Contact Type':
           value = this.getPersonAttributeValue('Contact Type');
+          break;
+        case 'Email':
+          value = this.getPersonAttributeValue('Email');
           break;
         default:
           break;
@@ -1386,8 +1347,20 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
           case 'INN':
             value = this.getPersonAttributeValue('INN');
             break;
+          // case 'TMH Case Number':
+          //   value = this.getPersonAttributeValue('TMH Case Number');
+          //   break;
+          case 'Request ID':
+            value = this.getPersonAttributeValue('Request ID');
+            break;
+          case 'Discipline':
+            value = this.getPersonAttributeValue('Discipline');
+            break;
           case 'Department':
             value = this.getPersonAttributeValue('Department');
+            break;
+          case 'Relative Phone Number':
+            value = this.getPersonAttributeValue('Relative Phone Number');
             break;
           default:
             break;
@@ -1437,4 +1410,189 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     return getFieldValueByLanguage(element)
   }
 
+  isFeatureAvailable(featureName: string, notInclude = false): boolean {
+    return isFeaturePresent(featureName, notInclude);
+  }
+
+  renderReferralSectionPDF() {
+    const referralFacility = isFeaturePresent('referralFacility', true)
+    const priorityOfReferral = isFeaturePresent('priorityOfReferral', true)
+    if (!referralFacility && !priorityOfReferral) {
+      return {
+        widths: ['35%', '65%'],
+        headerRows: 1,
+        body: [
+          [{ text: 'Referral to', style: 'tableHeader' }, { text: 'Referral for (Reason)', style: 'tableHeader' }],
+          ...this.getRecords('referral')
+        ]
+      }
+    }
+
+    if (!priorityOfReferral) {
+      return {
+        widths: ['35%', '35%', '30%'],
+        headerRows: 1,
+        body: [
+          [{ text: 'Referral to', style: 'tableHeader' }, { text: 'Referral facility', style: 'tableHeader' }, { text: 'Referral for (Reason)', style: 'tableHeader' }],
+          ...this.getRecords('referral')
+        ]
+      }
+    }
+
+    if (!referralFacility) {
+      return {
+        widths: ['35%', '35%', '30%'],
+        headerRows: 1,
+        body: [
+          [{ text: 'Referral to', style: 'tableHeader' }, { text: 'Priority', style: 'tableHeader' }, { text: 'Referral for (Reason)', style: 'tableHeader' }],
+          ...this.getRecords('referral')
+        ]
+      }
+    }
+
+    return {
+      widths: ['30%', '30%', '10%', '30%'],
+      headerRows: 1,
+      body: [
+        [{ text: 'Referral to', style: 'tableHeader' }, { text: 'Referral facility', style: 'tableHeader' }, { text: 'Priority', style: 'tableHeader' }, { text: 'Referral for (Reason)', style: 'tableHeader' }],
+        ...this.getRecords('referral')
+      ]
+    }
+  }
+
+  /**
+   * Get followUpInstructions for the visit
+   * @returns {void}
+   */
+  checkIfFollowUpInstructionsPresent(): void {
+    this.followUpInstructions = [];
+    this.diagnosisService.getObs(this.visit.patient.uuid, this.conceptFollowUpInstruction).subscribe((response: ObsApiResponseModel) => {
+      response.results.forEach((obs: ObsModel) => {
+        if (obs.encounter.visit.uuid === this.visit.uuid) {
+          this.followUpInstructions.push(obs);
+        }
+      });
+    });
+  }
+
+  getDoctorRecommandation(){
+    let subFields = [[
+      {
+        colSpan: 4,
+        table: {
+          widths: [30, '*'],
+          headerRows: 1,
+          body: [
+            [ {image: 'medication', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Medications Advised', style: 'sectionheader', border: [false, false, false, true] }],
+            [
+              {
+                colSpan: 2,
+                table: {
+                  widths: ['*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                  headerRows: 1,
+                  body: [
+                    [{text: 'Drug name', style: 'tableHeader'}, {text: 'Strength', style: 'tableHeader'}, {text: 'No. of days', style: 'tableHeader'}, {text: 'Timing', style: 'tableHeader'}, {text: 'Frequency', style: 'tableHeader'}, {text: 'Remarks', style: 'tableHeader'}],
+                    ...this.getRecords('medication')
+                  ]
+                },
+                layout: 'lightHorizontalLines'
+              }
+            ],
+            [{ text: 'Additional Instructions:', style: 'sectionheader', colSpan: 2 }, ''],
+            [
+              {
+                colSpan: 2,
+                ul: [
+                  ...this.getRecords('additionalInstruction')
+                ]
+              }
+            ]
+          ]
+        },
+        layout: {
+          defaultBorder: false
+        }
+      },
+      '',
+      '',
+      ''
+    ],
+    [
+      {
+        colSpan: 4,
+        table: {
+          widths: [30, '*'],
+          headerRows: 1,
+          body: [
+            [ {image: 'test', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Investigations Advised', style: 'sectionheader', border: [false, false, false, true] }],
+            [
+              {
+                colSpan: 2,
+                ul: [
+                  ...this.getRecords('test')
+                ]
+              }
+            ]
+          ]
+        },
+        layout: {
+          defaultBorder: false
+        }
+      },
+      '',
+      '',
+      ''
+    ],
+    [
+      {
+        colSpan: 4,
+        table: {
+          widths: [30, '*'],
+          headerRows: 1,
+          body:  [
+            [ {image: 'referral', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Referral Advise', style: 'sectionheader', border: [false, false, false, true] }],
+            [
+              {
+                colSpan: 2,
+                table: this.renderReferralSectionPDF(),
+                layout: 'lightHorizontalLines'
+              }
+            ]
+          ]
+        },
+        layout: {
+          defaultBorder: false
+        }
+      },
+      '',
+      '',
+      ''
+    ]];
+
+    if(this.isFeatureAvailable('doctor-recommendation')){
+      return [
+        [
+          {
+            colSpan: 4,
+            table: {
+              widths: [30, '*','auto','auto'],
+              headerRows: 1,
+              body: [
+                [ {image: 'advice', width: 25, height: 25, border: [false, false, false, true]  }, {colSpan: 3, text: 'Doctor\'s Recommendation', style: 'sectionheader', border: [false, false, false, true] },'',''],
+                ...subFields
+              ]
+            },
+            layout: {
+              defaultBorder: false
+            }
+          },
+          '',
+          '',
+          ''
+        ]
+      ]
+    } else {
+      return subFields;
+    }
+  }
 }

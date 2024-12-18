@@ -40,16 +40,6 @@
         </a>
     </li>
 </ng-container>
-<ng-container *ngIf="menus?.calendar">
-    <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL:MCC']" (click)="toggleSidebar()"
-        data-test-id="listItemCalendar">
-        <a class="nav-item-link" routerLink="/calendar/view-calendar" routerLinkActive="active"
-            data-test-id="linkCalendar">
-            <img src="assets/svgs/menu-calendar.svg" alt="">
-            <span>{{'Calendar' | translate}}</span>
-        </a>
-    </li>
-</ng-container>
 <ng-container *ngIf="menus?.prescription">
     <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR', 'ORGANIZATIONAL: NURSE']"
         (click)="toggleSidebar()" data-test-id="listItemPrescription">
