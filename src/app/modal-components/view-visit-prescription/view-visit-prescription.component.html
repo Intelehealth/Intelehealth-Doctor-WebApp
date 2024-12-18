@@ -435,12 +435,13 @@
                   <!-- Checkup Reasons -->
                     <div class="data-section-content" *ngSwitchCase="pvsConstant['check_up_reason'].key">
                       <div class="cheif-complaint-wrapper">
-                        <h6>{{'Chief complaint'|translate}}</h6>
+                        <h6 *ngIf="cheifComplaints.length">{{'Chief complaint'|translate}}</h6>
                         <div class="complaint-chips">
                           <div class="chip-item" *ngFor="let c of cheifComplaints;">
                             {{c}}
                           </div>
                         </div>
+                        <div *ngIf="!cheifComplaints.length">{{'No data available!'|translate}}</div>
                       </div>
                     </div>
                   <!-- END Checkup Reasons -->

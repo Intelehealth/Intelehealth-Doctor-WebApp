@@ -495,13 +495,13 @@
                       <!-- Checkup Reasons -->
                         <ng-container *ngSwitchCase="pvsConstant['check_up_reason'].key">
                           <div class="cheif-complaint-wrapper">
-                            <h6 data-test-id="etChiefComCheckup">{{'Chief Complaint'|translate}}</h6>
+                            <h6 data-test-id="etChiefComCheckup" *ngIf="cheifComplaints.length">{{'Chief Complaint'|translate}}</h6>
                             <div class="complaint-chips">
                               <div class="chip-item" *ngFor="let c of cheifComplaints" [attr.data-test-id]="'etChiefCom'+c.slice(0,3)+'Checkup'">
                                 {{ c }}
                               </div>
                             </div>
-                            <div class="check-up-reason-con">
+                            <div class="check-up-reason-con" *ngIf="checkUpReasonData.length">
                               <ng-container *ngFor="let ckr of checkUpReasonData">
                                 <ng-container *ngIf="ckr.title != 'Associated symptoms'">
                                   <h6 class="my-3" [attr.data-test-id]="'etTitle'+ckr.title.slice(0,3)+'Checkup'">{{ ckr.title }}</h6>
@@ -539,6 +539,7 @@
                                 </ng-container>
                               </ng-container>
                             </div>
+                            <div *ngIf="!cheifComplaints.length && !checkUpReasonData.length">{{'No data available!'|translate}}</div>
                           </div>
                         </ng-container>
                       <!-- END Checkup Reasons -->
@@ -626,6 +627,7 @@
                               </ng-container>
                             </div>
                           </ng-container>
+                          <div class="no-docs" *ngIf="!physicalExaminationData.length">{{'No data available!'|translate}}</div>
                         </ng-container>
                       <!-- END Physical examination -->
                       
@@ -650,6 +652,7 @@
                               </ul>
                             </div>
                           </ng-container>
+                          <div class="no-docs" *ngIf="!patientHistoryData.length">{{'No data available!'|translate}}</div>
                         </ng-container>
                       <!-- END Medical History -->
                       
@@ -1171,8 +1174,12 @@
                           >{{'Select diagnosis'|translate}}*</label
                         >
                         <div class="col-sm-3">
-                          <input formControlName="diagnosisName" type="text" class="form-control" placeholder="{{'Enter Diagnosis'|translate}}*"
+                          <input *ngIf="isFeatureAvailable('TEXT_DIAGNOSIS')" formControlName="diagnosisName" type="text" class="form-control" placeholder="{{'Enter Diagnosis'|translate}}*"
                             data-test-id="selectDiagnosisName" />
+                          <ng-select *ngIf="!isFeatureAvailable('TEXT_DIAGNOSIS')" appendTo=".visit-summary-tab-group" class="visit-select custom" formControlName="diagnosisName"
+                            (search)="onKeyUp($event)" [items]="diagnosis$ | async" bindLabel="name" bindValue="name" [clearable]="true"
+                            [searchable]="true" placeholder="{{'Select diagnosis'|translate}}" [addTag]="true" data-test-id="selectDiagnosisName">
+                          </ng-select>
                         </div>
                       </div>
                     </li>

@@ -390,13 +390,13 @@
                   <!-- Checkup Reasons -->
                     <div class="data-section-content" *ngSwitchCase="pvsConstant['check_up_reason'].key">
                       <div class="cheif-complaint-wrapper">
-                        <h6>{{'Chief complaint'|translate}}</h6>
+                        <h6 *ngIf="cheifComplaints.length">{{'Chief complaint'|translate}}</h6>
                         <div class="complaint-chips">
                           <div class="chip-item" *ngFor="let c of cheifComplaints;">
                             {{c}}
                           </div>
                         </div>
-                        <div class="check-up-reason-con">
+                        <div class="check-up-reason-con" *ngIf="checkUpReasonData.length">
                           <ng-container *ngFor="let ckr of checkUpReasonData;">
                             <ng-container *ngIf="ckr.title != 'Associated symptoms'">
                               <h6 class="my-3">{{ckr.title}}</h6>
@@ -426,6 +426,7 @@
                             </ng-container>
                           </ng-container>
                         </div>
+                        <div *ngIf="!cheifComplaints.length && !checkUpReasonData.length">{{'No data available!'|translate}}</div>
                       </div>
                     </div>
                   <!-- END Checkup Reasons -->
@@ -513,6 +514,7 @@
                           </ng-container>
                         </div>
                       </ng-container>
+                    < <div class="no-docs" *ngIf="!physicalExaminationData.length">{{'No data available!'|translate}}</div>
                     </div>
                   <!-- END Physical examination -->
                   
@@ -537,6 +539,7 @@
                           </ul>
                         </div>
                       </ng-container>
+                      <div class="no-docs" *ngIf="!patientHistoryData.length">{{'No data available!'|translate}}</div>
                     </div>
                   <!-- END Medical History -->
                   
