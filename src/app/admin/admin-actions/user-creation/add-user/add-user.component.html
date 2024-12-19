@@ -153,7 +153,7 @@
                       <small class="error-msg" *ngIf="f1.username.errors.required">{{'Enter username' | translate}}</small>
                       <small class="error-msg" *ngIf="f1.username.errors.minlength">{{'Minimum 3 charactors required' | translate}}</small>
                       <small class="error-msg" *ngIf="f1.username.errors.maxlength">{{'Maximum 20 charactors allowed' | translate}}</small>
-                      <small class="error-msg" *ngIf="f1.username.errors.pattern">{{'Enter Alphanumric charactors only' | translate}}</small>
+                      <small class="error-msg" *ngIf="f1.username.errors.pattern">{{'Enter Alphanumeric characters only' | translate}}</small>
                     </div>
                     <div *ngIf="f1.username.errors">
                       <small class="error-msg" *ngIf="f1.username.errors?.alreadyExists">{{'Username already exists. Please enter another Username.'| translate}}</small>

@@ -10,12 +10,13 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { conceptIds, doctorDetails, visitTypes } from 'src/config/constant';
-import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PatientRegistrationFieldsModel, PatientVisitSection, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
+import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PatientRegistrationFieldsModel, PatientVisitSection, PatientVisitSummaryConfigModel, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 import { precription } from "../../utils/base64"
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { calculateBMI, getFieldValueByLanguage, isFeaturePresent } from 'src/app/utils/utility-functions';
 import { checkIsEnabled, VISIT_SECTIONS } from 'src/app/utils/visit-sections';
+import { VisitSummaryHelperService } from 'src/app/services/visit-summary-helper.service';
 
 @Component({
   selector: 'app-view-visit-prescription',
@@ -48,6 +49,9 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   followUp: FollowUpDataModel;
   consultedDoctor: any;
   followUpInstructions: ObsModel[] = [];
+  diagnosisAtSecondaryLevel: VisitAttributeModel;
+  patientVisitSummary: PatientVisitSummaryConfigModel;
+  
 
   conceptDiagnosis = '537bb20d-d09d-4f88-930b-cc45c7d662df';
   conceptNote = '162169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
@@ -82,7 +86,8 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     private profileService: ProfileService,
     private diagnosisService: DiagnosisService,
     private translateService: TranslateService,
-    private appConfigService: AppConfigService) {
+    private appConfigService: AppConfigService,
+    private visitSummaryService: VisitSummaryHelperService) {
       Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
         this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter((e: { is_enabled: any; })=>e.is_enabled).map((e: { name: any; })=>e.name));
       });
@@ -95,6 +100,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         this.pvsConstant['consultation_details'].key,
         this.pvsConstant['check_up_reason'].key
       ].includes(pvs.key));
+      this.patientVisitSummary = { ...this.appConfigService.patient_visit_summary };
     }
 
   ngOnInit(): void {
@@ -141,7 +147,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
             }
             this.getCheckUpReason(visit.encounters);
             this.getVitalObs(visit.encounters);
-
+            this.diagnosisAtSecondaryLevel = this.visitSummaryService.checkIfAttributeExists(visit.attributes, 'DiagnosisSecondaryLevel');
             visit.encounters.forEach((encounter: EncounterModel) => {
               if (encounter.encounterType.display === visitTypes.VISIT_COMPLETE) {
                 this.completedEncounter = encounter;
