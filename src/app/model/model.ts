@@ -675,6 +675,7 @@ export interface PatientVisitSummaryConfigModel {
   hw_interaction: boolean
   awaiting_visits_patient_type_demarcation: boolean
   awaiting_visit_section: boolean
+  diagnosis_at_secondary_level: boolean
 }
 
 export interface PagerdutyList {
