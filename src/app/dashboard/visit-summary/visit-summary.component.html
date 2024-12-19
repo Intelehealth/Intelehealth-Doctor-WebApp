@@ -1099,6 +1099,18 @@
                 <mat-icon>{{ panel2.expanded ? "remove" : "add" }}</mat-icon>
               </mat-expansion-panel-header>
 
+              <h4 class="mb-0 mt-3" *ngIf="patientVisitSummary?.diagnosis_at_secondary_level && diagnosisAtSecondaryLevel">{{'Diagnosis at
+                Secondary Level'| translate}}
+              </h4>
+              <ul class="items-list pb-4">
+                <li *ngIf="patientVisitSummary?.diagnosis_at_secondary_level && diagnosisAtSecondaryLevel">
+                  <div class="list-item">
+                    <div class="list-item-content">{{diagnosisAtSecondaryLevel?.display}}</div>
+                  </div>
+                </li>
+              </ul>
+              <h4>Diagnosis after telemedicine consultation</h4>
+
               <div class="table-responsive">
                 <table class="table" aria-describedby="">
                   <thead>
@@ -1151,20 +1163,12 @@
                 </table>
               </div>
 
-              <ng-container *ngIf="patientVisitSummary?.diagnosis_at_secondary_level && diagnosisAtSecondaryLevel">
-                <h4 class="mb-0">{{'Diagnosis at Secondary Level'| translate}}</h4>
-                <ul class="items-list pb-4">
-                  <li>{{diagnosisAtSecondaryLevel?.display}}</li>
-                </ul>
-              </ng-container>
-
               <ng-container *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded">
                 <form
                   [formGroup]="diagnosisForm"
                   (ngSubmit)="saveDiagnosis()"
                   *ngIf="!addMoreDiagnosis"
                 >
-                  <h4 class="mb-0">Diagnosis after telemedicine consultation</h4>
                   <ul class="items-list">
                     <li>
                       <div class="row">

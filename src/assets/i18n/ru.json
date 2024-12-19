@@ -6070,7 +6070,7 @@
   "Doctor": "Доктор",
   "HW": "Медицинский работник",
   "Username already exists. Please enter another Username." : "Имя пользователя уже существует. Пожалуйста, введите другое имя пользователя.",
-  "Enter Alphanumric charactors only": "Введите только буквенно-цифровые символы",
+  "Enter Alphanumeric characters only": "Введите только буквенно-цифровые символы",
   "Enter password": "Введите пароль",
   "Minimum 8 charactors required":"Требуется минимум 8 символов",
   "Minimum 3 charactors required":"Требуется минимум 3 символов",
