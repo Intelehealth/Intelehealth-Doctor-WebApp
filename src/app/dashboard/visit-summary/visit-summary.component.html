@@ -44,8 +44,8 @@
                     <span>{{ ' ' + patient?.person?.preferredName?.familyName }}</span>
                     <!-- <span *ngIf="checkPatientRegField('Gender')">{{ " (" + (patient?.person.gender | translate) + ") "}}</span> -->
                   </h6>
-                  <p data-test-id="etPatienOpenMRSId">{{ getPersonAttributeValue('TMH Case Number') }}</p>
-                  <!-- <p data-test-id="etPatienOpenMRSId">{{ getPatientIdentifier('OpenMRS ID') }}</p> -->
+                  <p data-test-id="etPatienOpenMRSId" *ngIf="isFeatureAvailable('tnmStaging')">{{ getPersonAttributeValue('TMH Case Number') }}</p>
+                  <p data-test-id="etPatienOpenMRSId" *ngIf="!isFeatureAvailable('tnmStaging')">{{ getPatientIdentifier('OpenMRS ID') }}</p>
                 </div>
               </div>
             </div>
