@@ -1105,7 +1105,7 @@
               <ul class="items-list pb-4">
                 <li *ngIf="patientVisitSummary?.diagnosis_at_secondary_level && diagnosisAtSecondaryLevel">
                   <div class="list-item">
-                    <div class="list-item-content">{{diagnosisAtSecondaryLevel?.display}}</div>
+                    <div class="list-item-content"><span class="mr-3">{{'Diagnosis Secondary Level' | translate}}</span>:<span class="ml-3">{{diagnosisAtSecondaryLevel?.value}}</span></div>
                   </div>
                 </li>
               </ul>
