@@ -31,6 +31,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MatPaginationIntlService } from '../services/mat-pagination.service';
 import { SharedModule } from '../shared.module';
 import { OpenChatComponent } from './open-chat/open-chat.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -66,6 +68,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     NgxDropzoneModule,
     NgbTypeaheadModule,
     MatDatepickerModule,
+    MatMenuModule,
+    MatCheckboxModule,
     NgxPermissionsModule.forChild({
       permissionsIsolate: false,
       rolesIsolate: false,

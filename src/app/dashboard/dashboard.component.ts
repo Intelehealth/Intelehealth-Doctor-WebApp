@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { CoreService } from '../services/core/core.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { getCacheData, checkIfDateOldThanOneDay } from '../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from 'src/config/constant';
 import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, EncounterModel, EncounterProviderModel, ObsModel, ProviderAttributeModel, RecentVisitsApiResponseModel, RescheduleAppointmentModalResponseModel, VisitModel } from '../model/model';
@@ -42,6 +43,7 @@ export class DashboardComponent implements OnInit {
   awaitingVisits: CustomVisitModel[] = [];
   inProgressVisits: CustomVisitModel[] = [];
   followupVisits: CustomVisitModel[] = [];
+  filteredFollowUpVisits: CustomVisitModel[] =[];
 
   specialization: string = '';
   priorityVisitsCount: number = 0;
@@ -92,6 +94,15 @@ export class DashboardComponent implements OnInit {
   @ViewChild('awSearchInput', { static: true }) awSearchElement: ElementRef;
   @ViewChild('ipSearchInput', { static: true }) ipSearchElement: ElementRef;
   @ViewChild('fuSearchInput', { static: true }) fuSearchElement: ElementRef;
+
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+  showDate: boolean = true;
+  showRange: boolean = false;
+  showAllVisits:boolean = false;
+  today = new Date().toISOString().slice(0, 10);
+  fromDate: string;
+  toDate: string;
+  isAllSelected: false;
 
   constructor(
     private pageTitleService: PageTitleService,
@@ -303,13 +314,17 @@ export class DashboardComponent implements OnInit {
           this.followupVisits.push(visit);
         }
         this.followupVisits.sort((a, b) => new Date(b.followup_date) > new Date(a.followup_date) ? -1 : 1);
-        this.dataSource5.data = [...this.followupVisits];
-        this.followupVisitsCount = this.followupVisits.length;
+        this.filteredFollowUpVisits = this.followupVisits.filter((visit) => {
+          return visit.encounter_provider == getCacheData(false, doctorDetails.DOCTOR_NAME);
+        });
+        this.dataSource5.data = [...this.filteredFollowUpVisits];
+        this.followupVisitsCount = this.filteredFollowUpVisits.length;
         if (page == 1) {
           this.dataSource5.paginator = this.tempPaginator4;
-          this.dataSource5.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          this.dataSource5.filterPredicate = (data, filter: string) => data?.encounter_provider.toLowerCase().indexOf(filter) != -1 ||
+           data?.patient_name.given_name.concat((data?.patient_name.middle_name ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
-          this.tempPaginator4.length = this.followupVisits.length;
+          this.tempPaginator4.length = this.filteredFollowUpVisits.length;
           this.tempPaginator4.nextPage();
         }
       });
@@ -692,6 +707,39 @@ export class DashboardComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  applyDateFilter(showAllVisits: boolean) {
+    let filteredVisits :CustomVisitModel[] = [];
+    let visits =  showAllVisits ? this.followupVisits : this.filteredFollowUpVisits;
+    this.followupVisitsCount = 0;
+    if(this.fromDate && this.toDate) {
+      filteredVisits = visits.filter((visit) => {
+        return (new Date(visit.followup_date).toISOString().slice(0, 10) >= this.fromDate &&
+         new Date(visit.followup_date).toISOString().slice(0, 10) <= this.toDate);
+      });
+    } else if(this.fromDate) {
+      filteredVisits = visits.filter((visit) => {
+        return new Date(visit.followup_date).toISOString().slice(0, 10) == this.fromDate;
+      });
+    } else if(showAllVisits) {
+      filteredVisits = this.followupVisits;
+    }
+    this.dataSource5.data = [...filteredVisits];
+    this.tempPaginator4.length = filteredVisits.length;
+    this.tempPaginator4.nextPage();
+    this.followupVisitsCount = filteredVisits.length;
+    this.trigger.closeMenu();
+  }
+
+  resetFilter() {
+    this.dataSource5.data = [...this.filteredFollowUpVisits];
+    this.tempPaginator4.length = this.filteredFollowUpVisits.length;
+    this.tempPaginator4.nextPage();
+    this.followupVisitsCount = this.filteredFollowUpVisits.length;
+    this.trigger.closeMenu();
+    this.fromDate = null;
+    this.toDate = null;
   }
 
 }
