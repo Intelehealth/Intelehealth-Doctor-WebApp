@@ -96,7 +96,7 @@
           <th mat-header-cell *matHeaderCellDef>{{ 'Patient' | translate }}</th>
           <td mat-cell *matCellDef="let element; let j = index;" [attr.data-test-id]="'ipPatient' + j">
             <div class="d-flex align-items-center">
-              <img src="{{ baseUrl + '/personimage/' + element.person.uuid }}" alt="" width="32px" height="32px" style="border-radius: 50%;">
+              <img src="{{ checkPatientRegField('Profile Photo') ? baseUrl + '/personimage/' + element.person.uuid : '' }}" alt="" width="32px" height="32px" style="border-radius: 50%;">
               <span class="font-bold ml-2">{{ element.patient_name.given_name }} {{ checkPatientRegField('Middle Name') && element.patient_name?.middle_name ? element.patient_name?.middle_name + ' ' : '' }}{{ element.patient_name.family_name }} ({{ (element.person.gender) | translate }})</span>
             </div>
           </td>
