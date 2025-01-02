@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable, Subject } from "rxjs";
 import { environment } from "../../environments/environment";
+import * as moment from "moment";
+import { visitTypes } from "src/config/constant";
 
 @Injectable({
   providedIn: "root",
@@ -248,5 +250,70 @@ export class VisitService {
   */
    getLocations(): Observable<any> {
     return this.http.get(`${this.baseURLMindmap}/openmrs/getLocations`);
+  }
+
+
+  /**
+   * Get followup date for a given encounter type
+   * @param  visit - Visit
+   * @param {string} encounterName - Encounter type
+   * @return {string} - Encounter ProviderName
+   */
+    getFollowupDate(visit, encounterName) {
+      let followup_date = '';
+      const encounters = visit.encounters;
+      encounters.forEach((encounter) => {
+        const display = encounter.type?.name;
+        if (display?.match(encounterName) !== null) {
+          encounter.obs.forEach((obs) => {
+            if (obs?.concept_id === 163345 && !obs?.value_text.includes('No')) {
+              followup_date = ((obs.value_text.includes('Time:')) ? moment(obs.value_text.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.value_text.split(', Remark: ')[0]).format('YYYY-MM-DD'))
+              .concat(', ',(obs.value_text.includes('Time:')) ? obs.value_text.split(', Time: ')[1].split(', Remark: ')[0] : null);
+            
+            } else if( obs?.display && obs?.display?.match("Follow up visit") !== null) {
+              followup_date = ((obs.display.includes('Time:')) ? moment(obs.display.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.display.split(', Remark: ')[0]).format('YYYY-MM-DD'))
+              .concat(', ',(obs.display.includes('Time:')) ? obs.display.split(', Time: ')[1].split(', Remark: ')[0] : null);
+            }
+          });
+        }
+      });
+      return followup_date;
+    }
+
+     /**
+     * Retreive the chief complaints for the visit
+     * @param visit - Visit
+     * @return {string[]} - Chief complaints array
+     */
+      getCheifComplaint1(visit) {
+        let recent: string[] = [];
+        const encounters = visit.encounters;
+        encounters.forEach((encounter) => {
+          const display = encounter.type?.name;
+          if (display.match(visitTypes.ADULTINITIAL) !== null) {
+            const obs = encounter.obs;
+            obs.forEach((currentObs) => {
+              if (currentObs.display.match("CURRENT COMPLAINT") !== null) {
+                const currentComplaint = currentObs.display.split("<b>");
+                for (let i = 1; i < currentComplaint.length; i++) {
+                  const obs1 = currentComplaint[i].split("<");
+                  if (!obs1[0].match("Associated symptoms")) {
+                    recent.push(obs1[0]);
+                  }
+                }
+              }
+            });
+          }
+        });
+        return recent;
+      }
+    
+       /**
+  * Returns the age in years from the birthdate
+  * @param {string} birthdate - Date in string format
+  * @return {number} - Age
+  */
+  calculateAge(birthdate: string) {
+    return moment().diff(birthdate, 'years');
   }
 }

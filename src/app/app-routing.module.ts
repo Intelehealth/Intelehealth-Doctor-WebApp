@@ -77,6 +77,13 @@ const routes: Routes = [
         //     redirectTo: '/dashboard'
         //   }
         // }
+      },
+      {
+        path: 'follow-up-tracker',
+        data: {
+          breadcrumb: 'Follow Up Tracker'
+        },
+        loadChildren: () => import('./followup-tracker/followup-tracker.module').then(m => m.FollowupTrackerModule)
       }
     ]
   },

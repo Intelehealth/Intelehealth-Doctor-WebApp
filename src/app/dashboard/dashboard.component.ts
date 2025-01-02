@@ -151,8 +151,8 @@ export class DashboardComponent implements OnInit {
         for (let i = 0; i < av.data.length; i++) {
           let visit = av.data[i];
           visit.cheif_complaint = this.getCheifComplaint(visit);
-          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
-          visit.person.age = this.calculateAge(visit.person.birthdate);
+          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
+          visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
           if (visit.cheif_complaint.filter(f => f.includes('Follow')).length > 0) {
             newfollowupVisits.push(visit);
           } else {
@@ -213,8 +213,8 @@ export class DashboardComponent implements OnInit {
         for (let i = 0; i < pv.data.length; i++) {
           let visit = pv.data[i];
           visit.cheif_complaint = this.getCheifComplaint(visit);
-          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.FLAGGED);
-          visit.person.age = this.calculateAge(visit.person.birthdate);
+          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created) : this.getEncounterCreated(visit, visitTypes.FLAGGED);
+          visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
           this.priorityVisits.push(visit);
         }
         this.dataSource2.data = [...this.priorityVisits];
@@ -272,7 +272,7 @@ export class DashboardComponent implements OnInit {
           visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
           visit.prescription_started = this.getEncounterCreated(visit, visitTypes.VISIT_NOTE);
           visit.encounter_provider = this.getEncounterProviderName(visit, visitTypes.VISIT_NOTE);
-          visit.person.age = this.calculateAge(visit.person.birthdate);
+          visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
           this.inProgressVisits.push(visit);
         }
         this.dataSource4.data = [...this.inProgressVisits];
@@ -299,18 +299,18 @@ export class DashboardComponent implements OnInit {
       this.visitService.recentVisits(visit.person.uuid).subscribe((res) => {
         const visits = res.results;
         let recentVisit = visits.filter(v => v.uuid !== visit.uuid && v.encounters.filter(e => e.encounterType.display == visitTypes.PATIENT_EXIT_SURVEY || e.encounterType.display == visitTypes.VISIT_COMPLETE).length > 0);
-        visit.person.age = this.calculateAge(visit.person.birthdate);
+        visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
         if (recentVisit.length > 1) {
-          visit.followup_date = this.getFollowupDate(recentVisit[0], visitTypes.VISIT_NOTE);
+          visit.followup_date = this.visitService.getFollowupDate(recentVisit[0], visitTypes.VISIT_NOTE);
           visit.encounter_provider = recentVisit[1].encounters.filter(e => e.encounterType.display == visitTypes.PATIENT_EXIT_SURVEY || e.encounterType.display == visitTypes.VISIT_COMPLETE)[0]
             .encounterProviders[0].display.split(':')[0];
-          visit.cheif_complaint = this.getCheifComplaint1(recentVisit[1]);
+          visit.cheif_complaint = this.visitService.getCheifComplaint1(recentVisit[1]);
           this.followupVisits.push(visit);
         } else if(recentVisit.length > 0) {
-          visit.followup_date = this.getFollowupDate(recentVisit[0], visitTypes.VISIT_NOTE);
+          visit.followup_date = this.visitService.getFollowupDate(recentVisit[0], visitTypes.VISIT_NOTE);
           visit.encounter_provider = recentVisit[0]?.encounters.filter(e => e.encounterType.display == visitTypes.PATIENT_EXIT_SURVEY || e.encounterType.display == visitTypes.VISIT_COMPLETE)[0]
             .encounterProviders[0].display.split(':')[0];
-          visit.cheif_complaint = this.getCheifComplaint1(recentVisit[0]);
+          visit.cheif_complaint = this.visitService.getCheifComplaint1(recentVisit[0]);
           this.followupVisits.push(visit);
         }
         this.followupVisits.sort((a, b) => new Date(b.followup_date) > new Date(a.followup_date) ? -1 : 1);
@@ -438,30 +438,6 @@ export class DashboardComponent implements OnInit {
   }
 
   /**
- * Get followup date for a given encounter type
- * @param  visit - Visit
- * @param {string} encounterName - Encounter type
- * @return {string} - Encounter ProviderName
- */
-  getFollowupDate(visit, encounterName) {
-    let followup_date = '';
-    const encounters = visit.encounters;
-    encounters.forEach((encounter) => {
-      const display = encounter.encounterType.display;
-      if (display.match(encounterName) !== null) {
-        encounter.obs.forEach((obs) => {
-          if (obs.display.match("Follow up visit") !== null) {
-            followup_date = ((obs.display.includes('Time:')) ? moment(obs.display.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.display.split(', Remark: ')[0]).format('YYYY-MM-DD'))
-            .concat(', ',(obs.display.includes('Time:')) ? obs.display.split(', Time: ')[1].split(', Remark: ')[0] : null);
-          
-          }
-        });
-      }
-    });
-    return followup_date;
-  }
-
-  /**
   * Retreive the chief complaints for the visit
   * @param {CustomVisitModel} visit - Visit
   * @return {string[]} - Chief complaints array
@@ -489,42 +465,7 @@ export class DashboardComponent implements OnInit {
     return recent;
   }
 
-  /**
- * Retreive the chief complaints for the visit
- * @param visit - Visit
- * @return {string[]} - Chief complaints array
- */
-  getCheifComplaint1(visit) {
-    let recent: string[] = [];
-    const encounters = visit.encounters;
-    encounters.forEach((encounter) => {
-      const display = encounter.encounterType.display;
-      if (display.match(visitTypes.ADULTINITIAL) !== null) {
-        const obs = encounter.obs;
-        obs.forEach((currentObs) => {
-          if (currentObs.display.match("CURRENT COMPLAINT") !== null) {
-            const currentComplaint = currentObs.display.split("<b>");
-            for (let i = 1; i < currentComplaint.length; i++) {
-              const obs1 = currentComplaint[i].split("<");
-              if (!obs1[0].match("Associated symptoms")) {
-                recent.push(obs1[0]);
-              }
-            }
-          }
-        });
-      }
-    });
-    return recent;
-  }
-
-  /**
-  * Returns the age in years from the birthdate
-  * @param {string} birthdate - Date in string format
-  * @return {number} - Age
-  */
-  calculateAge(birthdate: string) {
-    return moment().diff(birthdate, 'years');
-  }
+ 
 
   /**
   * Returns the created time in words from the date

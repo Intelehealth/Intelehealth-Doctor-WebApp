@@ -41,6 +41,12 @@
             <span>{{'Prescription' | translate}}</span>
           </a>
         </li>
+        <li class="nav-item" *ngxPermissionsExcept="['ORGANIZATIONAL: SYSTEM ADMINISTRATOR']" (click)="toggleSidebar()" data-test-id="listItemHelp">
+          <a class="nav-item-link" routerLink="/follow-up-tracker" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkHelp">
+            <img src="assets/svgs/follow-up-tracker-icon.svg" alt="">
+            <span>{{'Follow-up Tracker' | translate}}</span>
+          </a>
+        </li>
         <li class="nav-item" *ngxPermissionsOnly="['ORGANIZATIONAL: NURSE']" (click)="toggleSidebar()" data-test-id="listItemProfile">
           <a class="nav-item-link" routerLink="/dashboard/hw-profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" data-test-id="linkProfile">
             <img src="assets/svgs/menu-home.svg" alt="">

@@ -62,7 +62,7 @@ export class SupportService {
   * @return {Observable<any>}
   */
   raiseTicket(data: { title: string, description: string, priority: string }): Observable<any> {
-    return this.http.post(`https://demo.intelehealth.org/createticket`, data);
+    return this.http.post(`${environment.base}/createticket`, data);
   }
 
   /**

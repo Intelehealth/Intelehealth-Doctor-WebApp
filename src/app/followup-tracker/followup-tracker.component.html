@@ -1,0 +1,131 @@
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12 p-0">
+        <mat-accordion class="intel-accordion-con" multi>
+  
+          <mat-expansion-panel [expanded]="true" data-test-id="matExpCompleted">
+            <mat-expansion-panel-header data-test-id="matExpHeaderCompleted">
+              <mat-panel-title>
+                <div class="intel-accordion-title">
+                  <img src="assets/svgs/follow-up-tracker.svg" alt="" width="44px">
+                  <h6 class="mb-0 ml-2">{{'Follow-up Tracker'|translate}} ({{doctorFollowpCount}})</h6>
+                  <mat-icon class="info_icon" aria-hidden="false" aria-label="help icon" 
+                  matTooltip="{{'Visits that follow-up provided by you'|translate}}" matTooltipPosition="right"
+                   data-test-id="matIcoHelpCompleted">help_outline</mat-icon>
+                  <div class="input-group input-group1 search-bar ml-auto mr-2" (click)="$event.stopPropagation();">
+                    <div class="input-group-append1" [matMenuTriggerFor]="dateFilter">
+                      <span class="input-group-text" id="basic-addon1">
+                        <img src="assets/svgs/filter.svg" alt="" width="15px" height="24px">
+                        {{'Filter'| translate}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+  
+            <div class="mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource">
+  
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef> {{'Patient'|translate}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'compPatient'+j">
+                    <div class="d-flex align-items-center">
+                      <img src="{{ baseUrl + '/personimage/' + element.person.uuid }}" alt="" width="32px" height="32px" style="border-radius: 50%;">
+                      <span class="font-bold ml-2">{{element.patient_name.given_name}} {{element.patient_name?.middle_name ? element.patient_name?.middle_name+" " : ""}}{{element.patient_name.family_name}} ({{(element.person.gender) | translate}})</span>
+                    </div>
+                  </td>
+                </ng-container>
+  
+                <!-- Age Column -->
+                <ng-container matColumnDef="age">
+                  <th mat-header-cell *matHeaderCellDef> {{'Age'|translate}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'compAge'+j"> {{element.person.age}} {{'y'|translate}} </td>
+                </ng-container>
+  
+                <!-- Visit Created Column -->
+                <ng-container matColumnDef="doctor_name">
+                  <th mat-header-cell *matHeaderCellDef> {{'Doctor'|translate}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'compCreated'+j"> {{element.visit_created}} </td>
+                </ng-container>
+  
+                <!-- Chief complaint Column -->
+                <ng-container matColumnDef="cheif_complaint">
+                  <th mat-header-cell *matHeaderCellDef> {{'Chief Complaint'|translate}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'compComplaint'+j"> {{element.cheif_complaint}} </td>
+                </ng-container>
+
+                <!-- Location Column -->
+                <ng-container matColumnDef="followUp_date">
+                  <th mat-header-cell *matHeaderCellDef> {{'Follow-up date'|translate}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'compLocation'+j"> {{element.followUp_date}} </td>
+                </ng-container>
+  
+                <!-- Prescription Sent Column -->
+                <ng-container matColumnDef="patient_verdict">
+                  <th mat-header-cell *matHeaderCellDef> {{'Patient Verdict'|translate}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'compPresSent'+j">
+                    <div class="green-pill" *ngIf="element?.prescription_sent">
+                      <img src="assets/svgs/green-pad.svg" alt="">
+                      <span class="ml-2">{{element?.prescription_sent}}</span>
+                    </div>
+                  </td>
+                </ng-container>
+                
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+                    {{'No data to display.'|translate}}
+                  </td>
+                </tr>
+  
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; let x=index; columns: displayedColumns;" [attr.data-test-id]="'comp'+x" [routerLink]="['/dashboard/visit-summary', row?.uuid]" ></tr>
+              </table>
+  
+              <mat-paginator #tempPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]" hidden aria-label="Select page of periodic elements"></mat-paginator>
+              <mat-paginator #completedPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]"
+              [length]="visitsCount" [pageIndex]="pageIndex" [pageSize]="pageSize" (page)="pageEvent = getData($event)" aria-label="Select page of periodic elements" data-test-id="matPaginatorCompleted">
+              </mat-paginator>
+            </div>
+  
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+  </div>
+  
+  <div class="d-flex align-items-center justify-content-end">
+    <mat-menu #dateFilter="matMenu" [hasBackdrop]="false" class="menu1">
+      <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+        <button mat-icon-button  class="date-btn mt-4" [ngClass]="showRange ? 'bg-color-white': 'bg-color-lightGray'" (click)="showDate = true; showRange = false; fromDate=null; toDate=null">Date</button>
+        <button mat-icon-button class="range-btn mt-4" [ngClass]="showDate ? 'bg-color-white': 'bg-color-lightGray'" (click)="showRange = true; showDate = false; fromDate=null; toDate=null">Range</button>
+        <div *ngIf="showDate" class="date-filter">
+          <div class="input-field-group">
+            <input class="mt-4" type="date" [max]="today" [(ngModel)]="fromDate" data-test-id="etExpiryDateAddLicense">
+          </div>
+          <div class="actions-btn-wrap d-flex align-items-center ml-4 mt-4 mb-2">
+            <button class="action-btn white-btn mr-2" type="button" (click)="resetFilter()" data-test-id="btnCancel">Reset</button>
+            <button class="action-btn blue-btn" type="button" [disabled]="(showDate && !fromDate)"
+                      (click)="applyDateFilter()" data-test-id="btnSubmit">Apply</button>
+          </div>
+        </div>
+        <div *ngIf="showRange" class="date-filter">
+          <div class="input-field-group">
+            <label class="mt-4">From</label>
+            <input type="date" [max]="today" [(ngModel)]="fromDate" data-test-id="etExpiryDateAddLicense">
+          </div> 
+          <div class="input-field-group">
+            <label>To</label>
+            <input type="date" [max]="today"  [(ngModel)]="toDate" data-test-id="etExpiryDateAddLicense">
+          </div>
+          <div class="actions-btn-wrap d-flex align-items-center ml-4 mt-4 mb-2">
+            <button class="action-btn white-btn mr-2" type="button" (click)="resetFilter()" data-test-id="btnCancel">Reset</button>
+            <button class="action-btn blue-btn" type="button" [disabled]="(showRange && (!fromDate || !toDate) || (fromDate > toDate))" 
+            (click)="applyDateFilter()" data-test-id="btnSubmit">Apply</button>
+          </div>
+        </div>
+      </div>
+    </mat-menu>
+  </div>
+  
