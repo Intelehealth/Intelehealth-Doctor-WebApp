@@ -256,7 +256,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       days: new FormControl(null, [Validators.required]),
       timing: new FormControl(null, [Validators.required]),
       frequency: new FormControl(null),
-      remark: new FormControl(null, [Validators.required])
+      remark: new FormControl('', [])
     });
 
     this.addAdditionalInstructionForm = new FormGroup({
@@ -1211,7 +1211,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       concept: conceptIds.conceptMed,
       person: this.visit.patient.uuid,
       obsDatetime: new Date(),
-      value: `${this.addMedicineForm.value.drug}:${this.addMedicineForm.value.strength}:${this.addMedicineForm.value.days}:${this.addMedicineForm.value.timing}:${this.addMedicineForm.value.remark}:${this.addMedicineForm.value.frequency}`,
+      value: `${this.addMedicineForm.value.drug}:${this.addMedicineForm.value.strength}:${this.addMedicineForm.value.days}:${this.addMedicineForm.value.timing}:${this.addMedicineForm.value.remark ?? ''}:${this.addMedicineForm.value.frequency ?? ''}`,
       encounter: this.visitNotePresent.uuid
     }).subscribe((response: ObsModel) => {
       this.medicines.push({ ...this.addMedicineForm.value, uuid: response.uuid });
