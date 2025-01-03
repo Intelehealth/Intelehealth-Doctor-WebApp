@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { doctorDetails, visitTypes } from 'src/config/constant';
 import { EncounterModel, ObsModel, ProviderAttributeModel, VisitModel } from 'src/app/model/model';
+import { AppConfigService } from 'src/app/services/app-config.service';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -15,13 +16,17 @@ import { EncounterModel, ObsModel, ProviderAttributeModel, VisitModel } from 'sr
 export class AppointmentDetailComponent implements OnInit {
 
   baseUrl: string = environment.baseURL;
+  patientRegFields: string[] = [];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data,
     private dialogRef: MatDialogRef<AppointmentDetailComponent>,
     private visitService: VisitService,
-    private translate:TranslateService) { }
+    private translate:TranslateService,
+    private appConfigService: AppConfigService
+  ) { }
 
   ngOnInit(): void {
+    this.patientRegFields = this.appConfigService.patientRegFields;
     if (this.data?.title == 'Appointment') {
       this.visitService.fetchVisitDetails(this.data.id).subscribe((visit: VisitModel)=> {
         this.data.meta.visit_info = visit;
@@ -161,6 +166,10 @@ export class AppointmentDetailComponent implements OnInit {
       return `${this.translate.instant('Prescription created')} ${minutes} ${this.translate.instant('minutes ago')}`;
     }
     return `${this.translate.instant('Prescription created')} ${hours} ${this.translate.instant('hrs ago')}`;
+  }
+
+  checkPatientRegField(fieldName): boolean{
+    return this.patientRegFields.indexOf(fieldName) !== -1;
   }
 
 }

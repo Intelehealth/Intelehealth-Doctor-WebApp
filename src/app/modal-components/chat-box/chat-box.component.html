@@ -10,7 +10,7 @@
   <div class="chat-con-title">
     <div class="chat-item-info">
       <img
-        src="{{ baseUrl + '/personimage/' + data.patientPersonUuid }}"
+        src="{{ checkPatientRegField('Profile Photo') ? baseUrl + '/personimage/' + data.patientPersonUuid : ''}}"
         alt=""
       />
       <div class="title">
