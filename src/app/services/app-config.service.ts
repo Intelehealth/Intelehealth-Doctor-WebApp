@@ -56,4 +56,20 @@ export class AppConfigService {
       return null;
     }
   }
+
+  public get patientRegFields() {
+    const fields = [];
+    Object.keys(this.patient_registration).forEach(obj=>{
+      fields.push(...this.patient_registration[obj]
+        .filter((e: { is_enabled: any; })=>e.is_enabled)
+        .map((e: { name: any; })=>e.name));
+    });
+
+    return fields;
+  }
+
+  public checkPatientRegField(fieldName: any, fields: string | any[]): boolean{
+    return fields.indexOf(fieldName) !== -1;
+  }
+
 }
