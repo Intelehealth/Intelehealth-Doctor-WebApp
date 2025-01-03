@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { getCacheData } from '../utils/utility-functions';
 import { notifications, doctorDetails, languages } from 'src/config/constant';
 import { ApiResponseModel, ConversationModel, MessageModel, PatientVisitsModel } from '../model/model';
+import { AppConfigService } from '../services/app-config.service';
 
 @Component({
   selector: 'app-messages',
@@ -35,16 +36,19 @@ export class MessagesComponent implements OnInit, OnDestroy {
   subscription1: Subscription;
   subscription2: Subscription;
   subscription3: Subscription;
+  patientRegFields: string[] = [];
 
   constructor(
     private pageTitleService: PageTitleService,
     private chatSvc: ChatService,
     private socketSvc: SocketService,
     private coreService: CoreService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private appConfigService: AppConfigService
   ) { }
 
   ngOnInit(): void {
+    this.patientRegFields = this.appConfigService.patientRegFields;
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
     this.pageTitleService.setTitle({ title: "Messages", imgUrl: "assets/svgs/menu-message-circle.svg" });
     this.getPatientsList(this.chatSvc?.user?.uuid);
@@ -259,4 +263,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
     this.subscription3?.unsubscribe();
   }
 
+  checkPatientRegField(fieldName): boolean{
+    return this.patientRegFields.indexOf(fieldName) !== -1;
+  }
+  
 }

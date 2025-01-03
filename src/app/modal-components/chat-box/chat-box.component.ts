@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { ApiResponseModel, MessageModel } from 'src/app/model/model';
+import { AppConfigService } from 'src/app/services/app-config.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { CoreService } from 'src/app/services/core/core.service';
 import { SocketService } from 'src/app/services/socket.service';
@@ -30,6 +31,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   subscription3: Subscription;
   sending = false;
   CHAT_TEXT_LIMIT = WEBRTC.CHAT_TEXT_LIMIT;
+  patientRegFields: string[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
@@ -37,10 +39,12 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     private chatSvc: ChatService,
     private socketSvc: SocketService,
     private coreService: CoreService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private appConfigService: AppConfigService
   ) { }
 
   ngOnInit(): void {
+    this.patientRegFields = this.appConfigService.patientRegFields;
     const patientVisitProvider = getCacheData(true, visitTypes.PATIENT_VISIT_PROVIDER);
     this.toUser = patientVisitProvider?.provider?.uuid;
     this.hwName = patientVisitProvider?.display?.split(":")?.[0];
@@ -212,6 +216,10 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
 
   get msgCharCount() {
     return this.message?.length || 0
+  }
+
+  checkPatientRegField(fieldName): boolean{
+    return this.patientRegFields.indexOf(fieldName) !== -1;
   }
 
 }
