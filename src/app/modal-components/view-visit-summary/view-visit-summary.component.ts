@@ -724,7 +724,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
                     body: [
                       [
                         {
-                          image: (userImg && !userImg?.includes('application/json')) ? userImg : 'user',
+                          image: (userImg && !userImg?.includes('application/json') && this.checkPatientRegField('Profile Photo')) ? userImg : 'user',
                           width: 30,
                           height: 30,
                           margin: [0, (userImg && !userImg?.includes('application/json')) ? 15 : 5, 0, 5]
