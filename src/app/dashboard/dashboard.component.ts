@@ -98,6 +98,7 @@ export class DashboardComponent implements OnInit {
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   showDate: boolean = true;
   showRange: boolean = false;
+  selectAll : boolean = false;
   showAllVisits:boolean = false;
   today = new Date().toISOString().slice(0, 10);
   fromDate: string;
@@ -293,30 +294,24 @@ export class DashboardComponent implements OnInit {
   * @return {void}
   */
   getFollowUpVisits(visits, page: number = 1) {
-    this.followupVisits = [];
+    this.followupVisits = [], this.filteredFollowUpVisits = [];
     for (let i = 0; i < visits.length; i++) {
       let visit = visits[i];
       this.visitService.recentVisits(visit.person.uuid).subscribe((res) => {
         const visits = res.results;
         let recentVisit = visits.filter(v => v.uuid !== visit.uuid && v.encounters.filter(e => e.encounterType.display == visitTypes.PATIENT_EXIT_SURVEY || e.encounterType.display == visitTypes.VISIT_COMPLETE).length > 0);
         visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
-        if (recentVisit.length > 1) {
-          visit.followup_date = this.visitService.getFollowupDate(recentVisit[0], visitTypes.VISIT_NOTE);
-          visit.encounter_provider = recentVisit[1].encounters.filter(e => e.encounterType.display == visitTypes.PATIENT_EXIT_SURVEY || e.encounterType.display == visitTypes.VISIT_COMPLETE)[0]
-            .encounterProviders[0].display.split(':')[0];
-          visit.cheif_complaint = this.visitService.getCheifComplaint1(recentVisit[1]);
-          this.followupVisits.push(visit);
-        } else if(recentVisit.length > 0) {
+        if (recentVisit.length > 0) {
           visit.followup_date = this.visitService.getFollowupDate(recentVisit[0], visitTypes.VISIT_NOTE);
           visit.encounter_provider = recentVisit[0]?.encounters.filter(e => e.encounterType.display == visitTypes.PATIENT_EXIT_SURVEY || e.encounterType.display == visitTypes.VISIT_COMPLETE)[0]
             .encounterProviders[0].display.split(':')[0];
           visit.cheif_complaint = this.visitService.getCheifComplaint1(recentVisit[0]);
           this.followupVisits.push(visit);
         }
-        this.followupVisits.sort((a, b) => new Date(b.followup_date) > new Date(a.followup_date) ? -1 : 1);
         this.filteredFollowUpVisits = this.followupVisits.filter((visit) => {
           return visit.encounter_provider == getCacheData(false, doctorDetails.DOCTOR_NAME);
         });
+        this.filteredFollowUpVisits.sort((a, b) => new Date(b.followup_date) < new Date(a.followup_date) ? -1 : 1);
         this.dataSource5.data = [...this.filteredFollowUpVisits];
         this.followupVisitsCount = this.filteredFollowUpVisits.length;
         if (page == 1) {
@@ -666,6 +661,7 @@ export class DashboardComponent implements OnInit {
     } else if(showAllVisits) {
       filteredVisits = this.followupVisits;
     }
+    filteredVisits.sort((a, b) => new Date(b.followup_date) < new Date(a.followup_date) ? -1 : 1);
     this.dataSource5.data = [...filteredVisits];
     this.tempPaginator4.length = filteredVisits.length;
     this.tempPaginator4.nextPage();
@@ -678,9 +674,15 @@ export class DashboardComponent implements OnInit {
     this.tempPaginator4.length = this.filteredFollowUpVisits.length;
     this.tempPaginator4.nextPage();
     this.followupVisitsCount = this.filteredFollowUpVisits.length;
+    this.selectAll = false;
     this.trigger.closeMenu();
     this.fromDate = null;
     this.toDate = null;
+  }
+
+  selectAllVisits(event) {
+    console.log(event);
+    this.selectAll = event.target.checked;
   }
 
 }

@@ -1703,6 +1703,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
                 }
               });
               this.pastVisits.push(visitdetail);
+              this.pastVisits.sort((a, b) => new Date(b.created_on) < new Date(a.created_on) ? -1 : 1)
               this.dataSource = new MatTableDataSource(this.pastVisits);
             });
           }

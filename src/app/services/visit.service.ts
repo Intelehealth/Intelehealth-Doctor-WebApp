@@ -270,7 +270,7 @@ export class VisitService {
               followup_date = ((obs.value_text.includes('Time:')) ? moment(obs.value_text.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.value_text.split(', Remark: ')[0]).format('YYYY-MM-DD'))
               .concat(', ',(obs.value_text.includes('Time:')) ? obs.value_text.split(', Time: ')[1].split(', Remark: ')[0] : null);
             
-            } else if( obs?.display && obs?.display?.match("Follow up visit") !== null) {
+            } else if( obs?.display && obs?.display?.match("Follow up visit") !== null  && !obs?.display.includes('No')) {
               followup_date = ((obs.display.includes('Time:')) ? moment(obs.display.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.display.split(', Remark: ')[0]).format('YYYY-MM-DD'))
               .concat(', ',(obs.display.includes('Time:')) ? obs.display.split(', Time: ')[1].split(', Remark: ')[0] : null);
             }
@@ -289,7 +289,7 @@ export class VisitService {
         let recent: string[] = [];
         const encounters = visit.encounters;
         encounters.forEach((encounter) => {
-          const display = encounter.type?.name;
+          const display = encounter.encounterType ? encounter.encounterType.display : encounter.type?.name;
           if (display.match(visitTypes.ADULTINITIAL) !== null) {
             const obs = encounter.obs;
             obs.forEach((currentObs) => {
