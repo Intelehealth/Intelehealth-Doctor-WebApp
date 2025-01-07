@@ -15,6 +15,7 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { SharedModule } from '../shared.module';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -28,17 +29,18 @@ const routes: Routes = [{ path: '', component: FollowupTrackerComponent }];
   ],
   imports: [
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatExpansionModule,
     MatIconModule,
     MatTooltipModule,
     MatTableModule,
     MatPaginatorModule,
     MatButtonModule,
-    MatMenuModule,
     MatCardModule,
-    ReactiveFormsModule,
-    FormsModule,
-      TranslateModule.forRoot({
+    MatMenuModule,
+    MatCheckboxModule, 
+    TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
             useFactory: HttpLoaderFactory,

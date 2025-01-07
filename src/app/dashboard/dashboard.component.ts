@@ -103,7 +103,6 @@ export class DashboardComponent implements OnInit {
   today = new Date().toISOString().slice(0, 10);
   fromDate: string;
   toDate: string;
-  isAllSelected: false;
 
   constructor(
     private pageTitleService: PageTitleService,
@@ -681,7 +680,6 @@ export class DashboardComponent implements OnInit {
   }
 
   selectAllVisits(event) {
-    console.log(event);
     this.selectAll = event.target.checked;
   }
 

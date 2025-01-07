@@ -293,11 +293,19 @@ export class VisitService {
           if (display.match(visitTypes.ADULTINITIAL) !== null) {
             const obs = encounter.obs;
             obs.forEach((currentObs) => {
-              if (currentObs.display.match("CURRENT COMPLAINT") !== null) {
+              if (currentObs.display && currentObs.display.match("CURRENT COMPLAINT") !== null) {
                 const currentComplaint = currentObs.display.split("<b>");
                 for (let i = 1; i < currentComplaint.length; i++) {
                   const obs1 = currentComplaint[i].split("<");
                   if (!obs1[0].match("Associated symptoms")) {
+                    recent.push(obs1[0]);
+                  }
+                }
+              } else if (currentObs.concept_id == 163212) {
+                const currentComplaint = this.getData2(currentObs)?.value_text.replace(new RegExp('►', 'g'), '').split('<b>');
+                for (let i = 1; i < currentComplaint.length; i++) {
+                  const obs1 = currentComplaint[i].split('<');
+                  if (!obs1[0].match(visitTypes.ASSOCIATED_SYMPTOMS)) {
                     recent.push(obs1[0]);
                   }
                 }
@@ -315,5 +323,41 @@ export class VisitService {
   */
   calculateAge(birthdate: string) {
     return moment().diff(birthdate, 'years');
+  }
+
+ /**
+     * Retreive the patient verdict for the visit
+     * @param visit - Visit
+     * @return {string[]} - patient verdict
+     */
+   getPatientVerdict(visit) {
+    let recent: string[] = [];
+    const encounters = visit?.encounters;
+    encounters.forEach((encounter) => {
+      const display = encounter.encounterType ? encounter.encounterType.display : encounter.type?.name;
+      if (display.match(visitTypes.ADULTINITIAL) !== null) {
+        const obs = encounter.obs;
+        obs.forEach((currentObs) => {
+          if (currentObs.display && currentObs.display.match("CURRENT COMPLAINT") !== null) {
+            const currentComplaint = currentObs.display.split("<b>");
+            for (let i = 1; i < currentComplaint.length; i++) {
+              const obs1 = currentComplaint[i].split("<");
+              if (obs1[0].includes("Follow Up") || obs1[0].includes("Follow up visit")) {
+                if(currentComplaint[i].includes('Patient is feeling better')) {
+                recent.push('Patient is feeling better');
+                } else if(currentComplaint[i].includes(`Patient's condition is still the same`)) {
+                  recent.push(`Patient's condition is still the same`);
+                } else if(currentComplaint[i].includes(`Patient's condition has worsened`)) {
+                  recent.push(`Patient's condition has worsened`);
+                } else {
+                  recent.push('NA');
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+    return recent;
   }
 }

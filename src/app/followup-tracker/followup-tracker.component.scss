@@ -66,6 +66,10 @@
   th:last-child {
     border-radius: 0 8px 8px 0;
   }
+
+  th:last-child {
+    padding-left: 7px;
+  }
   
   .green-pill {
     display: flex;
@@ -175,7 +179,7 @@
   
   .date-btn {
     margin-left: 10px;
-    min-width: 110px;
+    min-width: 80px;
     height: 35px;
     background: var(--color-lightGray);
     border: 1px solid var(--color-lightGray);
@@ -188,8 +192,8 @@
   }
   
   .range-btn {
-    margin-right: 10px;
-    min-width: 110px;
+    margin-right: 8px;
+    min-width: 80px;
     height: 35px;
     background: var(--color-white);
     border: 1px solid var(--color-lightGray);
@@ -197,7 +201,7 @@
     font-size: 18px;
     line-height: 150%;
     color: var(--color-darkBlue);
-    float: right;
+   // float: right;
     cursor: pointer;
   }
   

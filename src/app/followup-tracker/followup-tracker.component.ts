@@ -15,90 +15,90 @@ import { VisitService } from '../services/visit.service';
   styleUrls: ['./followup-tracker.component.scss']
 })
 export class FollowupTrackerComponent {
- displayedColumns: string[] = ['name', 'age', 'doctor_name', 'cheif_complaint', 'followUp_date', 'patient_verdict'];
+  displayedColumns: string[] = ['name', 'age', 'cheif_complaint', 'doctor_name', 'followUp_date', 'patient_verdict'];
   dataSource = new MatTableDataSource<any>();
   baseUrl: string = environment.baseURL;
-  @Input() doctorFollowUpVisits: CustomVisitModel[] = [];
-  @Input() doctorFollowpCount: number = 0;
+  doctorFollowUpVisits: CustomVisitModel[] = [];
+  filteredFollowUpVisits: CustomVisitModel[] = [];
+  doctorFollowpCount: number = 0;
   @ViewChild('completedPaginator') paginator: MatPaginator;
   offset: number = environment.recordsPerPage;
   recordsFetched: number = environment.recordsPerPage;
   pageEvent: PageEvent;
-  pageIndex:number = 0;
-  pageSize:number = 5;
+  pageIndex: number = 0;
+  pageSize: number = 5;
   visitsCount: number = 0;
-  specialization : string = '';
+  specialization: string = '';
   @Output() fetchPageEvent = new EventEmitter<number>();
   @ViewChild('tempPaginator') tempPaginator: MatPaginator;
+
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   showDate: boolean = true;
   showRange: boolean = false;
+  selectAll: boolean = false;
+  showAllVisits: boolean = false;
   today = new Date().toISOString().slice(0, 10);
   fromDate: string;
   toDate: string;
-  
-  constructor(private pageTitleService: PageTitleService, private visitService:VisitService) { }
-  
+
+  constructor(private pageTitleService: PageTitleService, private visitService: VisitService) { }
+
   ngOnInit(): void {
-    this.pageTitleService.setTitle({ title: "Follow Up Tracker", imgUrl: "assets/svgs/follow-up-tracker.svg" });
-     let provider = getCacheData(true, doctorDetails.PROVIDER);
-        if (provider) {
-          if (provider.attributes.length) {
-            provider.attributes.forEach((a: ProviderAttributeModel) => {
-                  if (a.attributeType.uuid == 'ed1715f5-93e2-404e-b3c9-2a2d9600f062' && !a.voided) {
-                    this.specialization = a.value;
-                  }
-                });
+    this.pageTitleService.setTitle({ title: "Follow-up Log", imgUrl: "assets/svgs/follow-up-tracker.svg" });
+    let provider = getCacheData(true, doctorDetails.PROVIDER);
+    if (provider) {
+      if (provider.attributes.length) {
+        provider.attributes.forEach((a: ProviderAttributeModel) => {
+          if (a.attributeType.uuid == 'ed1715f5-93e2-404e-b3c9-2a2d9600f062' && !a.voided) {
+            this.specialization = a.value;
           }
-        }
+        });
+      }
+    }
     this.getFollowupVisits();
   }
 
   getFollowupVisits(page: number = 1) {
-   if(page == 1) this.doctorFollowUpVisits = [];
-       this.visitService.getEndedVisits(this.specialization, page).subscribe((ps: ApiResponseModel) => {
-         if (ps.success) {
-          console.log(ps.data);
-            let record = [];
-           for (let i = 0; i < ps.data.length; i++) {
-             let visit = ps.data[i];
-             let followUp_date = this.visitService.getFollowupDate(visit, visitTypes.VISIT_NOTE);
-             if(followUp_date) {
-            //  visit.cheif_complaint = this.visitService.getCheifComplaint1(visit);
+    if (page == 1) this.doctorFollowUpVisits = [], this.filteredFollowUpVisits = [];
+    this.visitService.getEndedVisits(this.specialization, page).subscribe((ps: ApiResponseModel) => {
+      if (ps.success) {
+        for (let i = 0; i < ps.data.length; i++) {
+          let visit = ps.data[i];
+          let followUp_date = this.visitService.getFollowupDate(visit, visitTypes.VISIT_NOTE);
+          if (followUp_date) {
+            this.visitService.recentVisits(visit.person.uuid).subscribe((res) => {
+              visit.cheif_complaint = this.visitService.getCheifComplaint1(visit);
+              let enco = visit?.encounters.filter(e => e.type.name == visitTypes.PATIENT_EXIT_SURVEY || e.type.name == visitTypes.VISIT_COMPLETE)[0];
+              visit.encounter_provider = JSON.parse(enco.obs[0].value_text).name;
               visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
-              visit.followUp_date = followUp_date;
-               record.push(visit);
-             }
-            
-            //  if(vcenc?.encounter_provider?.provider.uuid === uuid) {
-            //    record.push(visit);
-            //  }
-           }
-           this.doctorFollowpCount = record.length;
-           this.doctorFollowUpVisits = this.doctorFollowUpVisits.concat(record);
-           this.dataSource = new MatTableDataSource(this.doctorFollowUpVisits);
-           this.dataSource.paginator = this.tempPaginator;
-           this.visitsCount = this.doctorFollowpCount;
-           this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat(' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
-           this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat(' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
-         }
-       });
-  }
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.tempPaginator;
-    this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat(' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
-    this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat(' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // if (!changes.doctorCompletedVisits.firstChange) {
-    //   this.recordsFetched += this.offset;
-    //   this.dataSource.data = [...this.doctorCompletedVisits];
-    //   this.tempPaginator.length = this.doctorCompletedVisits.length;
-    //   this.tempPaginator.nextPage();
-    //   this.visitsCount = this.doctorFollowpCount;
-    //   }
+              visit.followup_date = followUp_date;
+              const visits = res.results;
+              let recentVisit = visits.filter(v => v.uuid !== visit.uuid);
+              if(recentVisit.length > 0) {
+                   if(recentVisit.length > 1) { 
+                    let fvisits = recentVisit.filter(v => (this.visitService.getCheifComplaint1(v)).includes("Follow up visit") || (this.visitService.getCheifComplaint1(v)).includes("Follow Up"));
+                   // let sortedVisits = fvisits.sort((a, b) => new Date(b.created_on) < new Date(a.created_on) ? -1 : 1);
+                    visit.patient_verdict =  this.visitService.getPatientVerdict(fvisits[0]);
+                   } else {
+                    visit.patient_verdict =  this.visitService.getPatientVerdict(recentVisit[0]);
+                   }
+                
+              } else {
+                visit.patient_verdict = null;
+              }
+              this.doctorFollowUpVisits.push(visit);
+              this.filteredFollowUpVisits = this.doctorFollowUpVisits.filter((visit) => {
+                return visit.encounter_provider == getCacheData(false, doctorDetails.DOCTOR_NAME);
+              });
+              this.filteredFollowUpVisits.sort((a, b) => new Date(b.followup_date) < new Date(a.followup_date) ? -1 : 1);
+              this.doctorFollowpCount = this.filteredFollowUpVisits.length;
+              this.dataSource = new MatTableDataSource(this.filteredFollowUpVisits);
+              this.dataSource.paginator = this.tempPaginator;
+            });
+          }
+        }
+      }
+    });
   }
 
   /**
@@ -106,14 +106,14 @@ export class FollowupTrackerComponent {
   * @param {PageEvent} event - onerror event
   * @return {void}
   */
-  public getData(event?:PageEvent){
+  public getData(event?: PageEvent) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
     if (this.dataSource.filter) {
       this.paginator.firstPage();
     }
-    if (((event.pageIndex+1)*this.pageSize) > this.recordsFetched) {
-      this.fetchPageEvent.emit((this.recordsFetched+this.offset)/this.offset)
+    if (((event.pageIndex + 1) * this.pageSize) > this.recordsFetched) {
+      this.fetchPageEvent.emit((this.recordsFetched + this.offset) / this.offset)
     } else {
       if (event.previousPageIndex < event.pageIndex) {
         this.tempPaginator.nextPage();
@@ -144,33 +144,38 @@ export class FollowupTrackerComponent {
     this.dataSource.filter = null;
   }
 
-  applyDateFilter() {
-    let filteredVisits :CustomVisitModel[] = [];
-    // this.visitsCount = 0;
-    // if(this.fromDate && this.toDate) {
-    //   filteredVisits = this.doctorCompletedVisits.filter((visit) => {
-    //     return (new Date(visit.date_created).toISOString().slice(0, 10) >= this.fromDate &&
-    //      new Date(visit.date_created).toISOString().slice(0, 10) <= this.toDate);
-    //   });
-    // } else {
-    //   filteredVisits = this.doctorCompletedVisits.filter((visit) => {
-    //     return new Date(visit.date_created).toISOString().slice(0, 10) == this.fromDate;
-    //   });
-    // }
-    // this.dataSource.data = [...filteredVisits];
-    // this.tempPaginator.length = this.doctorCompletedVisits.length;
-    // this.tempPaginator.nextPage();
-    // this.visitsCount = filteredVisits.length;
-    // this.trigger.closeMenu();
+  applyDateFilter(showAllVisits: boolean) {
+    let filteredVisits: CustomVisitModel[] = [];
+    let visits = this.filteredFollowUpVisits;
+    this.doctorFollowpCount = 0;
+    if (this.fromDate && this.toDate) {
+      filteredVisits = visits.filter((visit) => {
+        return (new Date(visit.followup_date).toISOString().slice(0, 10) >= this.fromDate &&
+          new Date(visit.followup_date).toISOString().slice(0, 10) <= this.toDate);
+      });
+    } else if (this.fromDate) {
+      filteredVisits = visits.filter((visit) => {
+        return new Date(visit.followup_date).toISOString().slice(0, 10) == this.fromDate;
+      });
+    } else if (showAllVisits) {
+      filteredVisits = this.doctorFollowUpVisits;
+    }
+    filteredVisits.sort((a, b) => new Date(b.followup_date) < new Date(a.followup_date) ? -1 : 1);
+    this.dataSource.data = [...filteredVisits];
+    this.tempPaginator.length = filteredVisits.length;
+    this.tempPaginator.nextPage();
+    this.doctorFollowpCount = filteredVisits.length;
+    this.trigger.closeMenu();
   }
 
   resetFilter() {
-    // this.dataSource.data = [...this.doctorCompletedVisits];
-    // this.tempPaginator.length = this.doctorCompletedVisits.length;
-    // this.tempPaginator.nextPage();
-    // this.visitsCount = this.doctorCompletedVisits.length;
-    // this.trigger.closeMenu();
-    // this.fromDate = null;
-    // this.toDate = null;
+    this.dataSource.data = [...this.filteredFollowUpVisits];
+    this.tempPaginator.length = this.filteredFollowUpVisits.length;
+    this.tempPaginator.nextPage();
+    this.doctorFollowpCount = this.filteredFollowUpVisits.length;
+    this.selectAll = false;
+    this.trigger.closeMenu();
+    this.fromDate = null;
+    this.toDate = null;
   }
 }
