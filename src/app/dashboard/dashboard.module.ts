@@ -36,6 +36,7 @@ import { FollowupVisitsComponent } from './followup-visits/followup-visits.compo
 import { NotesComponent } from './visit-summary/notes/notes.component';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { FollowUpInstructionComponent } from './visit-summary/follow-up-instruction/follow-up-instruction.component';
+import { IhLibraryModule } from 'ih-library';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -57,6 +58,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     FollowUpInstructionComponent
   ],
   imports: [
+    IhLibraryModule,
     MatMenuModule,
     CommonModule,
     DashboardRoutingModule,

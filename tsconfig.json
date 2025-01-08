@@ -4,6 +4,11 @@
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": false,
+    "paths": {
+      "ih-library": [
+        "dist/ih-library"
+      ]
+    },
     "declaration": false,
     "module": "esnext",
     "moduleResolution": "node",

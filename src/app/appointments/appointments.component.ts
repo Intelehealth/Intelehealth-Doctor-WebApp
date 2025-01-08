@@ -27,7 +27,7 @@ export class AppointmentsComponent implements OnInit {
   expandedIndex = 0;
   displayedColumns: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'drName', 'telephone', 'actions'];
   dataSource = new MatTableDataSource<any>();
-  baseUrl: string = environment.baseURL;
+  // baseUrl: string = environment.baseURL;
   isLoaded: boolean = false;
   appointments: AppointmentModel[] = [];
   patientRegFields: string[] = [];

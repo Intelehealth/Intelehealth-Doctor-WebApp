@@ -1,0 +1,230 @@
+.mat-elevation-z8 {
+    box-shadow: none;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    font-family: DM Sans;
+  }
+  
+  th.mat-header-cell {
+    border: none;
+    font-size: 14px !important;
+    font-weight: 700;
+    color: var(--color-gray);
+    height: 21px;
+  }
+  
+  th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+    border: none;
+    min-width: 60px;
+    white-space: nowrap;
+    padding-right: 24px;
+  
+    span.alert-danger {
+      color: var(--color-red);
+      font-weight: bold;
+      background: transparent;
+      border: none;
+    }
+  
+    span.alert-success {
+      color: var(--color-green);
+      font-weight: bold;
+      background: transparent;
+      border: none;
+    }
+  }
+  
+  td.mat-cell {
+    font-size: 16px;
+  }
+  
+  tr.mat-row, tr.mat-footer-row {
+    height: 88px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  tr.mat-row.upcoming {
+    background: #E6FFF3 !important;
+  }
+  
+  tr.mat-row:nth-child(odd){
+    background: #F7F7FA;
+  }
+  
+  td:first-child,
+  th:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+  
+  // Set border-radius on the top-right and bottom-right of the last table data on the table row
+  td:last-child,
+  th:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+  
+  .actions-btn-wrap {
+    .action-btn {
+      outline: none;
+      border: none;
+      height: 36px;
+      min-width: 102px;
+      padding: 6px 8px;
+      background: white;
+      border-radius: 4px;
+      color: var(--color-black);
+      font-family: DM Sans;
+      font-size: 16px;
+    }
+  
+    .blue-btn {
+      background: var(--color-lightGray);
+      color: var(--color-darkBlue);
+    }
+  
+    .pink-btn {
+      background: var(--color-lightPink);
+      color: var(--color-red);
+    }
+  }
+  
+  .intel-accordion-con .mat-expansion-panel .mat-expansion-panel-header.mat-expanded {
+    .input-group {
+      display: flex;
+    }
+  }
+  
+  .input-group {
+    background: var(--color-white);
+    border: 1px solid rgba(127, 123, 146, 0.5);
+    border-radius: 6px;
+    height: 46px;
+    align-items: center;
+    max-width: 60vw;
+    width: 300px;
+    display: none;
+  
+    .input-group-text {
+      background: none;
+      border: none;
+      cursor: default;
+    }
+  
+    .form-control {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
+      line-height: 150%;
+      padding-left: 16px;
+    }
+  
+    .form-control:focus {
+      box-shadow: none;
+    }
+  }
+  
+  .intel-accordion-con {
+    .mat-expansion-panel {
+      background: #FFFFFF;
+      box-shadow: 0px 4px 24px rgba(31, 28, 58, 0.08);
+      border-radius: 20px !important;
+      padding: 24px;
+      margin-bottom: 24px;
+  
+      .mat-expansion-panel-header {
+        padding: 0px;
+  
+        .mat-content {
+          align-items: center;
+        }
+      }
+  
+      .mat-expansion-panel-header.mat-expanded {
+        height: 48px;
+      }
+  
+      .mat-expansion-panel-header:hover {
+        background: transparent !important;
+      }
+  
+      .intel-accordion-title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        width: 100%;
+  
+        .mat-icon {
+          height: 20px;
+          width: 20px;
+          font-size: 20px;
+          color: #461d90;
+          margin-left: 8px;
+        }
+  
+        h6 {
+          font-size: 18px;
+          font-weight: bold;
+          color: black;
+        }
+      }
+  
+      .mat-expansion-panel-content {
+        .mat-expansion-panel-body {
+          padding: 0px;
+          margin-top: 24px;
+          position: relative;
+        }
+  
+        .mat-expansion-panel-body::after {
+          content: '';
+          position: absolute;
+          top: 0px;
+          height: 1px;
+          left: 0px;
+          right: 0px;
+          background: #EFE8FF;
+        }
+      }
+    }
+  }
+
+  .anchor-con {
+    position: absolute;
+    top: -120px;
+    left: 0;
+  }
+
+  @media (max-width: 768px) {
+    .input-group {
+      width: 100%;
+      max-width: 100%;
+      margin: 10px 0px;
+    }
+  
+    .intel-accordion-con .mat-expansion-panel .mat-expansion-panel-header {
+      height: fit-content;
+    }
+  
+    .intel-accordion-con .mat-expansion-panel .mat-expansion-panel-header.mat-expanded {
+      height: fit-content;
+    }
+    .info-icon{
+      display: none;
+    }
+
+    .anchor-con {
+      top: -100px;
+    }  
+  }
+
+  .matIconButton {
+    border: none;
+    background: transparent;
+  }

@@ -1,0 +1,103 @@
+<div class="row mt-3">
+    <div class="col-md-12 p-0">
+      <div class="text-right my-2">
+        <mat-accordion class="intel-accordion-con" multi data-test-id="matAccAppointment">
+          <mat-expansion-panel [expanded]="true" data-test-id="matExpAppointment">
+            <mat-expansion-panel-header data-test-id="matExpHeaderAppointment">
+              <mat-panel-title>
+                <div id="anchor-appointment" class="anchor-con"></div>
+                <div class="intel-accordion-title">
+                  <img src="assets/svgs/cam-icon.svg" alt="" width="44px">
+                  <h6 class="mb-0 ml-2">{{'Appointments'}} ({{ appointmentVisitsCount }})</h6>
+                  <mat-icon aria-hidden="false" aria-label="help icon" matTooltip="{{'Scheduled appointments'}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
+                  <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
+                    <input type="text" #apSearchInput class="form-control" placeholder="{{ 'Search Appointments' }}" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointmentDashboard">
+                    <div class="input-group-append">
+                      <span class="input-group-text" id="basic-addon1" *ngIf="!tblDataSource.filter">
+                        <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
+                      </span>
+                      <button data-test-id="btnResetApSerach" class="matIconButton ml-0" mat-icon-button aria-label="Reset appointment search" *ngIf="tblDataSource.filter" (click)="clearFilter('Appointment')">
+                        <mat-icon class="ml-0" style="line-height: normal;">close</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="mat-elevation-z8">
+              <table mat-table [dataSource]="tblDataSource">
+  
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef> {{'Patient'}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'apPatient'+j" [routerLink]="['/dashboard/visit-summary', element?.visitUuid]">
+                    <div class="d-flex align-items-center">
+                      <!-- <img src="{{ baseUrl + '/personimage/' + element.patientId }}" alt="" width="32px" height="32px" style="border-radius: 50%;"> -->
+                      <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
+                      <span class="font-bold ml-2">{{element.patientName}} ({{(element.patientGender)}})</span>
+                    </div>
+                  </td>
+                </ng-container>
+  
+                <!-- Age Column -->
+                <ng-container matColumnDef="age">
+                  <th mat-header-cell *matHeaderCellDef> {{'Age'}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'apAge'+j" [routerLink]="['/dashboard/visit-summary', element?.visitUuid]"> {{element.patientAge}}{{'y'}} </td>
+                </ng-container>
+  
+                <!-- Starts In Column -->
+                <ng-container matColumnDef="starts_in">
+                  <th mat-header-cell *matHeaderCellDef> {{'Starts in'}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'apStart'+j" [routerLink]="['/dashboard/visit-summary', element?.visitUuid]"> <span [ngClass]="{ 'alert-danger': element.starts_in.includes('Due'), 'alert-success': element.starts_in.includes('Hour')||element.starts_in.includes('Minute') }">{{element.starts_in}}</span></td>
+                </ng-container>
+  
+                <!-- Location Column -->
+                <ng-container matColumnDef="location">
+                  <th mat-header-cell *matHeaderCellDef> {{'Location'}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'apLocation'+j" [routerLink]="['/dashboard/visit-summary', element?.visitUuid]"> {{element?.visit?.location.name}} </td>
+                </ng-container>
+  
+                <!-- Chief complaint Column -->
+                <ng-container matColumnDef="cheif_complaint">
+                  <th mat-header-cell *matHeaderCellDef> {{'Chief Complaint'}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'apComplaint'+j" [routerLink]="['/dashboard/visit-summary', element?.visitUuid]"> {{element?.cheif_complaint}} </td>
+                </ng-container>
+  
+                <!-- Contact Column -->
+                <ng-container matColumnDef="telephone">
+                  <th mat-header-cell *matHeaderCellDef> {{'Contact'}} </th>
+                  <td mat-cell *matCellDef="let element; let j=index;" 
+                    [attr.data-test-id]="'whatsappCall'+j" class="text-center"> <a *ngIf="element.telephone" href="{{ element.telephone }}" target="_blank"
+                    class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp'+j">
+                    <img src="assets/svgs/whatsapp-green.svg" alt="" />
+                  </a> </td>
+                </ng-container>
+  
+                <!-- Prescription Sent Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef> {{'Actions'}} </th>
+                  <td mat-cell *matCellDef="let element;let j=index;" [attr.data-test-id]="'apAction'+j">
+                    <div class="actions-btn-wrap d-flex align-items-center">
+                      <button class="action-btn blue-btn mr-2" [attr.data-test-id]="'btnReschedule'+j" type="button" (click)="reschedule(element)">{{'Reschedule'}}</button>
+                      <button class="action-btn pink-btn " [attr.data-test-id]="'btnCancel'+j" type="button" (click)="cancel(element)">{{'Cancel'}}</button>
+                    </div>
+                  </td>
+                </ng-container>
+  
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+                    {{'No any appointments scheduled.'}}
+                  </td>
+                </tr>
+  
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; let x=index; columns: displayedColumns;" [attr.data-test-id]="'ap'+x" [class.upcoming]="row.starts_in.includes('hours')||row.starts_in.includes('minutes')"></tr>
+              </table>
+  
+              <mat-paginator #tempPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]" aria-label="Select page of periodic elements"></mat-paginator>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+</div>

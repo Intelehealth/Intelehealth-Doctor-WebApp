@@ -12,7 +12,8 @@
     "test": "ng test --include src/app/admin/admin-actions/webrtc",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build-library": "ng build ih-library --watch"
   },
   "lint-staged": {
     "src/**/*.{ts,css}": "tslint --fix -c ./tslint.json"
@@ -95,6 +96,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "lint-staged": "^14.0.1",
+    "ng-packagr": "^16.2.3",
     "protractor": "~7.0.0",
     "ts-node": "~7.0.0",
     "tslint": "~6.1.3",

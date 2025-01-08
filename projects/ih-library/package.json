@@ -1,0 +1,19 @@
+{
+  "name": "ih-library",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^16.2.0",
+    "@angular/core": "^16.2.0",
+    "@angular/animations": "^18.2.6",
+    "@angular/cdk": "^18.2.6",
+    "@angular/material": "^18.2.6",
+    "bootstrap": "^5.3.3",
+    "sass": "^1.79.4",
+    "ngx-permissions": "^13.0.1",
+    "ngx-toastr": "^14.3.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}
