@@ -9,8 +9,9 @@ import { CoreService } from 'src/app/services/core/core.service';
 import { getCacheData } from 'src/app/utils/utility-functions';
 import { Participant, RemoteParticipant, RemoteTrack, RemoteTrackPublication, Track } from 'livekit-client';
 import { WebrtcService } from 'src/app/services/webrtc.service';
-import { notifications, doctorDetails, visitTypes } from 'src/config/constant';
-import { ApiResponseModel, EncounterProviderModel, MessageModel, ProviderModel, UserModel } from 'src/app/model/model';
+import { doctorDetails, visitTypes } from 'src/config/constant';
+import { ApiResponseModel, EncounterProviderModel, MessageModel } from 'src/app/model/model';
+import { AppConfigService } from 'src/app/services/app-config.service';
 
 @Component({
   selector: 'app-video-call',
@@ -50,6 +51,7 @@ export class VideoCallComponent implements OnInit, OnDestroy {
   activeSpeakerIds: any = [];
   connecting = false;
   callEndTimeout = null;
+  patientRegFields: string[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
@@ -58,10 +60,12 @@ export class VideoCallComponent implements OnInit, OnDestroy {
     private socketSvc: SocketService,
     private cs: CoreService,
     private toastr: ToastrService,
-    private webrtcSvc: WebrtcService
+    private webrtcSvc: WebrtcService,
+    private appConfigService: AppConfigService
   ) { }
 
   async ngOnInit() {
+    this.patientRegFields = this.appConfigService.patientRegFields;
     this.room = this.data.patientId;
 
     const patientVisitProvider: EncounterProviderModel = getCacheData(true, visitTypes.PATIENT_VISIT_PROVIDER);
@@ -572,5 +576,9 @@ export class VideoCallComponent implements OnInit, OnDestroy {
     clearInterval(this.changeDetForDuration);
     this.webrtcSvc.disconnect();
     this.webrtcSvc.token = '';
+  }
+
+  checkPatientRegField(fieldName: string): boolean{
+    return this.patientRegFields.indexOf(fieldName) !== -1;
   }
 }

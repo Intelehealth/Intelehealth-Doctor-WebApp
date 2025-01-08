@@ -15,7 +15,7 @@ import { getCacheData } from '../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from 'src/config/constant';
 import { ApiResponseModel, AppointmentDetailResponseModel, AppointmentModel, CustomEncounterModel, EncounterModel, FollowUpModel, HwModel, ProviderAttributeModel, ProviderModel, RescheduleAppointmentModalResponseModel, ScheduleModel, ScheduleSlotModel, UserModel } from '../model/model';
 import { MindmapService } from '../services/mindmap.service';
-import { NgxRolesService } from 'ngx-permissions';
+import { AppConfigService } from '../services/app-config.service';
 
 @Component({
   selector: 'app-calendar',
@@ -37,6 +37,7 @@ export class CalendarComponent implements OnInit {
   daysOff: ScheduleModel[] = [];
   monthNames: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   refresh = new Subject<void>();
+  patientRegFields = [];
 
   constructor(
     private pageTitleService: PageTitleService,
@@ -47,7 +48,7 @@ export class CalendarComponent implements OnInit {
     private toastr: ToastrService,
     private mindmapService: MindmapService,
     private translateService:TranslateService,
-    private roleService: NgxRolesService
+    private appConfigService: AppConfigService
   ) { }
 
   ngOnInit(): void {
@@ -60,6 +61,7 @@ export class CalendarComponent implements OnInit {
     this.getFollowUpVisit();
     this.getAppointments(moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'));
     this.getSchedule();
+    this.patientRegFields = this.appConfigService.patientRegFields;
   }
 
   /**
@@ -85,8 +87,7 @@ export class CalendarComponent implements OnInit {
   * @return {void}
   */
   getAppointments(from: string, to: string) {
-    const isMCCUser = !!this.roleService.getRole('ORGANIZATIONAL:MCC');
-    this.appointmentService.getUserSlots(getCacheData(true, doctorDetails.USER).uuid, from, to, isMCCUser ? this.getSpeciality(): null )
+    this.appointmentService.getUserSlots(getCacheData(true, doctorDetails.USER).uuid, from, to)
       .subscribe((res: ApiResponseModel) => {
         let appointmentsdata: AppointmentModel[] = res.data;
         appointmentsdata.forEach((appointment: AppointmentModel) => {
@@ -529,4 +530,7 @@ export class CalendarComponent implements OnInit {
     return getCacheData(false, languages.SELECTED_LANGUAGE);
   }
 
+  checkPatientRegField(fieldName: any): boolean{
+    return this.patientRegFields.indexOf(fieldName) !== -1;
+  }
 }

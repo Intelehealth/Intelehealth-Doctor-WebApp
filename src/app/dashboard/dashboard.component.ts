@@ -21,16 +21,45 @@ import { FollowupVisitsComponent } from './followup-visits/followup-visits.compo
 import { MindmapService } from '../services/mindmap.service';
 import { NgxRolesService } from 'ngx-permissions';
 import { HelpTourService } from '../services/help-tour.service';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
+import { formatDate } from '@angular/common';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+
+
+export const PICK_FORMATS = {
+  parse: { dateInput: { month: 'short', year: 'numeric', day: 'numeric' } },
+  display: {
+    dateInput: 'input',
+    monthYearLabel: { year: 'numeric', month: 'short' },
+    dateA11yLabel: { year: 'numeric', month: 'long', day: 'numeric' },
+    monthYearA11yLabel: { year: 'numeric', month: 'long' }
+  }
+};
+
+class PickDateAdapter extends NativeDateAdapter {
+  format(date: Date, displayFormat: Object): string {
+    if (displayFormat === 'input') {
+      return formatDate(date, 'dd MMM yyyy', this.locale);
+    } else {
+      return date.toDateString();
+    }
+  }
+};
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  providers: [
+    { provide: DateAdapter, useClass: PickDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: PICK_FORMATS }
+  ]
 })
 export class DashboardComponent implements OnInit {
 
   showAll: boolean = true;
-  displayedColumns1: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'telephone','actions'];
+  displayedColumns1: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'drName', 'telephone','actions'];
   displayedColumns2: string[] = ['name', 'age', 'location', 'cheif_complaint', 'visit_created'];
   displayedColumns3: string[] = ['name', 'age', 'location', 'cheif_complaint', 'patient_type', 'visit_created'];
   displayedColumns4: string[] = ['name', 'age', 'location', 'cheif_complaint', 'prescription_started'];
@@ -91,6 +120,22 @@ export class DashboardComponent implements OnInit {
   pvs: PatientVisitSummaryConfigModel;
   isMCCUser: boolean = false;
 
+  panelExpanded: boolean = true;
+  mode: 'date' | 'range' = 'date';
+  maxDate: Date = new Date();
+
+  filteredDateAndRangeForm1: FormGroup;
+  filteredDateAndRangeForm2: FormGroup;
+  filteredDateAndRangeForm3: FormGroup;
+  filteredDateAndRangeForm4: FormGroup;
+
+  isFilterApplied1 = false;
+  isFilterApplied2 = false;
+  isFilterApplied3 = false;
+  isFilterApplied4 = false;
+  
+  @ViewChild(MatMenuTrigger) menuTrigger: MatMenuTrigger;
+
   @ViewChild('tempPaginator1') tempPaginator1: MatPaginator;
   @ViewChild('tempPaginator2') tempPaginator2: MatPaginator;
   @ViewChild('tempPaginator3') tempPaginator3: MatPaginator;
@@ -116,18 +161,39 @@ export class DashboardComponent implements OnInit {
     private appConfigService: AppConfigService,
     public tourSvc: HelpTourService,
     private rolesService: NgxRolesService) {
+      this.filteredDateAndRangeForm1 = this.createFilteredDateRangeForm();
+      this.filteredDateAndRangeForm2 = this.createFilteredDateRangeForm();
+      this.filteredDateAndRangeForm3 = this.createFilteredDateRangeForm();
+      this.filteredDateAndRangeForm4 = this.createFilteredDateRangeForm();
+
       this.isMCCUser = !!this.rolesService.getRole('ORGANIZATIONAL:MCC');
       Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
         this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter((e: { is_enabled: any; })=>e.is_enabled).map((e: { name: any; })=>e.name));
       });
       this.pvs = { ...this.appConfigService.patient_visit_summary }; 
-      this.pvs.appointment_button = this.pvs.appointment_button && !this.isMCCUser;
-      this.displayedColumns1 = this.displayedColumns1.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
+      this.pvs.appointment_button = this.pvs.appointment_button;
+      this.displayedColumns1 = this.displayedColumns1.filter(col=> {
+        if(col === 'drName' && !this.isMCCUser) return false;
+        if(col === 'age') return this.checkPatientRegField('Age');
+        return true;
+      });
       this.displayedColumns2 = this.displayedColumns2.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
       this.displayedColumns3 = this.displayedColumns3.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
       this.displayedColumns4 = this.displayedColumns4.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
+      
+      if(!this.pvs.awaiting_visits_patient_type_demarcation){
+        this.displayedColumns3 = this.displayedColumns3.filter(col=>(col!=='patient_type'));
+      }
     }
 
+  createFilteredDateRangeForm(): FormGroup {
+    return new FormGroup({
+      date: new FormControl('', [Validators.required]),
+      startDate: new FormControl(null, Validators.required),
+      endDate: new FormControl(null, Validators.required),
+    });
+  }
+    
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
     this.pageTitleService.setTitle({ title: "Dashboard", imgUrl: "assets/svgs/menu-info-circle.svg" });
@@ -138,10 +204,12 @@ export class DashboardComponent implements OnInit {
       } else {
         this.router.navigate(['/dashboard/get-started']);
       }
-      if (this.pvs.appointment_button && !this.isMCCUser) {
+      if (this.pvs.appointment_button) {
         this.getAppointments();
       }
-      this.getAwaitingVisits(1);
+      if(this.pvs.awaiting_visit_section){
+        this.getAwaitingVisits(1);
+      }
       if (this.pvs.priority_visit_section) {
         this.getPriorityVisits(1);
       }
@@ -156,6 +224,11 @@ export class DashboardComponent implements OnInit {
 
     this.socket.initSocket(true);
     this.initHelpTour();
+
+    if(environment.brandName === 'KCDO'){
+      this.displayedColumns1 = ['TMH_patient_id', 'name', 'age', 'starts_in', 'actions'];
+      this.displayedColumns4 = ['TMH_patient_id', 'name', 'age', 'prescription_started'];
+    }
   }
 
   initHelpTour(){
@@ -238,7 +311,8 @@ export class DashboardComponent implements OnInit {
           visit.cheif_complaint = this.getCheifComplaint(visit);
           visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.COMPLETED_VISIT);
           visit.person.age = this.calculateAge(visit.person.birthdate);
-          visit.completed = this.getEncounterCreated(visit, visitTypes.VISIT_COMPLETE);
+          visit.completed = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.VISIT_COMPLETE);
+          visit.TMH_patient_id = this.getAttributeData(visit, "TMH Case Number");
           this.completedVisits.push(visit);
         }
         this.dataSource5.data = [...this.completedVisits];
@@ -398,6 +472,7 @@ export class DashboardComponent implements OnInit {
           visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z','+0530')) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
           visit.prescription_started = this.getEncounterCreated(visit, visitTypes.VISIT_NOTE);
           visit.person.age = this.calculateAge(visit.person.birthdate);
+          visit.TMH_patient_id = this.getAttributeData(visit, "TMH Case Number");
           this.inProgressVisits.push(visit);
         }
         this.dataSource4.data = [...this.inProgressVisits];
@@ -412,6 +487,21 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  getAttributeData(data: any, attributeName: string): { name: string; value: string } | null {
+    if (data?.person_attribute && Array.isArray(data.person_attribute)) {
+      const attribute = data.person_attribute.find(
+        (attr: any) => attr.person_attribute_type?.name === attributeName
+      );
+      if (attribute) {
+        return {
+          name: attribute.person_attribute_type.name,
+          value: attribute.value
+        };
+      }
+    }
+    return null;
+  }
+    
   /**
   * Callback for page change event and Get inprogress visit for a selected page index and page size
   * @param {PageEvent} event - onerror event
@@ -441,7 +531,7 @@ export class DashboardComponent implements OnInit {
   */
   getAppointments() {
     this.appointments = [];
-    this.appointmentService.getUserSlots(getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'))
+    this.appointmentService.getUserSlots(getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'), this.isMCCUser ? this.specialization : null)
       .subscribe((res: ApiResponseModel) => {
         let appointmentsdata = res.data;
         appointmentsdata.forEach((appointment: AppointmentModel) => {
@@ -450,6 +540,7 @@ export class DashboardComponent implements OnInit {
               appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
               appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
               appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person)
+              appointment.TMH_patient_id = this.getAttributeData(appointment.visit, "TMH Case Number");
               this.appointments.push(appointment);
             }
           }
@@ -638,6 +729,7 @@ export class DashboardComponent implements OnInit {
   applyFilter1(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource1.filter = filterValue.trim().toLowerCase();
+    this.isFilterApplied1 = true;
   }
 
   /**
@@ -649,6 +741,7 @@ export class DashboardComponent implements OnInit {
     this.dataSource2.filter = filterValue.trim().toLowerCase();
     this.tempPaginator1.firstPage();
     this.priorityPaginator?.firstPage();
+    this.isFilterApplied2 = true;
   }
 
   /**
@@ -660,6 +753,7 @@ export class DashboardComponent implements OnInit {
     this.dataSource3.filter = filterValue.trim().toLowerCase();
     this.tempPaginator2?.firstPage();
     this.awaitingPaginator?.firstPage();
+    this.isFilterApplied3 = true;
   }
 
   /**
@@ -671,6 +765,7 @@ export class DashboardComponent implements OnInit {
     this.dataSource4.filter = filterValue.trim().toLowerCase();
     this.tempPaginator3.firstPage();
     this.inprogressPaginator?.firstPage();
+    this.isFilterApplied4 = true;
   }
 
   /**
@@ -683,18 +778,22 @@ export class DashboardComponent implements OnInit {
       case 'Appointment':
         this.dataSource1.filter = null;
         this.apSearchElement.nativeElement.value = "";
+        this.isFilterApplied1 = false;
         break;
       case 'Priority':
         this.dataSource2.filter = null;
         this.prSearchElement.nativeElement.value = "";
+        this.isFilterApplied2 = false;
         break;
       case 'Awaiting':
         this.dataSource3.filter = null;
         this.awSearchElement.nativeElement.value = "";
+        this.isFilterApplied3 = false;
         break;
       case 'In-progress':
         this.dataSource4.filter = null;
         this.ipSearchElement.nativeElement.value = "";
+        this.isFilterApplied4 = false;
         break;
       default:
         break;
@@ -727,5 +826,199 @@ export class DashboardComponent implements OnInit {
 
   getTelephoneNumber(person: AppointmentModel['visit']['person']): any {
     return person?.person_attribute.find((v: { person_attribute_type_id: number; }) => v.person_attribute_type_id == 8)?.value;
+  }
+
+  closeMenu() {
+    if (this.menuTrigger) {
+      this.menuTrigger.closeMenu();
+    }
+  }
+
+  setMode(mode: 'date' | 'range') {
+    this.mode = mode;
+  }
+
+  formatDate(date: any): string {
+    const localDate = new Date(date);
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  
+
+  convertToDate(relativeTime: string): string {
+    const now = new Date();
+    const [value, unit] = relativeTime.split(' ');
+    const amount = parseInt(value, 10);
+  
+    if (['hour', 'hours'].includes(unit.toLowerCase())) now.setHours(now.getHours() - amount);
+    else if (['minute', 'minutes'].includes(unit.toLowerCase())) now.setMinutes(now.getMinutes() - amount);
+    else if (['day', 'days'].includes(unit.toLowerCase())) now.setDate(now.getDate() - amount);
+    else throw new Error('Invalid time unit. Only "hours", "minutes", or "days" are supported.');
+  
+    return now.toISOString().split('T')[0];
+  }
+
+  applyDateOrRangeFilter1() {
+    const selectedDate = this.filteredDateAndRangeForm1.get('date')?.value;
+    const startDate = this.filteredDateAndRangeForm1.get('startDate')?.value;
+    const endDate = this.filteredDateAndRangeForm1.get('endDate')?.value;
+  
+    if (selectedDate) {
+      const formattedDate = this.formatDate(selectedDate);
+
+      this.dataSource1.filterPredicate = (data: any, filter: string) => {
+        const itemDate = this.formatDate(data.slotJsDate);
+        return itemDate === filter;
+      };
+      this.dataSource1.filter = formattedDate;
+    } else if (startDate && endDate) {
+      const formattedStartDate = this.formatDate(startDate);
+      const formattedEndDate = this.formatDate(endDate);
+  
+      this.dataSource1.filterPredicate = (data: any, filter: string) => {
+        const itemDate = this.formatDate(data.slotJsDate);
+        return itemDate >= formattedStartDate && itemDate <= formattedEndDate;
+      };
+      this.dataSource1.filter = `${formattedStartDate}:${formattedEndDate}`;
+    } else {
+      this.dataSource1.filter = '';
+    }
+    this.tempPaginator3.firstPage();
+    this.inprogressPaginator?.firstPage();
+    this.closeMenu();
+  }
+
+  applyDateOrRangeFilter2() {
+    const selectedDate = this.filteredDateAndRangeForm2.get('date')?.value;
+    const startDate = this.filteredDateAndRangeForm2.get('startDate')?.value;
+    const endDate = this.filteredDateAndRangeForm2.get('endDate')?.value;
+  
+    if (selectedDate) {
+      const formattedDate = this.formatDate(selectedDate);
+      
+      this.dataSource2.filterPredicate = (data: any, filter: string) => {
+        const itemDate = data.visit_created.includes(',') ? this.formatDate(data.visit_created) : this.convertToDate(data.visit_created);
+        return itemDate === filter;
+      };
+      this.dataSource2.filter = formattedDate;
+    } else if (startDate && endDate) {
+      const formattedStartDate = this.formatDate(startDate);
+      const formattedEndDate = this.formatDate(endDate);
+  
+      this.dataSource2.filterPredicate = (data: any, filter: string) => {
+        const itemDate = data.visit_created.includes(',') ? this.formatDate(data.visit_created) : this.convertToDate(data.visit_created);
+        return itemDate >= formattedStartDate && itemDate <= formattedEndDate;
+      };
+      this.dataSource2.filter = `${formattedStartDate}:${formattedEndDate}`;
+    } else {
+      this.dataSource2.filter = '';
+    }
+    this.tempPaginator3.firstPage();
+    this.priorityPaginator?.firstPage();
+    this.closeMenu();
+  }
+
+  applyDateOrRangeFilter3() {    
+    const selectedDate = this.filteredDateAndRangeForm3.get('date')?.value;
+    const startDate = this.filteredDateAndRangeForm3.get('startDate')?.value;
+    const endDate = this.filteredDateAndRangeForm3.get('endDate')?.value;
+  
+    if (selectedDate) {
+      const formattedDate = this.formatDate(selectedDate);
+      
+      this.dataSource3.filterPredicate = (data: any, filter: string) => {
+        const itemDate = data.visit_created.includes(',') ? this.formatDate(data.visit_created) : this.convertToDate(data.visit_created);
+        return itemDate === filter;
+      };
+      this.dataSource3.filter = formattedDate;
+    } else if (startDate && endDate) {
+      const formattedStartDate = this.formatDate(startDate);
+      const formattedEndDate = this.formatDate(endDate);
+  
+      this.dataSource3.filterPredicate = (data: any, filter: string) => {
+        const itemDate = data.visit_created.includes(',') ? this.formatDate(data.visit_created) : this.convertToDate(data.visit_created);
+        return itemDate >= formattedStartDate && itemDate <= formattedEndDate;
+      };
+      this.dataSource3.filter = `${formattedStartDate}:${formattedEndDate}`;
+    } else {
+      this.dataSource3.filter = '';
+    }
+    this.tempPaginator3.firstPage();
+    this.awaitingPaginator?.firstPage();
+    this.closeMenu();
+  }
+
+  applyDateOrRangeFilter4() {
+    const selectedDate = this.filteredDateAndRangeForm4.get('date')?.value;
+    const startDate = this.filteredDateAndRangeForm4.get('startDate')?.value;
+    const endDate = this.filteredDateAndRangeForm4.get('endDate')?.value;
+    
+    if (selectedDate) {
+      const formattedDate = this.formatDate(selectedDate);
+
+      this.dataSource4.filterPredicate = (data: any, filter: string) => {
+        const itemDate = data.prescription_started.includes(',') ? this.formatDate(data.prescription_started) : this.convertToDate(data.prescription_started);
+        return itemDate === filter;
+      };
+      this.dataSource4.filter = formattedDate;
+    } else if (startDate && endDate) {
+      const formattedStartDate = this.formatDate(startDate);
+      const formattedEndDate = this.formatDate(endDate);
+  
+      this.dataSource4.filterPredicate = (data: any, filter: string) => {
+        const itemDate = data.prescription_started.includes(',') ? this.formatDate(data.prescription_started) : this.convertToDate(data.prescription_started);
+        return itemDate >= formattedStartDate && itemDate <= formattedEndDate;
+      };
+      this.dataSource4.filter = `${formattedStartDate}:${formattedEndDate}`;
+    } else {
+      this.dataSource4.filter = '';
+    }
+    this.tempPaginator3.firstPage();
+    this.inprogressPaginator?.firstPage();
+    this.closeMenu();
+  }
+  
+  resetDate1(flag:boolean = false) {
+    this.filteredDateAndRangeForm1.reset();
+    this.dataSource1.filter = '';
+    this.dataSource1.filterPredicate = (data: any, filter: string) => true;
+    if(!flag){
+      this.closeMenu();
+    }
+  }
+
+  resetDate2(flag:boolean = false) {
+    this.filteredDateAndRangeForm2.reset();
+    this.dataSource2.filter = '';
+    this.dataSource2.filterPredicate = (data: any, filter: string) => true;
+    this.tempPaginator1.firstPage();
+    this.priorityPaginator?.firstPage();
+    if(!flag){
+      this.closeMenu();
+    }
+  }
+
+  resetDate3(flag:boolean = false) {
+    this.filteredDateAndRangeForm3.reset();
+    this.dataSource3.filter = '';
+    this.dataSource3.filterPredicate = (data: any, filter: string) => true;
+    this.tempPaginator2.firstPage();
+    this.awaitingPaginator?.firstPage();
+    if(!flag){
+      this.closeMenu();
+    }
+  }
+
+  resetDate4(flag:boolean = false) {    
+    this.filteredDateAndRangeForm4.reset();
+    this.dataSource4.filter = '';
+    this.dataSource4.filterPredicate = (data: any, filter: string) => true;
+    this.tempPaginator3.firstPage();
+    this.inprogressPaginator?.firstPage();
+    if(!flag){
+      this.closeMenu();
+    }
   }
 }

@@ -186,8 +186,23 @@
     font-weight: normal;
   }
 
+  .search-bar{
+    width: 30%;
+    margin-left: 2% !important;
+  }
+
   @media (max-width: 768px) {
     .btn-block {
       display: block;
+    }
+
+    .card-header > div{
+        margin-bottom: 10px !important;
+        width: 100% !important;
+        max-width: unset;
+        margin-left: 0 !important;
+        .btn{
+          width: 100%;
+        }
     }
   }

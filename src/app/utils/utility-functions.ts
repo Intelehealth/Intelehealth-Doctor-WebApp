@@ -2,6 +2,7 @@ import { languages, visitTypes } from "src/config/constant";
 import * as moment from 'moment';
 import { ProviderAttributeModel } from "../model/model";
 import { DecimalPipe } from "@angular/common";
+import { environment } from "src/environments/environment";
 
 export function getCacheData(parse: boolean, key: string) {
   if (parse) {
@@ -142,4 +143,20 @@ export function calculateBMI(vitals: any, vitalObs: any, _locale: string = 'en')
     return decimalPipe.transform(weight / ((height/100) * (height/100)), "1.2-2")
   }  
   return null;
+}
+
+export function isFeaturePresent(featureName: string, notInclude = false): boolean {
+  const featureList = environment.featureList ?? []; // Extract from ENV file
+  if(notInclude) return !featureList.includes(featureName);
+  return featureList.includes(featureName);
+}
+
+export function getCallDuration(given_seconds: number){
+  let dateObj = new Date(given_seconds * 1000);
+  let hours = dateObj.getUTCHours();
+  let minutes = dateObj.getUTCMinutes();
+  let seconds = dateObj.getSeconds();
+  return hours.toString().padStart(2, '0') + ':' + 
+      minutes.toString().padStart(2, '0') + ':' + 
+      seconds.toString().padStart(2, '0');
 }

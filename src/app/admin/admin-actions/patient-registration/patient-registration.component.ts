@@ -1,16 +1,15 @@
-import { Component, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
-import { TranslateService } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
-import { PageTitleService } from 'src/app/core/page-title/page-title.service';
-import { ConfigService } from 'src/app/services/config.service';
-import { compare, getCacheData } from 'src/app/utils/utility-functions';
-import { languages } from 'src/config/constant';
-import { MatSort, Sort } from '@angular/material/sort';
-import { PatientRegistrationFieldsModel } from 'src/app/model/model';
-import * as moment from 'moment';
-
+import { Component, ViewChild } from "@angular/core";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatTableDataSource } from "@angular/material/table";
+import { TranslateService } from "@ngx-translate/core";
+import { ToastrService } from "ngx-toastr";
+import { PageTitleService } from "src/app/core/page-title/page-title.service";
+import { ConfigService } from "src/app/services/config.service";
+import { compare, getCacheData } from "src/app/utils/utility-functions";
+import { languages } from "src/config/constant";
+import { MatSort } from "@angular/material/sort";
+import { PatientRegistrationFieldsModel } from "src/app/model/model";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-patient-registration',
@@ -22,12 +21,14 @@ export class PatientRegistrationComponent {
   tabList = ['Personal', 'Address', 'Other'];
   currentTabIndex = 0; 
   dataSource = new MatTableDataSource<any>();
+  rosterDataSource = new MatTableDataSource<any>();
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild("rosterPaginator") rosterPaginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  patientFieldsData : any;
-  sortedData : PatientRegistrationFieldsModel[];
-  selectedSort: any; 
-  sortOptions = [ 
+  patientFieldsData: any;
+  sortedData: PatientRegistrationFieldsModel[];
+  selectedSort: any;
+  sortOptions = [
                   {colName:"name",label:"Field Title"},
                   {colName:"updatedAt",label:"Last Updated"},                  
                   {colName:"is_enabled",label:"Active"},
@@ -35,6 +36,16 @@ export class PatientRegistrationComponent {
                 ];
   sectionEnabled: boolean = false;
   allSectionData: any = {};
+
+  displayedRosterColumns: string[] = [
+    "serialNo",
+    "section",
+    "updatedAt",
+    "is_enabled",
+  ];
+  tableData = [];
+  rosterQuestionnaireId: number;
+  rosterQuestionnairefeatures: any = {};
 
   constructor(
     private pageTitleService: PageTitleService,
@@ -46,10 +57,13 @@ export class PatientRegistrationComponent {
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
     this.pageTitleService.setTitle({ title: "Admin Actions", imgUrl: "assets/svgs/admin-actions.svg" });
+    this.getRoosterQuestionnaire();
+    this.getRoosterQuestionnaireByKey();
   }
 
   ngAfterViewInit(){
     this.getAllFields();
+    this.rosterDataSource.paginator = this.rosterPaginator;
   }
 
   onTabChange(tabIndex){
@@ -60,64 +74,64 @@ export class PatientRegistrationComponent {
   }
 
   /**
-  * Get patient registration fields.
-  * @return {void}
-  */
+   * Get patient registration fields.
+   * @return {void}
+   */
   getAllFields(): void {
     this.configService.getPatientRegistrationFields().subscribe(res=>{
-      this.patientFieldsData = res.patient_registration;
+        this.patientFieldsData = res.patient_registration;
       this.allSectionData['personal'] = { id:0 , is_enabled:true };
       this.allSectionData['address'] = res.patient_registration_address;
       this.allSectionData['other'] = res.patient_registration_other;
-      this.sortDataAndUpdate();
+        this.sortDataAndUpdate();
     }, err => {
       
     });
   }
 
   /**
-  * Update Field status.
-  * @return {void}
-  */
+   * Update Field status.
+   * @return {void}
+   */
   updateStatus(id: number, status: boolean): void {
     this.configService.updatePatientRegistrationStatus(id, status).subscribe(res => {
       this.toastr.success("Patient Registration has been successfully updated","Update successful!");
-      this.getAllFields();
+        this.getAllFields();
     }, err => {
-      this.getAllFields();
+        this.getAllFields();
     });
   }
 
   /**
-  * Update Mandatory Field status.
-  * @return {void}
-  */
+   * Update Mandatory Field status.
+   * @return {void}
+   */
   updateMandatoryStatus(id: number, status: boolean): void {
     this.configService.updatePatientRegistrationMandatoryStatus(id, status).subscribe(res => {
       this.toastr.success("Patient Registration has been successfully updated","Update successful!");
-      this.getAllFields();
+          this.getAllFields();
     }, err => {
-      this.getAllFields();
+          this.getAllFields();
     });
   }
 
   /**
-  * Update Editable Field status.
-  * @return {void}
-  */
+   * Update Editable Field status.
+   * @return {void}
+   */
   updateEditStatus(id: number, status: boolean): void {
     this.configService.updatePatientRegistrationEditableStatus(id, status).subscribe(res => {
       this.toastr.success("Patient Registration has been successfully updated","Update successful!");
-      this.getAllFields();
+          this.getAllFields();
     }, err => {
-      this.getAllFields();
+          this.getAllFields();
     });
   }
 
   /**
-  * Publish langauge changes.
-  * @return {void}
-  */
+   * Publish langauge changes.
+   * @return {void}
+   */
   onPublish(): void {
     this.configService.publishConfig().subscribe(res => {
       this.toastr.success("Patient Registration changes published successfully!", "Changes published!");
@@ -175,15 +189,72 @@ export class PatientRegistrationComponent {
   }
 
   /**
-  * Update Patient registartion status.
-  * @return {void}
-  */
+   * Update Patient registartion status.
+   * @return {void}
+   */
   updateFeatureStatus(id: number, status: boolean): void {
     this.configService.updateFeatureEnabledStatus(id, status).subscribe(res => {
       this.toastr.success("Patient Registration has been successfully updated", "Update successful!");
-      this.getAllFields();
+        this.getAllFields();
     }, err => {
-      this.getAllFields();
+        this.getAllFields();
+      }
+    );
+  }
+
+  getRoosterQuestionnaire() {
+    this.configService.getRosterQuestionnaire().subscribe((res: any) => {
+      const data = res.rosterQuestionnaire;
+      this.rosterDataSource = new MatTableDataSource(data);
+      this.rosterDataSource.paginator = this.rosterPaginator;
     });
+  }
+
+  /**
+   * Update patient details status.
+   * @return {void}
+   */
+  updateRosterQuestionnarire(id: number, status: boolean): void {
+    this.configService.updateRosterQuestionnaireStatus(id, status).subscribe(
+      (res) => {
+        this.toastr.success(
+          "Roster questionnarie have been successfully updated",
+          "Update successful!"
+        );
+        this.getRoosterQuestionnaire();
+      },
+      (err) => {
+        this.getRoosterQuestionnaire();
+      }
+    );
+  }
+
+  getRoosterQuestionnaireByKey() {
+    this.configService
+      .getRosterQuestionnaireByKey("roster_questionnaire_section")
+      .subscribe((res: any) => {
+        this.rosterQuestionnaireId = res.feature.id;
+        this.rosterQuestionnairefeatures = res.feature;
+      });
+  }
+
+  /**
+   * @return {void}
+   */
+  updateRoosterQuestionnaireStatus(status: boolean): void {
+    this.configService
+      .updateFeatureEnabledStatus(this.rosterQuestionnaireId, status)
+      .subscribe(
+        (res) => {
+          this.toastr.success(
+            "Roster questionnaire have been successfully updated",
+            "Update successful!"
+          );
+          this.getRoosterQuestionnaire();
+        },
+        (err) => {
+          this.getRoosterQuestionnaire();
+        }
+      );
   }
 }

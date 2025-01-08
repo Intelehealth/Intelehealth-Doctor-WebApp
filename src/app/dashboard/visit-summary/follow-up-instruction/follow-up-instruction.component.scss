@@ -1,0 +1,122 @@
+.items-list {
+    font-family: DM Sans;
+    font-size: 16px;
+    padding: 24px 0px 0px 24px;
+    margin-bottom: 0px;
+  
+    li {
+      margin-bottom: 5px;
+    }
+  
+    li .list-item {
+      display: flex;
+      flex-wrap: nowrap;
+  
+      label {
+        width: 25%;
+        min-width: 25%;
+        margin-bottom: 0px;
+        padding: 5px 0px;
+      }
+  
+      .list-item-content {
+        padding: 5px 0px;
+      }
+    }
+  
+    li .list-item-col {
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: column;
+    }
+  }
+  
+  .no-docs {
+    padding: 24px 0px;
+    font-size: 14px;
+  }
+  
+  .form-group {
+    label {
+      font-size: 14px;
+      color: var(--color-darkestBlue);
+    }
+  
+    .white-btn {
+      background: var(--color-white);
+      border-radius: 8px;
+      font-size: 18px;
+      color: var(--color-darkBlue);
+      position: relative;
+      font-weight: bold;
+      border: 1px solid var(--color-lightGray);
+      padding: 10px 16px;
+    }
+  
+    .gray-btn {
+      background: var(--color-lightGray);
+      border-radius: 8px;
+      font-size: 18px;
+      color: var(--color-darkBlue);
+      position: relative;
+      font-weight: bold;
+      border: 1px solid var(--color-lightGray);
+      padding: 10px 16px;
+    }
+  
+    .white-btn:disabled,
+    .gray-btn:disabled {
+      opacity: 0.5;
+    }
+  
+    .white-btn:focus {
+      box-shadow: none;
+    }
+  
+    .error-msg {
+      color: var(--color-red);
+    }
+  }
+  
+  .form-control {
+    padding: 14px 16px;
+    background: var(--color-offWhite);
+    border: 1px solid rgba(178, 175, 190, 0.2);
+    border-radius: 8px;
+    height: 48px;
+    font-size: 16px;
+    color: var(--color-darkestBlue);
+  }
+  
+  textarea.form-control {
+    height: fit-content;
+  }
+  
+  .form-control:focus {
+    box-shadow: none;
+  }
+  
+  .add-more-btn {
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    line-height: 150%;
+    color: var(--color-darkestBlue);
+    padding: 0px;
+  }
+
+  .mat-expansion-panel.bg-gray {
+    background: var(--color-offWhite);
+
+    .input-group {
+      background: var(--color-white);
+    }
+
+    .form-control {
+      background: var(--color-white);
+    }
+
+    textarea.form-control {
+      background: var(--color-white);
+    }
+  }

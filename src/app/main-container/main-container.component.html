@@ -123,12 +123,9 @@
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #beforeMenu="matMenu" xPosition="before" class="profile-dropdown">
-                  <button mat-menu-item (click)="changePassword()" data-test-id="btnChangePasswordMain">{{'Change
-                    Password' | translate}}</button>
-                  <button mat-menu-item (click)="selectLanguage()" data-test-id="btnSelectLanguageMain">{{'Change
-                    Language' | translate}}</button>
-                  <button mat-menu-item routerLink="/dashboard/profile" data-test-id="btnProfileMain">{{'Profile' |
-                    translate}}</button>
+                  <button mat-menu-item (click)="changePassword()" data-test-id="btnChangePasswordMain">{{'Change Password' | translate}}</button>
+                  <button mat-menu-item (click)="selectLanguage()" data-test-id="btnSelectLanguageMain">{{'Change Language' | translate}}</button>
+                  <button mat-menu-item routerLink="/dashboard/profile" data-test-id="btnProfileMain">{{'Profile' | translate}}</button>
                 </mat-menu>
               </div>
             </li>

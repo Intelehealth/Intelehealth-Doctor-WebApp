@@ -235,9 +235,16 @@ export const conceptIds = {
   conceptReferral : '605b6f15-8f7a-4c45-b06d-14165f6974be',
   conceptFollow : 'e8caffd6-5d22-41c4-8d6a-bc31a44d0c86',
   conceptDDx : 'bc48889e-b461-4e5e-98d1-31eb9dd6160e',
-  conceptDiagnosisClass : '8d4918b0-c2cc-11de-8d13-0010c6dffd0f'
+  conceptDiagnosisClass : '8d4918b0-c2cc-11de-8d13-0010c6dffd0f',
+  conceptPastMedicalHistoryNotes: 'dc27d56c-f970-4eaa-88d0-46d55c2ab24c',
+  conceptFamilyHistoryNotes: '675bafa3-2d9b-4cd1-9d38-55a2f47a69a5',
+  conceptFollowUpInstruction: 'e444b5e9-e3b9-4cb1-92ee-29bba00b33d0'
 }
 
 export const WEBRTC = {
   CHAT_TEXT_LIMIT: 1000
+}
+
+export const visitAttributeTypes = {
+  patientCallDuration : '35e64f4a-d0a5-40bc-8010-8c61d52cc4b1'
 }

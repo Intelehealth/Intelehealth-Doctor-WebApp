@@ -47,7 +47,7 @@
                     >
                       <div class="chat-item-con">
                         <img
-                          [src]="conversation.patientPic"
+                          src="{{ checkPatientRegField('Profile Photo')  ? conversation.patientPic : ''}}"
                           alt=""
 
                         />
@@ -85,7 +85,7 @@
               >
                 <div class="chat-con-title">
                   <div class="chat-item-info">
-                    <img src="{{selectedConversation.patientPic? selectedConversation.patientPic : 'assets/svgs/user.svg'}}" alt="" />
+                    <img src="{{checkPatientRegField('Profile Photo') && selectedConversation.patientPic ? selectedConversation.patientPic : 'assets/svgs/user.svg'}}" alt="" />
                     <div class="title">
                       <h6 class="mb-0">
                         {{

@@ -1,0 +1,87 @@
+<mat-expansion-panel [expanded]="true" #panel3 hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <div class="intel-accordion-title">
+          <img src="assets/svgs/note.svg" alt="" width="44px" />
+          <h6 class="mb-0 ml-2">{{ title |translate}}</h6>
+        </div>
+      </mat-panel-title>
+      <mat-icon>{{ panel3.expanded ? "remove" : "add" }}</mat-icon>
+    </mat-expansion-panel-header>
+
+    <ul class="items-list" *ngIf="notes.length else noNotes">
+      <li *ngFor="let n of notes; let i = index">
+        <div
+          class="d-flex justify-content-between align-items-center"
+        >
+          <span>{{ n.value }}</span>
+          <button
+            mat-icon-button
+            (click)="deleteNote(i, n.uuid)"
+            *ngIf="isVisitNoteProvider && !visitEnded"
+            data-test-id="{{'btnDeleteNoteVisitSummary'+i}}"
+          >
+            <img src="assets/svgs/delete-icon.svg" alt="" />
+          </button>
+        </div>
+      </li>
+    </ul>
+    <ng-template #noNotes>
+      <div class="no-docs text-center font-weight-bold" *ngIf="isMCCUser">
+        {{'No notes added!'|translate}}
+      </div>
+    </ng-template>
+    <form
+      *ngIf="!isMCCUser"
+      class="mt-3"
+      [formGroup]="addNoteForm"
+      (ngSubmit)="addNote()"
+    >
+      <div class="form-group" *ngIf="addMoreNote">
+        <button
+          type="button"
+          class="add-more-btn"
+          (click)="toggleNote()"
+          data-test-id="btnAddMoreNote"
+        >
+          <img src="assets/svgs/plus-circle.svg" alt="" />
+          <span class="ml-2">{{'Add more notes'|translate}}</span>
+        </button>
+      </div>
+      <ng-container *ngIf="!addMoreNote">
+        <div class="form-group">
+          <label for="note"
+            ><b>{{title|translate}}*&nbsp;</b>
+            <span class="text-muted"
+              >({{'Not shared with patient'|translate}})</span
+            ></label
+          >
+          <textarea
+            class="form-control"
+            rows="3"
+            placeholder="{{'Type here'|translate}}"
+            formControlName="note"
+            data-test-id="etNote"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <button
+            type="button"
+            class="white-btn mr-2"
+            (click)="toggleNote()"
+            data-test-id="btnCancelNote"
+          >
+            {{'Cancel'|translate}}
+          </button>
+          <button
+            type="submit"
+            class="gray-btn"
+            [disabled]="addNoteForm.invalid"
+            data-test-id="btnSubmitNote"
+          >
+            {{'Add note'|translate}}
+          </button>
+        </div>
+      </ng-container>
+    </form>
+  </mat-expansion-panel>

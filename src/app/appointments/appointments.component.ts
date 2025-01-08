@@ -11,9 +11,10 @@ import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { getCacheData, checkIfDateOldThanOneDay} from '../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from 'src/config/constant';
-import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, RescheduleAppointmentModalResponseModel } from '../model/model';
+import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../model/model';
 import { AppConfigService } from '../services/app-config.service';
 import { MindmapService } from '../services/mindmap.service';
+import { NgxRolesService } from 'ngx-permissions';
 
 @Component({
   selector: 'app-appointments',
@@ -24,12 +25,13 @@ export class AppointmentsComponent implements OnInit {
 
   items = ["Appointments"];
   expandedIndex = 0;
-  displayedColumns: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'telephone', 'actions'];
+  displayedColumns: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'drName', 'telephone', 'actions'];
   dataSource = new MatTableDataSource<any>();
   baseUrl: string = environment.baseURL;
   isLoaded: boolean = false;
   appointments: AppointmentModel[] = [];
   patientRegFields: string[] = [];
+  isMCCUser = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild('searchInput', { static: true }) searchElement: ElementRef;
@@ -46,11 +48,17 @@ export class AppointmentsComponent implements OnInit {
     private toastr: ToastrService,
     private translateService: TranslateService,
     private mindmapService: MindmapService,
-    private appConfigService: AppConfigService) { 
+    private appConfigService: AppConfigService,
+    private rolesService: NgxRolesService) { 
+      this.isMCCUser = !!this.rolesService.getRole('ORGANIZATIONAL:MCC');
       Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
         this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter(e=>e.is_enabled).map(e=>e.name));
       }); 
-      this.displayedColumns = this.displayedColumns.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
+      this.displayedColumns = this.displayedColumns.filter(col=> {
+        if(col === 'drName' && !this.isMCCUser) return false;
+        if(col === 'age') return this.checkPatientRegField('Age');
+        return true;
+      });
     }
 
   ngOnInit(): void {
@@ -65,7 +73,7 @@ export class AppointmentsComponent implements OnInit {
   */
   getAppointments() {
     this.appointments = [];
-    this.appointmentService.getUserSlots(getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'))
+    this.appointmentService.getUserSlots(getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'), this.isMCCUser ? this.getSpeciality() : null)
       .subscribe((res: ApiResponseModel) => {
         let appointmentsdata = res.data;
         appointmentsdata.forEach((appointment: AppointmentModel) => {
@@ -229,5 +237,15 @@ export class AppointmentsComponent implements OnInit {
   
   getTelephoneNumber(person: AppointmentModel['visit']['person']) {
     return person?.person_attribute.find((v: { person_attribute_type_id: number; }) => v.person_attribute_type_id == 8)?.value;
+  }
+
+  /**
+  * Get doctor speciality from localstorage provider
+  * @return {string} - Doctor Speciality
+  */
+  private getSpeciality(): string {
+    return getCacheData(true, doctorDetails.PROVIDER).attributes.find((a: ProviderAttributeModel) =>
+      a.display.includes(doctorDetails.SPECIALIZATION)
+    ).value;
   }
 }

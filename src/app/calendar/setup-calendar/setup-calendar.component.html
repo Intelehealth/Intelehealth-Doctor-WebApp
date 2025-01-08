@@ -302,7 +302,7 @@
               <div class="days-off-chips" formArrayName="daysOff">
                 <ng-container *ngFor="let doff of fd.controls; let j=index;">
                   <div class="chip-item">
-                    <span>{{doff.value|date:'dd MMM YYYY'}}</span>
+                    <span>{{doff.value|date:'d MMM y'}}</span>
                     <button mat-icon-button type="button" (click)="removeDaysOff(j)" [attr.data-test-id]="'btnRemoveDaysOff' + j">
                       <mat-icon>close</mat-icon>
                     </button>

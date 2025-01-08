@@ -7,6 +7,7 @@ import { AddLicenseKeyComponent } from 'src/app/modal-components/add-license-key
 import { AddTicketComponent } from 'src/app/modal-components/add-ticket/add-ticket.component';
 import { AppointmentDetailMonthComponent } from 'src/app/modal-components/appointment-detail-month/appointment-detail-month.component';
 import { AppointmentDetailComponent } from 'src/app/modal-components/appointment-detail/appointment-detail.component';
+import { CallHistoryComponent } from 'src/app/modal-components/call-history/call-history.component';
 import { CancelAppointmentConfirmComponent } from 'src/app/modal-components/cancel-appointment-confirm/cancel-appointment-confirm.component';
 import { ChatBoxComponent } from 'src/app/modal-components/chat-box/chat-box.component';
 import { ConfirmDayOffComponent } from 'src/app/modal-components/confirm-day-off/confirm-day-off.component';
@@ -392,6 +393,15 @@ export class CoreService {
   */
   openPatientVisitSubSectionModel({ data }: { data: any }): MatDialogRef<SubSectionsComponent, any> {
     const dialogRef = this.dialog.open(SubSectionsComponent, { panelClass: 'modal-md', hasBackdrop: true, disableClose: false, data });
+    return dialogRef;
+  }
+
+   /**
+  * Open Patient Call Duration History modal
+  * @return {Observable<any>} - Dialog result
+  */
+   openPatientCallDurationHistoryModel({ data }: { data: any }): MatDialogRef<CallHistoryComponent, any> {
+    const dialogRef = this.dialog.open(CallHistoryComponent, { panelClass: 'modal-md', hasBackdrop: true, disableClose: false, data });
     return dialogRef;
   }
 }

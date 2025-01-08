@@ -56,10 +56,10 @@ export class VisitSummaryHelperService {
     return encounters.find(({ display = '' }) => display.includes(visitType));
   };
 
-  checkIfAttributeExists(attrs: VisitAttributeModel[]) {
-    let currentAttr;
+  checkIfAttributeExists(attrs: VisitAttributeModel[], attribute = 'Visit Speciality') {
+    let currentAttr: VisitAttributeModel;
     attrs.forEach((attr: VisitAttributeModel) => {
-      if (attr.attributeType.display === 'Visit Speciality') {
+      if (attr.attributeType.display === attribute) {
         currentAttr = attr;
       }
     });
