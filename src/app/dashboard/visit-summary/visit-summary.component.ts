@@ -212,7 +212,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       days: new FormControl(null, [Validators.required, Validators.pattern(/^[0-9]*$/)]),
       timing: new FormControl(null, [Validators.required]),
       remark: new FormControl(null),
-      route: new FormControl(null)
+      route: new FormControl(null,  [Validators.pattern(/^[A-Za-z]*$/)])
     });
 
     this.addAdditionalInstructionForm = new FormGroup({
@@ -1788,5 +1788,56 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
         this.patient["person"]["preferredAddress"]["sanch"] = sanchName;
       }
     })
+  }
+
+  /**
+   * Return color code for sbp
+   * @param n 
+   * @returns 
+   */
+  getSystolicColor(n: any) {
+    let code: string = '#FF0000';
+    if (n >= 90 && n < 120) {
+      code = '#008000';
+    } else if (n >= 120 && n <= 139) {
+      code = '#d9d900';
+    }
+    return code;
+  }
+
+  /**
+   *  Return color code for dbp
+   * @param n 
+   * @returns 
+   */
+  getDSystolicColor(n: any) {
+    let code: string = '#FF0000';
+    if (n < 80) {
+      code = '#008000';
+    } else if (n >= 80 && n <= 99) {
+      code = '#d9d900';
+    }
+    return code;
+  }
+
+  /**
+   * Return color code for bmi
+   * @param n 
+   * @returns 
+   */
+  getBmiColor(n: any) {
+    let code: string = '#FF0000'; // red
+    if (n < 18.50) {
+      code = '#FFA500';
+    } else if (n >= 18.50 && n <= 22.99) {
+      code = '#008000';
+    } else if (n >= 23 && n <= 24.99) {
+      code = '#d9d900';
+    } else if (n >= 25 && n <= 29.99) {
+      code = '#F85E5EE6';
+    } else if (n >= 30) {
+      code = '#FF0000'
+    }
+    return code;
   }
 }

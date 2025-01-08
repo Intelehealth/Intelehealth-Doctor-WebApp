@@ -92,7 +92,7 @@ export class FollowupTrackerComponent {
               });
               this.filteredFollowUpVisits.sort((a, b) => new Date(b.followup_date) < new Date(a.followup_date) ? -1 : 1);
               this.doctorFollowpCount = this.filteredFollowUpVisits.length;
-              this.dataSource = new MatTableDataSource(this.filteredFollowUpVisits);
+              this.dataSource.data = [...this.filteredFollowUpVisits];
               this.dataSource.paginator = this.tempPaginator;
             });
           }
