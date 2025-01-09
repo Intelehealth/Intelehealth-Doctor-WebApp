@@ -187,20 +187,21 @@ export class DashboardComponent implements OnInit {
         key: "actions",
       },
     ],
-    actionButtons: [
-      {
-        label: "Reschedule",
+     actionButtons: [
+    {
+      label: "Reschedule",
+      style: {
+        color: "#2E1E91",
+        backgroundColor: "#EFE8FF",
       },
-      {
-        label: "Cancel",
-        callBack: () => {
-          console.log("callback method");
-        },
-        style: {
-          color: "",
-          back: "",
-        },
+    },
+    {
+      label: "Cancel",
+      style: {
+        color: "#FF475D",
+        backgroundColor: "#FFE8E8",
       },
+    },
     ],
   }; 
   

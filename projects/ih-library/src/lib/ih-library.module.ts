@@ -3,6 +3,7 @@ import { IhLibraryComponent } from './ih-library.component';
 import { AppointmentsComponent } from './components/appointments/appointments.component';
 import { CommonModule } from '@angular/common';
 import { IhLibraryMaterialModule } from './material.module'; // Material modules imports
+import { RouterModule } from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -11,6 +12,7 @@ import { IhLibraryMaterialModule } from './material.module'; // Material modules
   ],
   imports: [
     IhLibraryMaterialModule,
+    RouterModule,
     CommonModule
   ],
   exports: [

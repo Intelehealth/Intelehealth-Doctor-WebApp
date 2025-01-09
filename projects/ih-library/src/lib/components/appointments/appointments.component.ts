@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, Input, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, Input, SimpleChanges,EventEmitter ,Output} from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../../model/model';
@@ -55,6 +55,7 @@ export class AppointmentsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("this.pluginConfig",this.pluginConfig)
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
     this.getAppointments();
   }
@@ -67,6 +68,8 @@ export class AppointmentsComponent implements OnInit {
       );
     }
   }
+
+ 
 
   /**
   * Get booked appointments for a logged-in doctor in a current year
