@@ -8,7 +8,7 @@
                 <div id="anchor-appointment" class="anchor-con"></div>
                 <div class="intel-accordion-title">
                   <img src="assets/svgs/cam-icon.svg" alt="" width="44px">
-                  <h6 class="mb-0 ml-2">{{ pluginConfig.tableHeader }} ({{ appointments.length ? appointments.length : 0 }})</h6>
+                  <h6 class="mb-0 ml-2">{{ pluginConfig.tableHeader }} ({{ appointments?.length ? appointments.length : 0 }})</h6>
                   <mat-icon aria-hidden="false" aria-label="help icon" matTooltip="{{'Scheduled appointments'}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
                   <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
                     <input type="text" #apSearchInput class="form-control" placeholder="{{ pluginConfig.searchPlaceHolder }}" aria-label="search1" aria-describedby="basic-addon1" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointmentDashboard">
@@ -127,7 +127,7 @@
               <tr class="mat-row" *matNoDataRow>
                 <td
                   class="mat-cell text-center"
-                  [attr.colspan]="appointmentsColumns.length"
+                  [attr.colspan]="appointmentsColumns?.length"
                 >
                   No appointments scheduled.
                 </td>
