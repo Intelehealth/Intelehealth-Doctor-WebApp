@@ -288,7 +288,18 @@
                   <div class="list-item">
                     <label>{{'BMI'|translate}}</label>
                     <div class="list-item-content" [class.text-muted]="!getObsValue('Height (cm)') || !getObsValue('Weight (kg)')">
-                      {{(getObsValue('Height (cm)') && getObsValue('Weight (kg)'))? ((getObsValue('Weight (kg)')/((getObsValue('Height (cm)')/100)*(getObsValue('Height (cm)')/100)))|number:'1.2-2') :'No information' | translate}}
+                      <span *ngIf="getObsValue('Height (cm)') && getObsValue('Weight (kg)')">
+                        <span [style.color]="getBmiColor(getObsValue('Weight (kg)') / ((getObsValue('Height (cm)') / 100) * (getObsValue('Height (cm)') / 100)))">
+                          {{
+                            (getObsValue("Weight (kg)") /
+                              ((getObsValue("Height (cm)") / 100) *
+                                (getObsValue("Height (cm)") / 100))
+                            | number : "1.2-2")
+                          }}
+                        </span>
+                      </span>
+                      <span *ngIf="!getObsValue('Height (cm)') && !getObsValue('Weight (kg)')">
+                        {{'No information'|translate}} </span>
                     </div>
                   </div>
                 </li>
@@ -296,7 +307,16 @@
                   <div class="list-item">
                     <label>{{'BP'|translate}}</label>
                     <div class="list-item-content" [class.text-muted]="!getObsValue('SYSTOLIC BLOOD PRESSURE')">
-                      {{getObsValue('SYSTOLIC BLOOD PRESSURE') ? getObsValue('SYSTOLIC BLOOD PRESSURE') + ' / ' + getObsValue('DIASTOLIC BLOOD PRESSURE') : 'No information' | translate}}
+                      <span *ngIf="getObsValue('SYSTOLIC BLOOD PRESSURE')">
+                        <span [style.color]="getSystolicColor(getObsValue('SYSTOLIC BLOOD PRESSURE'))">
+                          {{ getObsValue("SYSTOLIC BLOOD PRESSURE") }}
+                      </span> /
+                        <span [style.color]="getDSystolicColor(getObsValue('DIASTOLIC BLOOD PRESSURE'))">
+                          {{ getObsValue("DIASTOLIC BLOOD PRESSURE") }}
+                        </span> 
+                    </span>
+                    <span *ngIf="!getObsValue('SYSTOLIC BLOOD PRESSURE')">
+                      {{'No information'|translate}} </span>
                     </div>
                   </div>
                 </li>
