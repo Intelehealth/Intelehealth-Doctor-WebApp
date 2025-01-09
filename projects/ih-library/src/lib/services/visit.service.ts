@@ -9,7 +9,7 @@ import { Observable, Subject } from "rxjs";
 export class VisitService {
 
   // private baseURL = environment.baseURL; //'https://dev.intelehealth.org/openmrs/ws/rest/v1'
-  // private baseURLMindmap = environment.mindmapURL;
+  // private mindmapURL = environment.mindmapURL;
   // private baseURLAbha = environment.abhaURL; 
   public isVisitSummaryShow: boolean = false;
   public isHelpButtonShow: boolean = false;
@@ -203,8 +203,8 @@ export class VisitService {
   * @param {number} page - Page number
   * @return {Observable<any>}
   */
-  getAwaitingVisits(baseURLMindmap: string, speciality: string, page: number = 1): Observable<any> {
-    return this.http.get(`${baseURLMindmap}/openmrs/getAwaitingVisits?speciality=${speciality}&page=${page}`);
+  getAwaitingVisits(mindmapURL: string, speciality: string, page: number = 1): Observable<any> {
+    return this.http.get(`${mindmapURL}/openmrs/getAwaitingVisits?speciality=${speciality}&page=${page}`);
   }
 
   /**
@@ -213,8 +213,8 @@ export class VisitService {
   * @param {number} page - Page number
   * @return {Observable<any>}
   */
-  getPriorityVisits(baseURLMindmap: string, speciality: string, page: number = 1): Observable<any> {
-    return this.http.get(`${baseURLMindmap}/openmrs/getPriorityVisits?speciality=${speciality}&page=${page}`);
+  getPriorityVisits(mindmapURL: string, speciality: string, page: number = 1): Observable<any> {
+    return this.http.get(`${mindmapURL}/openmrs/getPriorityVisits?speciality=${speciality}&page=${page}`);
   }
 
   /**
@@ -223,8 +223,8 @@ export class VisitService {
   * @param {number} page - Page number
   * @return {Observable<any>}
   */
-  getInProgressVisits(baseURLMindmap: string, speciality: string, page: number = 1): Observable<any> {
-    return this.http.get(`${baseURLMindmap}/openmrs/getInProgressVisits?speciality=${speciality}&page=${page}`);
+  getInProgressVisits(mindmapURL: string, speciality: string, page: number = 1): Observable<any> {
+    return this.http.get(`${mindmapURL}/openmrs/getInProgressVisits?speciality=${speciality}&page=${page}`);
   }
 
   /**
@@ -233,8 +233,8 @@ export class VisitService {
   * @param {number} page - Page number
   * @return {Observable<any>}
   */
-  getCompletedVisits(baseURLMindmap: string, speciality: string, page: number = 1, countOnly:boolean = false): Observable<any> {
-    return this.http.get(`${baseURLMindmap}/openmrs/getCompletedVisits?speciality=${speciality}&page=${page}&countOnly=${countOnly}`);
+  getCompletedVisits(mindmapURL: string, speciality: string, page: number = 1, countOnly:boolean = false): Observable<any> {
+    return this.http.get(`${mindmapURL}/openmrs/getCompletedVisits?speciality=${speciality}&page=${page}&countOnly=${countOnly}`);
   }
 
  /**
@@ -243,8 +243,8 @@ export class VisitService {
   * @param {number} page - Page number
   * @return {Observable<any>}
   */
- getFollowUpVisits(baseURLMindmap: string, speciality: string, page: number = 1, countOnly:boolean = false): Observable<any> {
-  return this.http.get(`${baseURLMindmap}/openmrs/getFollowUpVisits?speciality=${speciality}&page=${page}&countOnly=${countOnly}`);
+ getFollowUpVisits(mindmapURL: string, speciality: string, page: number = 1, countOnly:boolean = false): Observable<any> {
+  return this.http.get(`${mindmapURL}/openmrs/getFollowUpVisits?speciality=${speciality}&page=${page}&countOnly=${countOnly}`);
  }
 
   /**
@@ -253,8 +253,8 @@ export class VisitService {
   * @param {number} page - Page number
   * @return {Observable<any>}
   */
-  getEndedVisits(baseURLMindmap: string, speciality: string, page: number = 1): Observable<any> {
-    return this.http.get(`${baseURLMindmap}/openmrs/getEndedVisits?speciality=${speciality}&page=${page}`);
+  getEndedVisits(mindmapURL: string, speciality: string, page: number = 1): Observable<any> {
+    return this.http.get(`${mindmapURL}/openmrs/getEndedVisits?speciality=${speciality}&page=${page}`);
   }
 
   /**

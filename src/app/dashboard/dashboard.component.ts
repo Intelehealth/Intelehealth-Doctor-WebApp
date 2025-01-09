@@ -148,6 +148,63 @@ export class DashboardComponent implements OnInit {
   @ViewChild(CompletedVisitsComponent) completedVisitsComponent: CompletedVisitsComponent;
   @ViewChild(FollowupVisitsComponent) followUpVisitsComponent: FollowupVisitsComponent;
 
+  // appointmentsHeading: string = "Appointments Heading";
+  pluginConfig: any = {
+    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
+    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    tableHeader: "Appointments Heading1",
+    searchPlaceHolder: "Search For Appointment",
+    noRecordFound: "No Appointment",
+    filter: "Filter",
+    tableHeaderIcon: "iconName",
+    tableColumns: [
+      {
+        label: "Patients",
+        key: "name",
+      },
+      {
+        label: "Age",
+        key: "age",
+      },
+      {
+        label: "Starts in",
+        key: "starts_in",
+      },
+      {
+        label: "Location",
+        key: "location",
+      },
+      {
+        label: "Cheif complaint",
+        key: "cheif_complaint",
+      },
+      {
+        label: "Contact",
+        key: "telephone",
+      },
+      {
+        label: "Action",
+        key: "actions",
+      },
+    ],
+    actionButtons: [
+      {
+        label: "Reschedule",
+      },
+      {
+        label: "Cancel",
+        callBack: () => {
+          console.log("callback method");
+        },
+        style: {
+          color: "",
+          back: "",
+        },
+      },
+    ],
+  }; 
+  
+
   constructor(
     private pageTitleService: PageTitleService,
     private appointmentService: AppointmentService,

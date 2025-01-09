@@ -1,11 +1,11 @@
-import { Component, ElementRef, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, Input, SimpleChanges } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../../model/model';
-// import { PageTitleService } from '../core/page-title/page-title.service';
 import { AppointmentService } from '../../services/appointment.service';
 import { VisitService } from '../../services/visit.service';
-import * as moment from 'moment';
+// import * as moment from 'moment';
+import moment from 'moment';
 // import { CoreService } from '../../services/core.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,7 +13,6 @@ import { getCacheData, checkIfDateOldThanOneDay } from '../../utils/utility-func
 import { doctorDetails, languages, visitTypes } from '../../config/constant';
 // import { AppConfigService } from '../services/app-config.service';
 import { MindmapService } from '../../services/mindmap.service';
-import { NgxRolesService } from 'ngx-permissions';
 
 
 @Component({
@@ -22,24 +21,18 @@ import { NgxRolesService } from 'ngx-permissions';
   styleUrls: ['./appointments.component.scss']
 })
 export class AppointmentsComponent implements OnInit {
-  @Output() rescheduleAppointment = new EventEmitter<AppointmentModel>();
-  @Output() cancelAppointment = new EventEmitter<AppointmentModel>();
   
-  @Input() appointmentVisitsCount: number = 0;
-  @Input() patientRegFields: string[] = [];
-  @ViewChild('ipSearchInput', { static: true }) public ipSearchElement: ElementRef;
-
-  @ViewChild('tempPaginator') public paginator: MatPaginator;
-
-  displayedColumns: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'telephone', 'actions'];
-  tblDataSource: any = new MatTableDataSource<any>([]);
-
+  @Input() pluginConfig: any;
+  displayedAppointmentColumns: any = [];
+  displayedColumns: string[] = [];
+ 
   dataSource = new MatTableDataSource<any>();
   appointments: AppointmentModel[] = [];
+  patientRegFields: string[] = [];
+  isMCCUser = false;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild('searchInput', { static: true }) searchElement: ElementRef;
-  baseURL
-  baseURLMindmap
-  baseURLAbha
 
 
   ngAfterViewInit() {
@@ -49,7 +42,6 @@ export class AppointmentsComponent implements OnInit {
   constructor(
     private appointmentService: AppointmentService,
     private visitService: VisitService,
-    // private pageTitleService: PageTitleService,
     // private coreService: CoreService,
     private toastr: ToastrService,
     private translateService: TranslateService,
@@ -64,8 +56,16 @@ export class AppointmentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
-    // this.pageTitleService.setTitle({ title: "Appointments", imgUrl: "assets/svgs/menu-video-circle.svg" });
-    // this.getAppointments();
+    this.getAppointments();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["pluginConfig"] && changes["pluginConfig"].currentValue) {
+      this.displayedAppointmentColumns = this.pluginConfig.tableColumns || [];
+      this.displayedColumns = this.displayedAppointmentColumns.map(
+        (column) => column.key
+      );
+    }
   }
 
   /**
@@ -74,7 +74,8 @@ export class AppointmentsComponent implements OnInit {
   */
   getAppointments() {
     this.appointments = [];
-    this.appointmentService.getUserSlots(this.baseURLMindmap, getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'))
+    const mindmapURL = this.pluginConfig.mindmapURL    
+    this.appointmentService.getUserSlots(mindmapURL, getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'))
       .subscribe((res: ApiResponseModel) => {
         let appointmentsdata = res.data;
         appointmentsdata.forEach((appointment: AppointmentModel) => {
@@ -162,10 +163,10 @@ export class AppointmentsComponent implements OnInit {
     //           appointment.appointmentId = appointment.id;
     //           appointment.slotDate = moment(newSlot.date, "YYYY-MM-DD").format('DD/MM/YYYY');
     //           appointment.slotTime = newSlot.slot;
-    //           this.appointmentService.rescheduleAppointment(this.baseURLMindmap, appointment).subscribe((res: ApiResponseModel) => {
+    //           this.appointmentService.rescheduleAppointment(this.mindmapURL, appointment).subscribe((res: ApiResponseModel) => {
     //             const message = res.message;
     //             if (res.status) {
-    //               this.mindmapService.notifyHwForRescheduleAppointment(this.baseURLMindmap, appointment)
+    //               this.mindmapService.notifyHwForRescheduleAppointment(this.mindmapURL, appointment)
     //               this.getAppointments();
     //               this.toastr.success(this.translateService.instant("The appointment has been rescheduled successfully!"), this.translateService.instant('Rescheduling successful!'));
     //             } else {
@@ -239,29 +240,5 @@ export class AppointmentsComponent implements OnInit {
   getTelephoneNumber(person: AppointmentModel['visit']['person']) {
     return person?.person_attribute.find((v: { person_attribute_type_id: number; }) => v.person_attribute_type_id == 8)?.value;
   }
-
-// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // checkPatientRegField(fieldName): boolean {
-  //   return this.patientRegFields.indexOf(fieldName) !== -1;
-  // }
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.tblDataSource.filter = filterValue.trim().toLowerCase();
-    this.paginator.firstPage();
-  }
-
-  // clearFilter() {
-  //   this.tblDataSource.filter = null;
-  //   this.ipSearchElement.nativeElement.value = "";
-  // }
-
-  // reschedule(appointment: AppointmentModel) {
-  //   this.rescheduleAppointment.emit(appointment);
-  // }
-
-  // cancel(appointment: AppointmentModel) {
-  //   this.cancelAppointment.emit(appointment);
-  // }
 }
 

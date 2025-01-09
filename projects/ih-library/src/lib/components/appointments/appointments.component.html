@@ -8,15 +8,15 @@
                 <div id="anchor-appointment" class="anchor-con"></div>
                 <div class="intel-accordion-title">
                   <img src="assets/svgs/cam-icon.svg" alt="" width="44px">
-                  <h6 class="mb-0 ml-2">{{'Appointments'}} ({{ appointmentVisitsCount }})</h6>
+                  <h6 class="mb-0 ml-2">{{ pluginConfig.tableHeader }} ({{ appointments.length ? appointments.length : 0 }})</h6>
                   <mat-icon aria-hidden="false" aria-label="help icon" matTooltip="{{'Scheduled appointments'}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
                   <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
-                    <input type="text" #apSearchInput class="form-control" placeholder="{{ 'Search Appointments' }}" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointmentDashboard">
+                    <input type="text" #apSearchInput class="form-control" placeholder="{{ 'Search Appointments' }}" aria-label="search1" aria-describedby="basic-addon1" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointmentDashboard">
                     <div class="input-group-append">
-                      <span class="input-group-text" id="basic-addon1" *ngIf="!tblDataSource.filter">
+                      <span class="input-group-text" id="basic-addon1" *ngIf="!dataSource.filter">
                         <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
                       </span>
-                      <button data-test-id="btnResetApSerach" class="matIconButton ml-0" mat-icon-button aria-label="Reset appointment search" *ngIf="tblDataSource.filter" (click)="clearFilter('Appointment')">
+                      <button data-test-id="btnResetApSerach" class="matIconButton ml-0" mat-icon-button aria-label="Reset appointment search" *ngIf="dataSource.filter" (click)="clearFilter('Appointment')">
                         <mat-icon class="ml-0" style="line-height: normal;">close</mat-icon>
                       </button>
                     </div>
@@ -25,8 +25,7 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div class="mat-elevation-z8">
-              <table mat-table [dataSource]="tblDataSource">
-  
+              <table mat-table [dataSource]="dataSource">
                 <!-- Name Column -->
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef> {{'Patient'}} </th>

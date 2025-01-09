@@ -17,9 +17,9 @@ export class AppointmentService {
   * @param {any} payload - Payload for create or update appointment
   * @return {Observable<any>}
   */
-  updateOrCreateAppointment(payload: ScheduleModel, baseURL: string): Observable<any> {
+  updateOrCreateAppointment(payload: ScheduleModel, mindmapURL: string): Observable<any> {
     return this.http.post(
-      `${baseURL}/appointment/createOrUpdateSchedule`,
+      `${mindmapURL}/appointment/createOrUpdateSchedule`,
       payload
     );
   }
@@ -29,9 +29,9 @@ export class AppointmentService {
   * @param {any} payload - Payload for update daysOff's
   * @return {Observable<any>}
   */
-  updateDaysOff(baseURL: string, payload: { userUuid: any; daysOff: any[] | string[]; month: string; year: any; }): Observable<any> {
+  updateDaysOff(mindmapURL: string, payload: { userUuid: any; daysOff: any[] | string[]; month: string; year: any; }): Observable<any> {
     return this.http.post(
-      `${baseURL}/appointment/updateDaysOff`,
+      `${mindmapURL}/appointment/updateDaysOff`,
       payload
     );
   }
@@ -43,9 +43,9 @@ export class AppointmentService {
   * @param {string} month - Month
   * @return {Observable<any>}
   */
-  getUserAppoitment(baseURL: string, userUuid: string, year: string, month: string): Observable<any> {
+  getUserAppoitment(mindmapURL: string, userUuid: string, year: string, month: string): Observable<any> {
     return this.http.get(
-      `${baseURL}/appointment/getSchedule/${userUuid}?year=${year}&month=${month}`
+      `${mindmapURL}/appointment/getSchedule/${userUuid}?year=${year}&month=${month}`
     );
   }
 
@@ -56,8 +56,8 @@ export class AppointmentService {
   * @param {string} toDate - To date
   * @return {Observable<any>}
   */
-  getUserSlots(baseURL: string, userUuid: string, fromDate: string, toDate: string, speciality = null): Observable<any> {
-    let url = `${baseURL}/appointment/getUserSlots/${userUuid}?fromDate=${fromDate}&toDate=${toDate}`
+  getUserSlots(mindmapURL: string, userUuid: string, fromDate: string, toDate: string, speciality = null): Observable<any> {    
+    let url = `${mindmapURL}/appointment/getUserSlots/${userUuid}?fromDate=${fromDate}&toDate=${toDate}`
   
     if(speciality) {
       url += `&speciality=${speciality}`;
@@ -72,9 +72,9 @@ export class AppointmentService {
   * @param {string} speciality - Speciality
   * @return {Observable<any>}
   */
-  getAppointmentSlots(baseURL: string, fromDate: string, toDate: string, speciality: any): Observable<any> {
+  getAppointmentSlots(mindmapURL: string, fromDate: string, toDate: string, speciality: any): Observable<any> {
     return this.http.get(
-      `${baseURL}/appointment/getAppointmentSlots?fromDate=${fromDate}&toDate=${toDate}&speciality=${speciality}`
+      `${mindmapURL}/appointment/getAppointmentSlots?fromDate=${fromDate}&toDate=${toDate}&speciality=${speciality}`
     );
   }
 
@@ -83,9 +83,9 @@ export class AppointmentService {
   * @param {string} visitId - Visit uuid
   * @return {Observable<any>}
   */
-  getAppointment(baseURL: string, visitId: string): Observable<any> {
+  getAppointment(mindmapURL: string, visitId: string): Observable<any> {
     return this.http.get(
-      `${baseURL}/appointment/getAppointment/${visitId}`
+      `${mindmapURL}/appointment/getAppointment/${visitId}`
     );
   }
 
@@ -96,8 +96,8 @@ export class AppointmentService {
   * @param {string} speciality - Speciality
   * @return {Observable<any>}
   */
-  getScheduledMonths(baseURL: string, userUuid: any, year: string, speciality: string = null): Observable<any> {
-    let url = `${baseURL}/appointment/getScheduledMonths/${userUuid}?year=${year}`;
+  getScheduledMonths(mindmapURL: string, userUuid: any, year: string, speciality: string = null): Observable<any> {
+    let url = `${mindmapURL}/appointment/getScheduledMonths/${userUuid}?year=${year}`;
     if(speciality) {
       url += `&speciality=${speciality}`;
     }
@@ -109,9 +109,9 @@ export class AppointmentService {
   * @param {string} providerId - Provider uuid
   * @return {Observable<any>}
   */
-  getFollowUpVisit(baseURL: string, providerId: string): Observable<any> {
+  getFollowUpVisit(mindmapURL: string, providerId: string): Observable<any> {
     return this.http.get(
-      `${baseURL}/openmrs/getFollowUpVisit/${providerId}`
+      `${mindmapURL}/openmrs/getFollowUpVisit/${providerId}`
     );
   }
 
@@ -120,9 +120,9 @@ export class AppointmentService {
   * @param {string} payload - Payload to reschedule appointment
   * @return {Observable<any>}
   */
-  rescheduleAppointment(baseURL: string, payload: AppointmentModel): Observable<any> {
+  rescheduleAppointment(mindmapURL: string, payload: AppointmentModel): Observable<any> {
     return this.http.post(
-      `${baseURL}/appointment/rescheduleAppointment`,
+      `${mindmapURL}/appointment/rescheduleAppointment`,
       payload
     );
   }
@@ -132,9 +132,9 @@ export class AppointmentService {
   * @param {string} payload - Payload to cancel appointment
   * @return {Observable<any>}
   */
-  cancelAppointment(baseURL: string, payload: { id: any; visitUuid: any; hwUUID: any; }): Observable<any> {
+  cancelAppointment(mindmapURL: string, payload: { id: any; visitUuid: any; hwUUID: any; }): Observable<any> {
     return this.http.post(
-      `${baseURL}/appointment/cancelAppointment`,
+      `${mindmapURL}/appointment/cancelAppointment`,
       payload
     );
   }
@@ -144,9 +144,9 @@ export class AppointmentService {
   * @param {string} payload - Payload to complete appointment
   * @return {Observable<any>}
   */
-  completeAppointment(baseURL: string, payload: { visitUuid: string; }): Observable<any> {
+  completeAppointment(mindmapURL: string, payload: { visitUuid: string; }): Observable<any> {
     return this.http.post(
-      `${baseURL}/appointment/completeAppointment`,
+      `${mindmapURL}/appointment/completeAppointment`,
       payload
     );
   }
@@ -159,9 +159,9 @@ export class AppointmentService {
   * @param {string} speciality - Speciality
   * @return {Observable<any>}
   */
-  checkAppointmentPresent(baseURL: string, userUuid: string, fromDate: string, toDate: string, speciality: string): Observable<any> {
+  checkAppointmentPresent(mindmapURL: string, userUuid: string, fromDate: string, toDate: string, speciality: string): Observable<any> {
     return this.http.get(
-      `${baseURL}/appointment/checkAppointment/${userUuid}?fromDate=${fromDate}&toDate=${toDate}&speciality=${speciality}`
+      `${mindmapURL}/appointment/checkAppointment/${userUuid}?fromDate=${fromDate}&toDate=${toDate}&speciality=${speciality}`
     );
   }
 
@@ -171,9 +171,9 @@ export class AppointmentService {
   * @param {string} speciality - Speciality
   * @return {Observable<any>}
   */
-  updateSlotSpeciality(baseURL: string, userUuid: string, speciality: string): Observable<any> {
+  updateSlotSpeciality(mindmapURL: string, userUuid: string, speciality: string): Observable<any> {
     return this.http.put(
-      `${baseURL}/appointment/updateSlotSpeciality/${userUuid}?speciality=${speciality}`,
+      `${mindmapURL}/appointment/updateSlotSpeciality/${userUuid}?speciality=${speciality}`,
       null
     );
   }
