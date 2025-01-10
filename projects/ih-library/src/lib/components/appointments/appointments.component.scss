@@ -242,7 +242,12 @@
     display: flex !important;
   }
   
+  .btnResetApSerach{
+    display: none;
+  }
+  
   .filter-btn {
+    background: none;
     align-items: center;
     border: 1px solid rgba(127, 123, 146, 0.5);
     border-radius: 6px;
