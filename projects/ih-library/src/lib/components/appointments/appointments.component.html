@@ -27,39 +27,27 @@
             <div class="mat-elevation-z8">
             <table mat-table [dataSource]="dataSource">
               <!-- Define all columns dynamically -->
-              <ng-container
-                *ngFor="let column of displayedAppointmentColumns"
-                [matColumnDef]="column.key"
-              >
+              <ng-container *ngFor="let column of displayedAppointmentColumns" [matColumnDef]="column.key">
                 <th mat-header-cell *matHeaderCellDef>
                   {{ column.label }}
                 </th>
-                <td
-                  mat-cell
-                  *matCellDef="let element; let j = index"
+                <td mat-cell *matCellDef="let element; let j = index"
                   [attr.data-test-id]="'apAge' + j"
-                  [routerLink]="[
-                    '/dashboard/visit-summary',
-                    element?.visitUuid
-                  ]"
-                >
+                  [routerLink]="['/dashboard/visit-summary',element?.visitUuid]">
+
                   <ng-container [ngSwitch]="column.key">
-                    <div
-                      *ngSwitchCase="'name'"
-                      class="d-flex align-items-center"
-                    >
-                      <img
-                        src="assets/svgs/user.svg"
-                        alt=""
-                        width="32px"
-                        height="32px"
-                        style="border-radius: 50%"
-                      />
+                    <!-- name -->
+                    <div *ngSwitchCase="'name'" class="d-flex align-items-center">
+                      <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%" />
                       <span class="font-bold ml-2">
                         {{ element.patientName }} ({{ element.patientGender }})
                       </span>
                     </div>
+
+                    <!--Age -->
                     <span *ngSwitchCase="'age'">{{ element.patientAge }}y</span>
+
+                    <!-- Starts in -->
                     <span
                       *ngSwitchCase="'starts_in'"
                       [ngClass]="{
@@ -70,32 +58,25 @@
                       }"
                       >{{ element.starts_in }}</span
                     >
-                    <span *ngSwitchCase="'location'">{{
-                      element?.visit?.location?.name
-                    }}</span>
-                    <span *ngSwitchCase="'cheif_complaint'">{{
-                      element.cheif_complaint
-                    }}</span>
-                    <a
-                      *ngSwitchCase="'telephone'"
-                      href="{{ element.telephone }}"
-                      target="_blank"
-                    >
+
+                    <!-- Location -->
+                    <span *ngSwitchCase="'location'">{{element?.visit?.location?.name}}</span>
+
+                    <!--complaint -->
+                    <span *ngSwitchCase="'cheif_complaint'">{{element.cheif_complaint}}</span>
+                    <a *ngSwitchCase="'telephone'" href="{{ element.telephone }}" target="_blank" >
                       <img src="assets/svgs/whatsapp-green.svg" alt="" />
                     </a>
+
+                    <!-- Action Buttons-->
                     <div *ngSwitchCase="'actions'" class="actions-btn-wrap d-flex align-items-center">
-                     <button
-                      *ngFor="let action of pluginConfig.actionButtons"
-                       class="action-btn mr-2"
+                     <button *ngFor="let action of pluginConfig.actionButtons" class="action-btn mr-2"
                       [ngStyle]="{
                         color: action.style?.color,
                         backgroundColor: action.style?.backgroundColor
-                      }"
-                      
-                    >
-                      {{ action.label }}
-                    </button>
+                      }"> {{ action.label }}</button>
                     </div>
+                    
                     <!-- <div
                       *ngSwitchCase="'actions'"
                       class="actions-btn-wrap d-flex align-items-center"
@@ -129,7 +110,8 @@
                   class="mat-cell text-center"
                   [attr.colspan]="appointmentsColumns?.length"
                 >
-                  No appointments scheduled.
+                {{pluginConfig.noRecordFound}}
+                 
                 </td>
               </tr>
             </table>
