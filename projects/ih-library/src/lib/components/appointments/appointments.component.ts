@@ -27,9 +27,7 @@ export class AppointmentsComponent implements OnInit {
   @Input() pluginConfigObs: any;
   displayedAppointmentColumns: any = [];
   displayedColumns: string[] = [];
- 
   dataSource = new MatTableDataSource<any>();
-  appointments: AppointmentModel[] = [];
   patientRegFields: string[] = [];
   isMCCUser = false;
 
@@ -37,13 +35,23 @@ export class AppointmentsComponent implements OnInit {
   @ViewChild('searchInput', { static: true }) searchElement: ElementRef;
   filteredDateAndRangeForm1: FormGroup;
   @ViewChild('tempPaginator') tempPaginator: MatPaginator;
-  @ViewChild('appointmentPaginator') appointmentPaginator: MatPaginator;
-  @ViewChild('inprogressPaginator') inprogressPaginator: MatPaginator;
   @ViewChild(MatMenuTrigger) menuTrigger: MatMenuTrigger;
 
   panelExpanded: boolean = true;
   mode: 'date' | 'range' = 'date';
   maxDate: Date = new Date();
+
+  appointments: AppointmentModel[] = [];
+  priorityVisits: CustomVisitModel[] = [];
+  awaitingVisits: CustomVisitModel[] = [];
+  inProgressVisits: CustomVisitModel[] = [];
+  completedVisits: CustomVisitModel[] = [];
+  followUpVisits: CustomVisitModel[] = [];
+
+  specialization: string = '';
+  visitsLengthCount: number = 0;
+  isFilterApplied = false;
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
@@ -74,7 +82,29 @@ export class AppointmentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
-    this.getAppointments();
+    let provider = getCacheData(true, doctorDetails.PROVIDER);
+    if (provider) {
+      if (provider.attributes.length) {
+        this.specialization = this.getSpecialization(provider.attributes);
+      }
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "Appointments Visits Table"){
+        this.getAppointments();
+      }
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "Awaiting Visits Table"){
+        this.getAwaitingVisits(1);
+      }
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "Priority Visits Table"){
+        this.getPriorityVisits(1);
+      }
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "InProgress Visits Table"){
+        this.getInProgressVisits(1);
+      }
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "Completed Visits Table"){
+        this.getCompletedVisits();
+      }if(this.pluginConfigObs?.pluginConfigObsFlag === "Follow Up Visit Table"){
+        this.getFollowUpVisit();
+      }
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -84,31 +114,6 @@ export class AppointmentsComponent implements OnInit {
         (column) => column.key
       );
     }
-  }
-
-  /**
-  * Get booked appointments for a logged-in doctor in a current year
-  * @return {void}
-  */
-  getAppointments() {
-    this.appointments = [];
-    this.appointmentService.getUserSlots(this.pluginConfigObs?.mindmapURL, getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'))
-      .subscribe((res: ApiResponseModel) => {
-        let appointmentsdata = res.data;
-        appointmentsdata.forEach((appointment: AppointmentModel) => {
-          if (appointment.status == 'booked' && (appointment.visitStatus == 'Awaiting Consult'||appointment.visitStatus == 'Visit In Progress')) {
-            if (appointment.visit) {
-              appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
-              appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
-              appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person)
-              this.appointments.push(appointment);
-            }
-          }
-        });
-        this.dataSource.data = [...this.appointments];
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.filterPredicate = (data, filter: string) => data?.openMrsId.toLowerCase().indexOf(filter) != -1 || data?.patientName.toLowerCase().indexOf(filter) != -1;
-      });
   }
 
   /**
@@ -228,9 +233,10 @@ export class AppointmentsComponent implements OnInit {
   * @param {Event} event - Input's change event
   * @return {void}
   */
-  applyFilter1(event: Event) {
+  applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.isFilterApplied = true;
   }
 
   /**
@@ -240,6 +246,7 @@ export class AppointmentsComponent implements OnInit {
   clearFilter() {
     this.dataSource.filter = null;
     this.searchElement.nativeElement.value = "";
+    this.isFilterApplied = false;
   }
 
   checkPatientRegField(fieldName): boolean{
@@ -301,7 +308,6 @@ export class AppointmentsComponent implements OnInit {
       this.dataSource.filter = '';
     }
     this.tempPaginator.firstPage();
-    this.appointmentPaginator?.firstPage();
     this.closeMenu();
   }
 
@@ -313,5 +319,308 @@ export class AppointmentsComponent implements OnInit {
       this.closeMenu();
     }
   }
+
+  getAttributeData(data: any, attributeName: string): { name: string; value: string } | null {
+    if (data?.person_attribute && Array.isArray(data.person_attribute)) {
+      const attribute = data.person_attribute.find(
+        (attr: any) => attr.person_attribute_type?.name === attributeName
+      );
+      if (attribute) {
+        return {
+          name: attribute.person_attribute_type.name,
+          value: attribute.value
+        };
+      }
+    }
+    return null;
+  }
+
+  /**
+  * Get booked appointments for a logged-in doctor in a current year
+  * @return {void}
+  */
+  getAppointments() {
+    this.appointments = [];
+    this.appointmentService.getUserSlots(this.pluginConfigObs?.mindmapURL, getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'))
+      .subscribe((res: ApiResponseModel) => {        
+        this.visitsLengthCount = res.data?.length
+        let appointmentsdata = res.data;
+        appointmentsdata.forEach((appointment: AppointmentModel) => {
+          if (appointment.status == 'booked' && (appointment.visitStatus == 'Awaiting Consult'||appointment.visitStatus == 'Visit In Progress')) {
+            if (appointment.visit) {
+              appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
+              appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
+              appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person);
+              this.appointments.push(appointment);
+            }
+          }
+        });
+        this.dataSource.data = [...this.appointments];
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.filterPredicate = (data, filter: string) => data?.openMrsId.toLowerCase().indexOf(filter) != -1 || data?.patientName.toLowerCase().indexOf(filter) != -1;
+      });
+  }
+  
+  
+  /**
+  * Get doctor speciality
+  * @param {ProviderAttributeModel[]} attr - Array of provider attributes
+  * @return {string} - Doctor speciality
+  */
+  getSpecialization(attr: ProviderAttributeModel[]) {
+    let specialization = '';
+    attr.forEach((a: ProviderAttributeModel) => {
+      if (a.attributeType.uuid == 'ed1715f5-93e2-404e-b3c9-2a2d9600f062' && !a.voided) {
+        specialization = a.value;
+      }
+    });
+    console.log(specialization, "From specialization function return");
+    
+    return specialization;
+  }
+
+  /**
+  * Returns the age in years from the birthdate
+  * @param {string} birthdate - Date in string format
+  * @return {number} - Age
+  */
+  calculateAge(birthdate: string) {
+    return moment().diff(birthdate, 'years');
+  }
+
+  /**
+  * Returns the created time in words from the date
+  * @param {string} data - Date
+  * @return {string} - Created time in words from the date
+  */
+  getCreatedAt(data: string) {
+    let hours = moment().diff(moment(data), 'hours');
+    let minutes = moment().diff(moment(data), 'minutes');
+    if (hours > 24) {
+      return moment(data).format('DD MMM, YYYY');
+    };
+    if (hours < 1) {
+      return `${minutes} ${this.translateService.instant("Minutes ago")}`;
+    }
+    return `${hours} ${this.translateService.instant("Hours ago")}`;
+  }
+  
+  /**
+  * Get encounter datetime for a given encounter type
+  * @param {CustomVisitModel} visit - Visit
+  * @param {string} encounterName - Encounter type
+  * @return {string} - Encounter datetime
+  */
+  getEncounterCreated(visit: CustomVisitModel, encounterName: string) {
+    let created_at = '';
+    const encounters = visit.encounters;
+    encounters.forEach((encounter: CustomEncounterModel) => {
+      const display = encounter.type?.name;
+      if (display.match(encounterName) !== null) {
+        created_at = this.getCreatedAt(encounter.encounter_datetime.replace('Z','+0530'));
+      }
+    });
+    return created_at;
+  }
+
+  getDemarcation(enc) {
+    let isFollowUp = false;
+    const adlIntl = enc?.find?.(e => e?.type?.name === visitTypes.ADULTINITIAL);
+    if (Array.isArray(adlIntl?.obs)) {
+      adlIntl?.obs.forEach(obs => {
+        if (!isFollowUp)
+          isFollowUp = obs?.value_text?.toLowerCase?.()?.includes?.("follow up");
+      });
+    }
+    return isFollowUp ? visitTypes.FOLLOW_UP : visitTypes.NEW;
+  }
+
+  /**
+  * Get awaiting visits for a given page number
+  * @param {number} page - Page number
+  * @return {void}
+  */
+  getAwaitingVisits(page: number = 1) {
+    if(page == 1) {
+      this.awaitingVisits = [];
+      // this.awatingRecordsFetched = 0;
+    }    
+    this.visitService.getAwaitingVisits(this.pluginConfigObs?.mindmapURL, this.specialization, page).subscribe((res: ApiResponseModel) => {
+      if (res.success) {
+        this.visitsLengthCount = res.totalCount
+        // this.awatingRecordsFetched += this.offset;
+        for (let i = 0; i < res.data.length; i++) {
+          let visit = res.data[i];
+          visit.cheif_complaint = this.getCheifComplaint(visit);
+          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z','+0530')) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
+          visit.person.age = this.calculateAge(visit.person.birthdate);
+          visit.patient_type = this.getDemarcation(visit?.encounters);
+          this.awaitingVisits.push(visit);
+        }
+        // this.dataSource.data = [...this.awaitingVisits];
+        if (page == 1) {
+          // this.dataSource.paginator = this.tempPaginator;
+          // this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+        } else {
+          this.tempPaginator.length = this.awaitingVisits.length;
+          this.tempPaginator.nextPage();
+        }
+      }
+    });
+  }
+
+  /**
+  * Get inprogress visits for a given page number
+  * @param {number} page - Page number
+  * @return {void}
+  */
+  getInProgressVisits(page: number = 1) {
+    if(page == 1) {
+      this.inProgressVisits = [];
+      // this.inprogressRecordsFetched = 0;
+    }
+    this.visitService.getInProgressVisits(this.pluginConfigObs?.mindmapURL, this.specialization, page).subscribe((res: ApiResponseModel) => {
+      if (res.success) {
+        this.visitsLengthCount = res.totalCount;
+        // this.inprogressVisitsCount = iv.totalCount;
+        // this.inprogressRecordsFetched += this.offset;
+        for (let i = 0; i < res.data.length; i++) {
+          let visit = res.data[i];
+          visit.cheif_complaint = this.getCheifComplaint(visit);
+          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z','+0530')) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
+          visit.prescription_started = this.getEncounterCreated(visit, visitTypes.VISIT_NOTE);
+          visit.person.age = this.calculateAge(visit.person.birthdate);
+          visit.TMH_patient_id = this.getAttributeData(visit, "TMH Case Number");
+          this.inProgressVisits.push(visit);
+        }
+        // this.dataSource.data = [...this.inProgressVisits];
+        if (page == 1) {
+          // this.dataSource.paginator = this.tempPaginator;
+          // this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+        } else {
+          this.tempPaginator.length = this.inProgressVisits.length;
+          this.tempPaginator.nextPage();
+        }
+      }
+    });
+  }
+
+  /**
+  * Get priority visits for a given page number
+  * @param {number} page - Page number
+  * @return {void}
+  */
+  getPriorityVisits(page: number = 1) {
+    if(page == 1) {
+      this.priorityVisits = [];
+      // this.priorityRecordsFetched = 0;
+    }
+    this.visitService.getPriorityVisits(this.pluginConfigObs?.mindmapURL, this.specialization, page).subscribe((res: ApiResponseModel) => {
+      if (res.success) {
+        this.visitsLengthCount = res.totalCount;
+        // this.priorityVisitsCount = res.totalCount;
+        // this.priorityRecordsFetched += this.offset;
+        for (let i = 0; i < res.data.length; i++) {
+          let visit = res.data[i];
+          visit.cheif_complaint = this.getCheifComplaint(visit);
+          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z','+0530')) : this.getEncounterCreated(visit, visitTypes.FLAGGED);
+          visit.person.age = this.calculateAge(visit.person.birthdate);
+          this.priorityVisits.push(visit);
+        }
+        // this.dataSource.data = [...this.priorityVisits];
+        if (page == 1) {
+          // this.dataSource.paginator = this.tempPaginator;
+          // this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+        } else {
+          this.tempPaginator.length = this.priorityVisits.length;
+          this.tempPaginator.nextPage();
+        }
+      }
+    });
+  }
+
+    /**
+   * Get completed visits count
+   * @return {void}
+   */
+  getCompletedVisits(page: number = 1) {
+    this.visitService.getEndedVisits(this.pluginConfigObs?.mindmapURL, this.specialization, page).subscribe((res: ApiResponseModel) => {
+      if (res.success) {
+        this.visitsLengthCount = res.totalCount;
+        // this.completedVisitsCount = res.totalCount;
+        // this.completedRecordsFetched += this.offset;
+        for (let i = 0; i < res.data.length; i++) {
+          let visit = res.data[i];
+          visit.cheif_complaint = this.getCheifComplaint(visit);
+          visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.COMPLETED_VISIT);
+          visit.person.age = this.calculateAge(visit.person.birthdate);
+          visit.completed = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.VISIT_COMPLETE);
+          visit.TMH_patient_id = this.getAttributeData(visit, "TMH Case Number");
+          this.completedVisits.push(visit);
+        }
+        // this.dataSource.data = [...this.completedVisits];
+        if (page == 1) {
+          // this.dataSource.paginator = this.tempPaginator;
+          // this.dataSource.filterPredicate = (data: { patient: { identifier: string; }; patient_name: { given_name: string; middle_name: string; family_name: string; }; }, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+        } else {
+          this.tempPaginator.length = this.completedVisits.length;
+          this.tempPaginator.nextPage();
+        }
+      }
+    });
+  }
+
+    /**
+  * Get follow-up visits for a logged-in doctor
+  * @return {void}
+  */
+  getFollowUpVisit(page: number = 1) {
+    this.visitService.getFollowUpVisits(this.pluginConfigObs?.mindmapURL, this.specialization).subscribe({
+      next: (res: ApiResponseModel) => {
+        if (res.success) {
+          // this.followUpVisitsCount = 0;
+          // this.completedRecordsFetched += this.offset;
+          for (let i = 0; i < res.data.length; i++) {
+            let visit = res.data[i];
+            if (visit?.encounters?.length) {
+              // this.followUpVisitsCount += 1;
+              this.visitsLengthCount += 1;
+              visit.cheif_complaint = this.getCheifComplaint(visit);
+              visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.COMPLETED_VISIT);
+              visit.person.age = this.calculateAge(visit.person.birthdate);
+              visit.completed = this.getEncounterCreated(visit, visitTypes.VISIT_COMPLETE);
+              visit.followUp = this.getEncounterObs(visit.encounters, visitTypes.VISIT_NOTE, 163345/*Follow-up*/)?.value_text;
+              this.followUpVisits.push(visit);
+            }
+          }
+          // this.dataSource.data = [...this.followUpVisits];
+          if (page == 1) {
+            // this.dataSource.paginator = this.tempPaginator;
+            // this.dataSource.filterPredicate = (data: { patient: { identifier: string; }; patient_name: { given_name: string; middle_name: string; family_name: string; }; }, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          } else {
+            // this.tempPaginator.length = this.followUpVisits.length;
+            // this.tempPaginator.nextPage();
+          }
+        }
+      }
+    });
+  }
+
+  /**
+  * Get encounter datetime for a given encounter type
+  * @param {CustomVisitModel} visit - Visit
+  * @param {string} encounterName - Encounter type
+  * @return {string} - Encounter datetime
+  */
+  getEncounterObs(encounters: CustomEncounterModel[], encounterName: string, conceptId: number) {
+    let obs: CustomObsModel;
+    encounters.forEach((encounter: CustomEncounterModel) => {
+      if (encounter.type?.name === encounterName) {
+        obs = encounter?.obs?.find((o: CustomObsModel) => o.concept_id == conceptId);
+      }
+    });
+    return obs;
+  }
+  
 }
 
