@@ -26,6 +26,8 @@ import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from '@angular/mater
 import { formatDate } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
+// Imports the AppointmentTableComponent from the appointment-library, which is a reusable Angular library component.
+import { AppointmentsComponent } from 'ih-library';
 
 export const PICK_FORMATS = {
   parse: { dateInput: { month: 'short', year: 'numeric', day: 'numeric' } },
@@ -148,12 +150,14 @@ export class DashboardComponent implements OnInit {
   @ViewChild(CompletedVisitsComponent) completedVisitsComponent: CompletedVisitsComponent;
   @ViewChild(FollowupVisitsComponent) followUpVisitsComponent: FollowupVisitsComponent;
 
-  // appointmentsHeading: string = "Appointments Heading";
-  pluginConfig: any = {
+  // Define these properties in the DashboardComponent
+  @ViewChild(AppointmentsComponent) AppointmentsComponent: AppointmentsComponent;
+
+  pluginConfigObs: any = {
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
     mindmapURL: "https://dev.intelehealth.org:3004/api",
-    tableHeader: "Appointments Heading1",
-    searchPlaceHolder: "Search For Appointment",
+    tableHeader: "Appointments",
+    searchPlaceHolder: "Search Appointments",
     noRecordFound: "No Appointment",
     filter: "Filter",
     tableHeaderIcon: "iconName",
@@ -204,7 +208,7 @@ export class DashboardComponent implements OnInit {
     },
     ],
   }; 
-  
+
 
   constructor(
     private pageTitleService: PageTitleService,

@@ -1,16 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'lib-ih-library',
-  template: `
-    <p>
-      ih-library works!
-    </p>
-    <lib-appointments></lib-appointments>
-  `,
-  styles: [
-  ]
+  templateUrl: './ih-library.component.html',
 })
-export class IhLibraryComponent {
+export class IhLibraryComponent implements OnInit {
 
+  constructor(public translate: TranslateService) {
+    translate.addLangs(['en', 'ru']);
+    translate.setDefaultLang('en');
+
+    const browserLang = translate.getBrowserLang();
+    translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
+  }
+
+  ngOnInit() {
+
+  }
 }

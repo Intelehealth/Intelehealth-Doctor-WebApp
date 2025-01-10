@@ -8,10 +8,80 @@
                 <div id="anchor-appointment" class="anchor-con"></div>
                 <div class="intel-accordion-title">
                   <img src="assets/svgs/cam-icon.svg" alt="" width="44px">
-                  <h6 class="mb-0 ml-2">{{ pluginConfig.tableHeader }} ({{ appointments?.length ? appointments.length : 0 }})</h6>
-                  <mat-icon aria-hidden="false" aria-label="help icon" matTooltip="{{'Scheduled appointments'}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
-                  <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
-                    <input type="text" #apSearchInput class="form-control" placeholder="{{ pluginConfig.searchPlaceHolder }}" aria-label="search1" aria-describedby="basic-addon1" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointmentDashboard">
+                  <h6 class="mb-0 ml-2">{{ pluginConfigObs.tableHeader | translate }} ({{ appointments.length ? appointments.length : 0 }})</h6>
+                  <mat-icon aria-hidden="false" aria-label="help icon" matTooltip="{{ ('Scheduled appointments' | translate) }}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
+                  <div class="ml-auto filter-search-container">
+                    <button mat-stroked-button [matMenuTriggerFor]="filterMenu1" class="filter-btn" (click)="$event.stopPropagation();">
+                      <img src="assets/svgs/filter.svg" alt=""> {{'Filter' | translate}}
+                    </button>
+                    <mat-menu #filterMenu1="matMenu" class="custom-menu" [hasBackdrop]="true" xPosition="before">
+                      <div class="toggle-buttons">
+                        <button mat-button [class.active]="mode === 'date'" (click)="setMode('date'); $event.stopPropagation(); resetDate(true)">{{'Date' | translate}}</button>
+                        <button mat-button [class.active]="mode === 'range'" (click)="setMode('range'); $event.stopPropagation(); resetDate(true)">{{'Range' | translate}}</button>
+                      </div>
+                      <div *ngIf="mode === 'date'" class="date-view" (click)="$event.stopPropagation()">
+                        <form [formGroup]="filteredDateAndRangeForm1">
+                          <div class="form-date">
+                            <div class="input-date">
+                              <label class="label-text">{{ 'Select date' | translate}}</label>
+                              <div class="input-wrapper">
+                                <input type="text" class="form-control" formControlName="date" [matDatepicker]="dobdp" placeholder="{{'Select date' | translate}}" aria-label="Date" aria-describedby="basic-addon1" readonly data-test-id="etDate"/>
+                                <mat-datepicker #dobdp></mat-datepicker>
+                                <mat-datepicker-toggle matSuffix [for]="dobdp" data-test-id="dpDate" class="datepicker-icon">
+                                  <img matDatepickerToggleIcon src="assets/svgs/calendar-date.svg" alt="">
+                                </mat-datepicker-toggle>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                        </div>
+                        <div *ngIf="mode === 'range'" class="range-view" (click)=" $event.stopPropagation()">
+                          <form [formGroup]="filteredDateAndRangeForm1">
+                            <div class="form-date">
+                              <div class="input-date">
+                                <label class="label-text">{{ 'Start date' | translate }}</label>
+                                <div class="input-wrapper">
+                                  <input type="text" class="form-control" formControlName="startDate" [matDatepicker]="picker1" placeholder="{{'Select start date'|translate}}" aria-label="Start date" aria-describedby="basic-addon1" readonly data-test-id="etSelStartDate">
+                                  <mat-datepicker #picker1></mat-datepicker>
+                                  <mat-datepicker-toggle matSuffix [for]="picker1" class="datepicker-icon">
+                                    <img matDatepickerToggleIcon src="assets/svgs/calendar-date.svg" alt="">
+                                  </mat-datepicker-toggle>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="form-date">
+                              <div class="input-date">
+                                <label class="label-text">{{ 'End date' | translate }}</label>
+                                <div class="input-wrapper">
+                                  <input type="text" class="form-control" formControlName="endDate" [matDatepicker]="picker2" placeholder="{{'Select end date'|translate}}" aria-label="End date" aria-describedby="basic-addon2" readonly data-test-id="etSelEndDate">
+                                  <mat-datepicker #picker2></mat-datepicker>
+                                  <mat-datepicker-toggle matSuffix [for]="picker2" class="datepicker-icon">
+                                    <img matDatepickerToggleIcon src="assets/svgs/calendar-date.svg" alt="">
+                                  </mat-datepicker-toggle>
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      <div class="action-buttons">
+                        <button mat-button class="reset-btn" (click)="resetDate();">{{ 'Reset'| translate }}</button>
+                        <button mat-button class="apply-btn" (click)="applyDateOrRangeFilter()">{{ 'Apply'| translate }}</button>
+                      </div>
+                    </mat-menu>
+                    <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
+                      <input type="text" #apSearchInput class="form-control" placeholder="{{ 'Search Appointments' | translate }}" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter1($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointmentDashboard">
+                      <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon1">
+                          <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
+                        </span>
+                        <button data-test-id="btnResetApSerach" mat-icon-button aria-label="Reset appointment search" (click)="clearFilter()">
+                          <mat-icon class="ml-0" style="line-height: normal;">close</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
+                    <input type="text" #searchInput class="form-control" placeholder="{{ (pluginConfigObs.searchPlaceHolder | translate) }}" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter1($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointment">
                     <div class="input-group-append">
                       <span class="input-group-text" id="basic-addon1" *ngIf="!dataSource.filter">
                         <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
@@ -20,7 +90,7 @@
                         <mat-icon class="ml-0" style="line-height: normal;">close</mat-icon>
                       </button>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </mat-panel-title>
             </mat-expansion-panel-header>

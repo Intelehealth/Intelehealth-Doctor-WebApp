@@ -1,0 +1,74 @@
+<div class="reschedule-modal">
+  <div class="modal-title">
+    <h6 class="mb-0">{{ 'Reschedule appointment' | translate }}</h6>
+    <button class="modal-close-btn" (click)="close(false)" data-test-id="btnClose"><img src="assets/svgs/Close.svg" alt=""></button>
+  </div>
+  <div class="modal-body">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 p-0">
+          <div class="select-date-con">
+            <div class="form-group row">
+              <label for="expiryDate" class="col-sm-3 col-form-label">Select Date</label>
+              <div class="col-sm-6">
+                <div class="input-group">
+                  <input type="text" class="form-control" [(ngModel)]="selectedDate" (dateChange)="dateChanged($event)" [min]="minDate" [matDatepicker]="dp1" placeholder="{{'Select date'|translate}}" aria-label="Date"
+                    aria-describedby="basic-addon1" readonly data-test-id="etDate">
+                  <mat-datepicker #dp1></mat-datepicker>
+                  <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon1">
+                      <mat-datepicker-toggle matSuffix [for]="dp1" data-test-id="dpDate">
+                        <img matDatepickerToggleIcon src="assets/svgs/calendar-date.svg" alt="">
+                      </mat-datepicker-toggle>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slots-con">
+            <h6>{{ 'Select a timeslot' | translate }}</h6>
+            <div class="slot-section" *ngIf="scheduleData.morning.length;">
+              <h6>
+                <img src="assets/svgs/sunrise.svg" alt="" class="mr-2" />
+                {{ 'Morning' | translate }}
+              </h6>
+              <div class="slot-chips">
+                <div class="slot-chip-item" [class.selected]="selectedSlot == s" *ngFor="let s of scheduleData.morning;" (click)="selectedSlot = s">
+                  {{s}}
+                </div>
+              </div>
+            </div>
+            <div class="slot-section" *ngIf="scheduleData.afternoon.length;">
+              <h6>
+                <img src="assets/svgs/sun.svg" alt="" class="mr-2" />
+                {{ 'Afternoon' | translate }}
+              </h6>
+              <div class="slot-chips">
+                <div class="slot-chip-item" [class.selected]="selectedSlot == s" *ngFor="let s of scheduleData.afternoon;" (click)="selectedSlot = s">
+                  {{s}}
+                </div>
+              </div>
+            </div>
+            <div class="slot-section" *ngIf="scheduleData.evening.length;">
+              <h6>
+                <img src="assets/svgs/sunset.svg" alt="" class="mr-2" />
+                {{ 'Evening' | translate }}
+              </h6>
+              <div class="slot-chips">
+                <div class="slot-chip-item" [class.selected]="selectedSlot == s" *ngFor="let s of scheduleData.evening;" (click)="selectedSlot = s">
+                  {{s}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center py-2">
+            <button class="confirm-btn" type="button" (click)="reschedule()" data-test-id="btnSubmit">{{ 'Reschedule' | translate }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
