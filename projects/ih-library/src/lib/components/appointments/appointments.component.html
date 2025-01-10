@@ -140,7 +140,7 @@
 
                     <!-- Action Buttons-->
                     <div *ngSwitchCase="'actions'" class="actions-btn-wrap d-flex align-items-center">
-                     <button *ngFor="let action of pluginConfig.actionButtons" class="action-btn mr-2"
+                     <button *ngFor="let action of pluginConfigObs.actionButtons" class="action-btn mr-2"
                       [ngStyle]="{
                         color: action.style?.color,
                         backgroundColor: action.style?.backgroundColor
@@ -180,7 +180,7 @@
                   class="mat-cell text-center"
                   [attr.colspan]="appointmentsColumns?.length"
                 >
-                {{pluginConfig.noRecordFound}}
+                {{pluginConfigObs.noRecordFound}}
                  
                 </td>
               </tr>

@@ -73,7 +73,7 @@ export class AppointmentsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("this.pluginConfig",this.pluginConfig)
+    console.log("this.pluginConfig",this.pluginConfigObs)
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
     this.getAppointments();
   }
