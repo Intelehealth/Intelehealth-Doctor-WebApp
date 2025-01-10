@@ -1,0 +1,14 @@
+<div class="intel-con-modal">
+  <div class="close-btn-con">
+    <button class="modal-close-btn" (click)="close(false)"><img src="assets/svgs/CloseX.svg" alt="" data-test-id="btnCloseCancelAppConfirm"></button>
+  </div>
+  <div class="modal-con mt-4">
+    <img src="assets/svgs/video-pink.svg" alt="" width="80px" height="80px">
+    <h6 class="mt-3">{{'Cancel the appointment'|translate}}</h6>
+    <p class="mt-2 text-center">{{'Are you sure you want to cancel your appointment on'|translate}} <b>{{data?.slotJsDate|date:'dd MMMM'}}</b> {{'at'|translate}} <b>{{data?.slotTime}}</b>?</p>
+  </div>
+  <div class="modal-action-btn-con">
+    <button class="modal-btn white-btn mr-3" type="button" (click)="close(false)" data-test-id="btnGoBackCancelAppConfirm">{{'Go back'|translate}}</button>
+    <button class="modal-btn blue-btn" type="button" (click)="cancel()" data-test-id="btnCancelAppConfirm">{{'Cancel'|translate}}</button>
+  </div>
+</div>

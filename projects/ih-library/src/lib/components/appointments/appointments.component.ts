@@ -6,13 +6,15 @@ import { AppointmentService } from '../../services/appointment.service';
 import { VisitService } from '../../services/visit.service';
 // import * as moment from 'moment';
 import moment from 'moment';
-// import { CoreService } from '../../services/core.service';
+import { CoreService } from '../../services/core.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { getCacheData, checkIfDateOldThanOneDay } from '../../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from '../../config/constant';
 // import { AppConfigService } from '../services/app-config.service';
 import { MindmapService } from '../../services/mindmap.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 
 @Component({
@@ -22,7 +24,7 @@ import { MindmapService } from '../../services/mindmap.service';
 })
 export class AppointmentsComponent implements OnInit {
   
-  @Input() pluginConfig: any;
+  @Input() pluginConfigObs: any;
   displayedAppointmentColumns: any = [];
   displayedColumns: string[] = [];
  
@@ -33,8 +35,15 @@ export class AppointmentsComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild('searchInput', { static: true }) searchElement: ElementRef;
+  filteredDateAndRangeForm1: FormGroup;
+  @ViewChild('tempPaginator') tempPaginator: MatPaginator;
+  @ViewChild('appointmentPaginator') appointmentPaginator: MatPaginator;
+  @ViewChild('inprogressPaginator') inprogressPaginator: MatPaginator;
+  @ViewChild(MatMenuTrigger) menuTrigger: MatMenuTrigger;
 
-
+  panelExpanded: boolean = true;
+  mode: 'date' | 'range' = 'date';
+  maxDate: Date = new Date();
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
@@ -42,7 +51,7 @@ export class AppointmentsComponent implements OnInit {
   constructor(
     private appointmentService: AppointmentService,
     private visitService: VisitService,
-    // private coreService: CoreService,
+    private coreService: CoreService,
     private toastr: ToastrService,
     private translateService: TranslateService,
     private mindmapService: MindmapService,
@@ -51,7 +60,16 @@ export class AppointmentsComponent implements OnInit {
       // Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
       //   this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter(e=>e.is_enabled).map(e=>e.name));
       // }); 
+      this.filteredDateAndRangeForm1 = this.createFilteredDateRangeForm();
       this.displayedColumns = this.displayedColumns.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
+  }
+
+  createFilteredDateRangeForm(): FormGroup {
+    return new FormGroup({
+      date: new FormControl('', [Validators.required]),
+      startDate: new FormControl(null, Validators.required),
+      endDate: new FormControl(null, Validators.required),
+    });
   }
 
   ngOnInit(): void {
@@ -60,8 +78,8 @@ export class AppointmentsComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["pluginConfig"] && changes["pluginConfig"].currentValue) {
-      this.displayedAppointmentColumns = this.pluginConfig.tableColumns || [];
+    if (changes["pluginConfigObs"] && changes["pluginConfigObs"].currentValue) {
+      this.displayedAppointmentColumns = this.pluginConfigObs.tableColumns || [];
       this.displayedColumns = this.displayedAppointmentColumns.map(
         (column) => column.key
       );
@@ -74,8 +92,7 @@ export class AppointmentsComponent implements OnInit {
   */
   getAppointments() {
     this.appointments = [];
-    const mindmapURL = this.pluginConfig.mindmapURL    
-    this.appointmentService.getUserSlots(mindmapURL, getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'))
+    this.appointmentService.getUserSlots(this.pluginConfigObs?.mindmapURL, getCacheData(true, doctorDetails.USER).uuid, moment().startOf('year').format('DD/MM/YYYY'), moment().endOf('year').format('DD/MM/YYYY'))
       .subscribe((res: ApiResponseModel) => {
         let appointmentsdata = res.data;
         appointmentsdata.forEach((appointment: AppointmentModel) => {
@@ -146,38 +163,38 @@ export class AppointmentsComponent implements OnInit {
   * @return {void}
   */
   reschedule(appointment: AppointmentModel) {
-    // const len = appointment.visit.encounters.filter((e: CustomEncounterModel) => {
-    //   return (e.type.name == visitTypes.PATIENT_EXIT_SURVEY || e.type.name == visitTypes.VISIT_COMPLETE);
-    // }).length;
-    // const isCompleted = Boolean(len);
-    // if (isCompleted) {
-    //   this.toastr.error(this.translateService.instant("Visit is already completed, it can't be rescheduled."), this.translateService.instant('Rescheduling failed!'));
-    // } else if(appointment.visitStatus == 'Visit In Progress') {
-    //   this.toastr.error(this.translateService.instant("Visit is in progress, it can't be rescheduled."), this.translateService.instant('Rescheduling failed!'));
-    // } else {
-    //   this.coreService.openRescheduleAppointmentModal(appointment).subscribe((res: RescheduleAppointmentModalResponseModel) => {
-    //     if (res) {
-    //       let newSlot = res;
-    //       this.coreService.openRescheduleAppointmentConfirmModal({ appointment, newSlot }).subscribe((result: boolean) => {
-    //         if (result) {
-    //           appointment.appointmentId = appointment.id;
-    //           appointment.slotDate = moment(newSlot.date, "YYYY-MM-DD").format('DD/MM/YYYY');
-    //           appointment.slotTime = newSlot.slot;
-    //           this.appointmentService.rescheduleAppointment(this.mindmapURL, appointment).subscribe((res: ApiResponseModel) => {
-    //             const message = res.message;
-    //             if (res.status) {
-    //               this.mindmapService.notifyHwForRescheduleAppointment(this.mindmapURL, appointment)
-    //               this.getAppointments();
-    //               this.toastr.success(this.translateService.instant("The appointment has been rescheduled successfully!"), this.translateService.instant('Rescheduling successful!'));
-    //             } else {
-    //               this.toastr.success(message, this.translateService.instant('Rescheduling failed!'));
-    //             }
-    //           });
-    //         }
-    //       });
-    //     }
-    //   });
-    // }
+    const len = appointment.visit.encounters.filter((e: CustomEncounterModel) => {
+      return (e.type.name == visitTypes.PATIENT_EXIT_SURVEY || e.type.name == visitTypes.VISIT_COMPLETE);
+    }).length;
+    const isCompleted = Boolean(len);
+    if (isCompleted) {
+      this.toastr.error(this.translateService.instant("Visit is already completed, it can't be rescheduled."), this.translateService.instant('Rescheduling failed!'));
+    } else if(appointment.visitStatus == 'Visit In Progress') {
+      this.toastr.error(this.translateService.instant("Visit is in progress, it can't be rescheduled."), this.translateService.instant('Rescheduling failed!'));
+    } else {
+      this.coreService.openRescheduleAppointmentModal(this.pluginConfigObs.mindmapURL, appointment).subscribe((res: RescheduleAppointmentModalResponseModel) => {
+        if (res) {
+          let newSlot = res;
+          this.coreService.openRescheduleAppointmentConfirmModal({ appointment, newSlot }).subscribe((result: boolean) => {
+            if (result) {
+              appointment.appointmentId = appointment.id;
+              appointment.slotDate = moment(newSlot.date, "YYYY-MM-DD").format('DD/MM/YYYY');
+              appointment.slotTime = newSlot.slot;
+              this.appointmentService.rescheduleAppointment(this.pluginConfigObs.mindmapURL, appointment).subscribe((res: ApiResponseModel) => {
+                const message = res.message;
+                if (res.status) {
+                  this.mindmapService.notifyHwForRescheduleAppointment(this.pluginConfigObs.mindmapURL, appointment)
+                  this.getAppointments();
+                  this.toastr.success(this.translateService.instant("The appointment has been rescheduled successfully!"), this.translateService.instant('Rescheduling successful!'));
+                } else {
+                  this.toastr.success(message, this.translateService.instant('Rescheduling failed!'));
+                }
+              });
+            }
+          });
+        }
+      });
+    }
   }
 
   /**
@@ -186,16 +203,16 @@ export class AppointmentsComponent implements OnInit {
   * @return {void}
   */
   cancel(appointment: AppointmentModel) {
-    // if(appointment.visitStatus == 'Visit In Progress') {
-    //   this.toastr.error(this.translateService.instant("Visit is in progress, it can't be cancelled."), this.translateService.instant('Canceling failed!'));
-    //   return;
-    // }
-    // this.coreService.openConfirmCancelAppointmentModal(appointment).subscribe((res: boolean) => {
-    //   if (res) {
-    //     this.toastr.success(this.translateService.instant('The Appointment has been successfully canceled.'),this.translateService.instant('Canceling successful'));
-    //     this.getAppointments();
-    //   }
-    // });
+    if(appointment.visitStatus == 'Visit In Progress') {
+      this.toastr.error(this.translateService.instant("Visit is in progress, it can't be cancelled."), this.translateService.instant('Canceling failed!'));
+      return;
+    }
+    this.coreService.openConfirmCancelAppointmentModal(this.pluginConfigObs?.mindmapURL, appointment).subscribe((res: boolean) => {
+      if (res) {
+        this.toastr.success(this.translateService.instant('The Appointment has been successfully canceled.'),this.translateService.instant('Canceling successful'));
+        this.getAppointments();
+      }
+    });
   }
 
   /**
@@ -239,6 +256,62 @@ export class AppointmentsComponent implements OnInit {
   
   getTelephoneNumber(person: AppointmentModel['visit']['person']) {
     return person?.person_attribute.find((v: { person_attribute_type_id: number; }) => v.person_attribute_type_id == 8)?.value;
+  }
+
+  closeMenu() {
+    if (this.menuTrigger) {
+      this.menuTrigger.closeMenu();
+    }
+  }
+
+  setMode(mode: 'date' | 'range') {
+    this.mode = mode;
+  }
+  formatDate(date: any): string {
+    const localDate = new Date(date);
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  applyDateOrRangeFilter() {
+    const selectedDate = this.filteredDateAndRangeForm1.get('date')?.value;
+    const startDate = this.filteredDateAndRangeForm1.get('startDate')?.value;
+    const endDate = this.filteredDateAndRangeForm1.get('endDate')?.value;
+  
+    if (selectedDate) {
+      const formattedDate = this.formatDate(selectedDate);
+
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        const itemDate = this.formatDate(data.slotJsDate);
+        return itemDate === filter;
+      };
+      this.dataSource.filter = formattedDate;
+    } else if (startDate && endDate) {
+      const formattedStartDate = this.formatDate(startDate);
+      const formattedEndDate = this.formatDate(endDate);
+  
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        const itemDate = this.formatDate(data.slotJsDate);
+        return itemDate >= formattedStartDate && itemDate <= formattedEndDate;
+      };
+      this.dataSource.filter = `${formattedStartDate}:${formattedEndDate}`;
+    } else {
+      this.dataSource.filter = '';
+    }
+    this.tempPaginator.firstPage();
+    this.appointmentPaginator?.firstPage();
+    this.closeMenu();
+  }
+
+  resetDate(flag:boolean = false) {
+    this.filteredDateAndRangeForm1.reset();
+    this.dataSource.filter = '';
+    this.dataSource.filterPredicate = (data: any, filter: string) => true;
+    if(!flag){
+      this.closeMenu();
+    }
   }
 }
 
