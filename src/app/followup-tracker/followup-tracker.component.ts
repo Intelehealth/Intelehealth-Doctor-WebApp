@@ -59,6 +59,7 @@ export class FollowupTrackerComponent {
   }
 
   getFollowupVisits(page: number = 1) {
+    let provider = getCacheData(true, doctorDetails.PROVIDER);
     if (page == 1) this.doctorFollowUpVisits = [], this.filteredFollowUpVisits = [];
     this.visitService.getEndedVisits(this.specialization, page).subscribe((ps: ApiResponseModel) => {
       if (ps.success) {
@@ -70,6 +71,7 @@ export class FollowupTrackerComponent {
               visit.cheif_complaint = this.visitService.getCheifComplaint1(visit);
               let enco = visit?.encounters.filter(e => e.type.name == visitTypes.PATIENT_EXIT_SURVEY || e.type.name == visitTypes.VISIT_COMPLETE)[0];
               visit.encounter_provider = JSON.parse(enco.obs[0].value_text).name;
+              visit.encounter_provider_uuid = JSON.parse(enco.obs[0].value_text).uuid;
               visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
               visit.followup_date = followUp_date;
               const visits = res.results;
@@ -88,7 +90,7 @@ export class FollowupTrackerComponent {
               }
               this.doctorFollowUpVisits.push(visit);
               this.filteredFollowUpVisits = this.doctorFollowUpVisits.filter((visit) => {
-                return visit.encounter_provider == getCacheData(false, doctorDetails.DOCTOR_NAME);
+                return visit.encounter_provider_uuid == provider.uuid;
               });
               this.filteredFollowUpVisits.sort((a, b) => new Date(b.followup_date) < new Date(a.followup_date) ? -1 : 1);
               this.doctorFollowpCount = this.filteredFollowUpVisits.length;

@@ -264,7 +264,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.addMedicineForm.get('medObj').valueChanges.subscribe(val => {
       if (val?.id) {
         this.addMedicineForm.patchValue({
-          medObj: val.name,
+          medObj: val.mname,
           strength: val.strength,
           form: val.form
         })

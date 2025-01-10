@@ -237,6 +237,7 @@ export interface CustomVisitModel {
   followup_date?:string,
   encounters: CustomEncounterModel[],
   encounter_provider ?: string,
+  encounter_provider_uuid?: string,
   location?: {
     name: string
   },

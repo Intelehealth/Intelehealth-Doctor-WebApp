@@ -333,7 +333,7 @@ export class VisitService {
    getPatientVerdict(visit) {
     let recent: string[] = [];
     const encounters = visit?.encounters;
-    encounters.forEach((encounter) => {
+    encounters?.forEach((encounter) => {
       const display = encounter.encounterType ? encounter.encounterType.display : encounter.type?.name;
       if (display.match(visitTypes.ADULTINITIAL) !== null) {
         const obs = encounter.obs;
