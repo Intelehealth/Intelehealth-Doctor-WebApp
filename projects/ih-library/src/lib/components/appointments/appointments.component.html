@@ -7,13 +7,12 @@
               <mat-panel-title>
                 <div id="anchor-appointment" class="anchor-con"></div>
                 <div class="intel-accordion-title">
-                  <img src="assets/svgs/cam-icon.svg" alt="" width="44px">
-                  <h6 class="mb-0 ml-2">{{ pluginConfigObs.tableHeader | translate }} ({{ appointments.length ? appointments.length : 0 }})</h6>
-                  <mat-icon aria-hidden="false" aria-label="help icon" matTooltip="{{ ('Scheduled appointments' | translate) }}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
+                  <img src="{{ pluginConfigObs.tableHeaderIcon }}" alt="" width="44px">
+                  <h6 class="mb-0 ml-2">{{ pluginConfigObs.tableHeader | translate }} ({{ visitsLengthCount }})</h6>
+                  <mat-icon aria-hidden="false" aria-label="help icon" matTooltip="{{ (pluginConfigObs.tooltipLabel | translate) }}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
                   <div class="ml-auto filter-search-container">
-                 
-                    <button mat-stroked-button [matMenuTriggerFor]="filterMenu1" class="filter-btn" (click)="$event.stopPropagation();">
-                      <img src="assets/svgs/filter.svg" alt=""> {{pluginConfigObs.filter | translate}}
+                    <button *ngIf="pluginConfigObs.filterObs.filterFlag" mat-stroked-button [matMenuTriggerFor]="filterMenu1" class="filter-btn" (click)="$event.stopPropagation();">
+                      <img src="{{pluginConfigObs.filterObs.filterIcon}}" alt=""> {{( pluginConfigObs.filterObs.filterLabel| translate)}}
                     </button>
                     <mat-menu #filterMenu1="matMenu" class="custom-menu" [hasBackdrop]="true" xPosition="before">
                       <div class="toggle-buttons">
@@ -70,9 +69,9 @@
                       </div>
                     </mat-menu>
                     <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
-                      <input type="text" #apSearchInput class="form-control" placeholder="{{ 'Search Appointments' | translate }}" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter1($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointmentDashboard">
+                      <input type="text" #searchInput class="form-control" placeholder="{{ 'Search Appointments' | translate }}" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointmentDashboard">
                       <div class="input-group-append">
-                        <span class="input-group-text" id="basic-addon1" >
+                        <span class="input-group-text" id="basic-addon1">
                           <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
                         </span>
                         <button data-test-id="btnResetApSerach"  class="btnResetApSerach" mat-icon-button aria-label="Reset appointment search"  (click)="clearFilter()">
@@ -81,17 +80,6 @@
                       </div>
                     </div>
                   </div>
-                  <!-- <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
-                    <input type="text" #searchInput class="form-control" placeholder="{{ (pluginConfigObs.searchPlaceHolder | translate) }}" aria-label="search1" aria-describedby="basic-addon1" (keyup)="applyFilter1($event)" (keydown.Space)="$event.stopPropagation()" (keydown.Enter)="$event.stopPropagation()" data-test-id="etSearchAppointment">
-                    <div class="input-group-append">
-                      <span class="input-group-text" id="basic-addon1" *ngIf="!dataSource.filter">
-                        <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
-                      </span>
-                      <button data-test-id="btnResetApSerach" class="matIconButton ml-0" mat-icon-button aria-label="Reset appointment search" *ngIf="dataSource.filter" (click)="clearFilter('Appointment')">
-                        <mat-icon class="ml-0" style="line-height: normal;">close</mat-icon>
-                      </button>
-                    </div>
-                  </div> -->
                 </div>
               </mat-panel-title>
             </mat-expansion-panel-header>

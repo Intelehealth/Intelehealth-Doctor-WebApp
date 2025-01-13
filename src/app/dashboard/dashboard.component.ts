@@ -154,13 +154,19 @@ export class DashboardComponent implements OnInit {
   @ViewChild(AppointmentsComponent) AppointmentsComponent: AppointmentsComponent;
 
   pluginConfigObs: any = {
+    pluginConfigObsFlag: "Appointments Visits Table",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
     mindmapURL: "https://dev.intelehealth.org:3004/api",
-    tableHeader: "Appointments",
+    tableHeader: "Appointments Visits",
+    tooltipLabel: "Scheduled appointments",
     searchPlaceHolder: "Search Appointments",
     noRecordFound: "No Appointment",
-    filter: "Filter",
-    tableHeaderIcon: "iconName",
+    filterObs: {
+      filterFlag: true,
+      filterLabel: "Filter",
+      filterIcon: "assets/svgs/filter.svg"
+    },
+    tableHeaderIcon: "assets/svgs/cam-icon.svg",
     tableColumns: [
       { label: "Patients", key: "name" },
       { label: "Age", key: "age" },
