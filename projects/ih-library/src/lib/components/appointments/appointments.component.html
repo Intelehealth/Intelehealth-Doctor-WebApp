@@ -138,6 +138,73 @@
                       {{ getPatientTypeLabel(element?.patient_type) }}
                     </div>
 
+                  <ng-container [ngSwitch]="column.key">
+
+                      <!-- Dynamic Visit Types -->
+                      <div
+                        *ngSwitchCase="'completed_visit_type'"
+                        class="chip d-flex align-items-center"
+                        [ngStyle]="{
+                          color: getVisitTypeStyle(element?.visit_type)?.color,
+                          backgroundColor: getVisitTypeStyle(element?.visit_type)?.backgroundColor
+                        }"
+                      >
+                        <mat-icon *ngIf="getVisitTypeIcon(element?.visit_type)" class="mr-2">
+                          {{ getVisitTypeIcon(element?.visit_type) }}
+                        </mat-icon>
+                        <span *ngIf="element?.visit_type === 'completed'">
+                          {{ getVisitTypeLabel(element?.visit_type) }} - {{ formatVisitDate(element?.visit_date) }}
+                        </span>
+                        <span *ngIf="element?.visit_type !== 'completed'">
+                          {{ getVisitTypeLabel(element?.visit_type) }}
+                        </span>
+                      </div>
+
+                      <div
+                        *ngSwitchCase="'priority_visit_type'"
+                        class="chip d-flex align-items-center"
+                        [ngStyle]="{
+                          color: getVisitTypeStyle(element?.visit_type)?.color,
+                          backgroundColor: getVisitTypeStyle(element?.visit_type)?.backgroundColor
+                        }"
+                      >
+                        <mat-icon *ngIf="getVisitTypeIcon(element?.visit_type)" class="mr-2">
+                          {{ getVisitTypeIcon(element?.visit_type) }}
+                        </mat-icon>
+                        {{ getVisitTypeLabel(element?.visit_type) }}
+                      </div>
+
+                      <div
+                        *ngSwitchCase="'inProgress_visit_type'"
+                        class="chip d-flex align-items-center"
+                        [ngStyle]="{
+                          color: getVisitTypeStyle(element?.visit_type)?.color,
+                          backgroundColor: getVisitTypeStyle(element?.visit_type)?.backgroundColor
+                        }"
+                      >
+                        <mat-icon *ngIf="getVisitTypeIcon(element?.visit_type)" class="mr-2">
+                          {{ getVisitTypeIcon(element?.visit_type) }}
+                        </mat-icon>
+                        {{ getVisitTypeLabel(element?.visit_type) }}
+                      </div>
+
+                      <div
+                        *ngSwitchCase="'pending_visit_type'"
+                        class="chip d-flex align-items-center"
+                        [ngStyle]="{
+                          color: getVisitTypeStyle(element?.visit_type)?.color,
+                          backgroundColor: getVisitTypeStyle(element?.visit_type)?.backgroundColor
+                        }"
+                      >
+                        <mat-icon *ngIf="getVisitTypeIcon(element?.visit_type)" class="mr-2">
+                          {{ getVisitTypeIcon(element?.visit_type) }}
+                        </mat-icon>
+                        {{ getVisitTypeLabel(element?.visit_type) }}
+                      </div>
+
+                    </ng-container>
+
+
 
                     <!-- Action Buttons-->
                     <div *ngSwitchCase="'actions'" class="actions-btn-wrap d-flex align-items-center">

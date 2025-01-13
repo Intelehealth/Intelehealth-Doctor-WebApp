@@ -239,6 +239,11 @@ export interface AppointmentModel {
   appointmentId?: number
   telephone?: string
   patient_type?: string
+  visit_type?:any
+  completed_visit_type?:any
+  pending_visit_type?:any
+  inProgress_visit_type?:any
+  priority_visit_type?:any
 }
 
 export interface CustomVisitModel {

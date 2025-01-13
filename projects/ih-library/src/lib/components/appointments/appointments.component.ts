@@ -15,6 +15,7 @@ import { doctorDetails, languages, visitTypes } from '../../config/constant';
 import { MindmapService } from '../../services/mindmap.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { formatDate } from '@angular/common';
 
 
 @Component({
@@ -108,6 +109,10 @@ export class AppointmentsComponent implements OnInit {
     }
   }
 
+  /**
+   * Dynmaic label Display
+   * @param changes pluginConfigObs 
+   */
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["pluginConfigObs"] && changes["pluginConfigObs"].currentValue) {
       this.displayedAppointmentColumns = this.pluginConfigObs.tableColumns || [];
@@ -117,6 +122,11 @@ export class AppointmentsComponent implements OnInit {
     }
   }
 
+  /**
+   * Get the patient type style
+   * @param type 
+   */
+
   getPatientTypeStyle(type: string): { color: string; backgroundColor: string } {
     const typeConfig = this.pluginConfigObs.patientType.find((t: any) => t.key === type);
     return typeConfig
@@ -124,10 +134,34 @@ export class AppointmentsComponent implements OnInit {
       : { color: "#000", backgroundColor: "#ccc" }; // Default fallback styling
   }
 
+  /**
+   * Get the patient type either new or old 
+   * @param type 
+   */
   getPatientTypeLabel(type: string): string {
     const typeConfig = this.pluginConfigObs.patientType.find((t: any) => t.key === type);
     return typeConfig ? typeConfig.label : "Unknown"; // Default fallback label
   }
+
+  getVisitTypeStyle(type: string): { color: string; backgroundColor: string } {
+    const visitType = this.pluginConfigObs.visitType.find((v: any) => v.type === type);
+    return visitType?.[type]?.style || { color: "#000", backgroundColor: "#ccc" }; // Default style
+  }
+
+  getVisitTypeLabel(type: string): string {
+    const visitType = this.pluginConfigObs.visitType.find((v: any) => v.type === type);
+    return visitType?.[type]?.label || "Unknown"; // Default label
+  }
+
+  getVisitTypeIcon(type: string): string {
+    const visitType = this.pluginConfigObs.visitType.find((v: any) => v.type === type);
+    return visitType?.[type]?.style?.icon || ""; // Default empty icon
+  }
+
+  formatVisitDate(date: string): string {
+    return date ? formatDate(date, 'dd MMM, yyyy', 'en-US') : '';
+  }
+
 
  
 
@@ -366,11 +400,29 @@ export class AppointmentsComponent implements OnInit {
               appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
               appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
               appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person);
+              appointment.patient_type = "new-patient"
+              appointment.visit_type = [
+              {
+                "visit_type": "completed",
+                "visit_date": "2025-01-07T00:00:00Z"
+              },
+              {
+                "visit_type": "priority"
+              },
+              {
+                "visit_type": "awaiting"
+              },
+              {
+                "visit_type": "inProgress"
+              }
+            ]
+              
               this.appointments.push(appointment);
             }
           }
         });
         this.dataSource.data = [...this.appointments];
+        console.log("dataSource",this.dataSource.data)
         this.dataSource.paginator = this.paginator;
         this.dataSource.filterPredicate = (data, filter: string) => data?.openMrsId.toLowerCase().indexOf(filter) != -1 || data?.patientName.toLowerCase().indexOf(filter) != -1;
       });

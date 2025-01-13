@@ -175,6 +175,10 @@ export class DashboardComponent implements OnInit {
       { label: "Cheif complaint", key: "cheif_complaint" },
       { label: "Contact", key: "telephone" },
       { label: "Patient Type", key: "patient_type" },
+      { label: "Completed Visit", key: "completed_visit_type" },
+      { label: "Pending Visit", key: "pending_visit_type" },
+      { label: "Inprogress Visit", key: "inProgress_visit_type" },
+      { label: "Priority Visit", key: "priority_visit_type" },
       { label: "Action", key: "actions" }
     ],
     actionButtons: [
@@ -186,35 +190,53 @@ export class DashboardComponent implements OnInit {
       { label: "Old", key: "old-patient", style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } }
     ],
     visitType: [
-      {
-        type: "completed",
-        completed:{
-          label : "Visit Completed",
-           style: {
-            icon:"icons",
-            color: "#2E1E91",
-            backgroundColor: "#EFE8FF",
-          },
-        }
+    {
+      type: "completed",
+      completed: {
+        label: "Visit Completed",
+        style: {
+          icon: "check_circle", // Material icon name
+          color: "#2E1E91",
+          backgroundColor: "#EFE8FF",
+        },
       },
-      {
-        type: "priority",
-        priority:{
-          label : "Visit Completed",
-           style: {
-            icon:"icons",
-            color: "#2E1E91",
-            backgroundColor: "#EFE8FF",
-          },
-        }
+    },
+    {
+      type: "priority",
+      priority: {
+        label: "High Priority",
+        style: {
+          icon: "priority_high",
+          color: "#FF8C00",
+          backgroundColor: "#FFF4E5",
+        },
       },
-       {
-        type: "awaiting"
+    },
+    {
+      type: "awaiting",
+      awaiting: {
+        label: "Awaiting",
+        style: {
+          icon: "hourglass_empty",
+          color: "#FF0000",
+          backgroundColor: "#FFE8E8",
+        },
       },
-      {
-        type: "inProgress"
-      }
-    ]
+    },
+    {
+      type: "inProgress",
+      inProgress: {
+        label: "In Progress",
+        style: {
+          icon: "sync",
+          color: "#0000FF",
+          backgroundColor: "#E0F7FA",
+        },
+      },
+    },
+  ],
+
+   
   }; 
 
 
