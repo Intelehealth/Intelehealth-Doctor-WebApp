@@ -100,7 +100,6 @@ export class DashboardComponent implements OnInit {
   showRange: boolean = false;
   selectAll : boolean = false;
   showAllVisits:boolean = false;
-  today = new Date().toISOString().slice(0, 10);
   fromDate: string;
   toDate: string;
 
@@ -681,6 +680,13 @@ export class DashboardComponent implements OnInit {
 
   selectAllVisits(event) {
     this.selectAll = event.target.checked;
+  }
+
+  /** Get the selected date from the date picker
+  *  @return {void}
+  * */
+  get isDatesValid() {
+    return this.fromDate && this.toDate ? new Date(this.fromDate).getTime() > new Date(this.toDate).getTime() : false;
   }
 
 }

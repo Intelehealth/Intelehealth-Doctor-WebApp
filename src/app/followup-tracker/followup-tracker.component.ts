@@ -180,4 +180,13 @@ export class FollowupTrackerComponent {
     this.fromDate = null;
     this.toDate = null;
   }
+
+  /**
+   * Get the selected date from the date picker
+   *  @return {void}
+   * */
+  get isDatesValid() {
+    return this.fromDate && this.toDate ? new Date(this.fromDate).getTime() > new Date(this.toDate).getTime() : false;
+  }
+
 }

@@ -3,7 +3,6 @@ import { Injectable } from "@angular/core";
 import {
   DialogPosition,
   MatDialog,
-  MatDialogConfig,
 } from "@angular/material/dialog";
 import { BehaviorSubject, Observable } from "rxjs";
 import * as io from "socket.io-client";
