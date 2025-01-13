@@ -87,6 +87,18 @@ export class AppointmentsComponent implements OnInit {
     }
   }
 
+  getPatientTypeStyle(type: string): { color: string; backgroundColor: string } {
+    const typeConfig = this.pluginConfigObs.patientType.find((t: any) => t.key === type);
+    return typeConfig
+      ? typeConfig.style
+      : { color: "#000", backgroundColor: "#ccc" }; // Default fallback styling
+  }
+
+  getPatientTypeLabel(type: string): string {
+    const typeConfig = this.pluginConfigObs.patientType.find((t: any) => t.key === type);
+    return typeConfig ? typeConfig.label : "Unknown"; // Default fallback label
+  }
+
  
 
   /**
@@ -104,12 +116,14 @@ export class AppointmentsComponent implements OnInit {
               appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
               appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
               appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person)
+              appointment.patient_type = "old-patient"
               this.appointments.push(appointment);
             }
           }
         });
         this.dataSource.data = [...this.appointments];
         this.dataSource.paginator = this.paginator;
+         console.log("dataSource",this.dataSource.data)
         this.dataSource.filterPredicate = (data, filter: string) => data?.openMrsId.toLowerCase().indexOf(filter) != -1 || data?.patientName.toLowerCase().indexOf(filter) != -1;
       });
   }

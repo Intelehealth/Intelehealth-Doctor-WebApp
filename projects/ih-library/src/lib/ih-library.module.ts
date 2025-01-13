@@ -29,6 +29,7 @@ import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { RouterModule } from "@angular/router";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -45,6 +46,7 @@ registerLocaleData(localeEn);
   imports: [
     ModalComponentsModule,
     TranslateModule,
+    RouterModule,
     CommonModule,
     TranslateModule.forRoot({
       loader: {

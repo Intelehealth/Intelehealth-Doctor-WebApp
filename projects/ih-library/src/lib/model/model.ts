@@ -238,6 +238,7 @@ export interface AppointmentModel {
   starts_in?: string,
   appointmentId?: number
   telephone?: string
+  patient_type?: string
 }
 
 export interface CustomVisitModel {

@@ -162,51 +162,53 @@ export class DashboardComponent implements OnInit {
     filter: "Filter",
     tableHeaderIcon: "iconName",
     tableColumns: [
-      {
-        label: "Patients",
-        key: "name",
-      },
-      {
-        label: "Age",
-        key: "age",
-      },
-      {
-        label: "Starts in",
-        key: "starts_in",
-      },
-      {
-        label: "Location",
-        key: "location",
-      },
-      {
-        label: "Cheif complaint",
-        key: "cheif_complaint",
-      },
-      {
-        label: "Contact",
-        key: "telephone",
-      },
-      {
-        label: "Action",
-        key: "actions",
-      },
+      { label: "Patients", key: "name" },
+      { label: "Age", key: "age" },
+      { label: "Starts in", key: "starts_in" },
+      { label: "Location", key: "location" },
+      { label: "Cheif complaint", key: "cheif_complaint" },
+      { label: "Contact", key: "telephone" },
+      { label: "Patient Type", key: "patient_type" },
+      { label: "Action", key: "actions" }
     ],
-     actionButtons: [
-    {
-      label: "Reschedule",
-      style: {
-        color: "#2E1E91",
-        backgroundColor: "#EFE8FF",
-      },
-    },
-    {
-      label: "Cancel",
-      style: {
-        color: "#FF475D",
-        backgroundColor: "#FFE8E8",
-      },
-    },
+    actionButtons: [
+      { label: "Reschedule", style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } },
+      { label: "Cancel", style: { color: "#FF475D", backgroundColor: "#FFE8E8" } }
     ],
+    patientType: [
+      { label: "New", key: "new-patient", style: { color: "#0FD197", backgroundColor: "#E6FFF3" } },
+      { label: "Old", key: "old-patient", style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } }
+    ],
+    visitType: [
+      {
+        type: "completed",
+        completed:{
+          label : "Visit Completed",
+           style: {
+            icon:"icons",
+            color: "#2E1E91",
+            backgroundColor: "#EFE8FF",
+          },
+        }
+      },
+      {
+        type: "priority",
+        priority:{
+          label : "Visit Completed",
+           style: {
+            icon:"icons",
+            color: "#2E1E91",
+            backgroundColor: "#EFE8FF",
+          },
+        }
+      },
+       {
+        type: "awaiting"
+      },
+      {
+        type: "inProgress"
+      }
+    ]
   }; 
 
 
