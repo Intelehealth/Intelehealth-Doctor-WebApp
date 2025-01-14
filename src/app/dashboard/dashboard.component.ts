@@ -154,10 +154,10 @@ export class DashboardComponent implements OnInit {
   @ViewChild(AppointmentsComponent) AppointmentsComponent: AppointmentsComponent;
 
   pluginConfigObs: any = {
-    pluginConfigObsFlag: "Appointments Visits Table",
+    pluginConfigObsFlag: "InProgress Visits Table",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
     mindmapURL: "https://dev.intelehealth.org:3004/api",
-    tableHeader: "Appointments Visits",
+    tableHeader: "InProgress Visits",
     tooltipLabel: "Scheduled appointments",
     searchPlaceHolder: "Search Appointments",
     noRecordFound: "No Appointment",
@@ -168,6 +168,7 @@ export class DashboardComponent implements OnInit {
     },
     tableHeaderIcon: "assets/svgs/cam-icon.svg",
     tableColumns: [
+      { label: "TMH Ptient id", key: "TMH_patient_id" },
       { label: "Patients", key: "name" },
       { label: "Age", key: "age" },
       { label: "Starts in", key: "starts_in" },
@@ -175,10 +176,9 @@ export class DashboardComponent implements OnInit {
       { label: "Cheif complaint", key: "cheif_complaint" },
       { label: "Contact", key: "telephone" },
       { label: "Patient Type", key: "patient_type" },
-      { label: "Completed Visit", key: "completed_visit_type" },
-      { label: "Pending Visit", key: "pending_visit_type" },
-      { label: "Inprogress Visit", key: "inProgress_visit_type" },
-      { label: "Priority Visit", key: "priority_visit_type" },
+      { label: "Visit Completed", key: "completed_visit_type" }, 
+      { label: "Followup Date", key: "followup" },
+      { label: "Visit Uploaded", key: "priority_visit_type" },
       { label: "Action", key: "actions" }
     ],
     actionButtons: [
