@@ -44,7 +44,6 @@ registerLocaleData(localeEn);
   ],
   imports: [
     ModalComponentsModule,
-    TranslateModule,
     CommonModule,
     TranslateModule.forRoot({
       loader: {
@@ -85,7 +84,28 @@ registerLocaleData(localeEn);
   ],
   exports: [
     IhLibraryComponent,
-    AppointmentsComponent
+    AppointmentsComponent,
+    MatPaginatorModule,
+    MatTooltipModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatExpansionModule,
+    MatBottomSheetModule,
+    MatSnackBarModule,
+    MatMenuModule,
+    MatTableModule,
+    MatIconModule,
+    MatSidenavModule,
+    MatTabsModule,
+    CdkAccordionModule,
+    MatDialogModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgxPermissionsModule,
+    ToastrModule,
+    TranslateModule
   ],
   providers: [
     { provide: MAT_DIALOG_DATA, useValue: {} },

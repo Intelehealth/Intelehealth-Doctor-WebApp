@@ -26,9 +26,6 @@ import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from '@angular/mater
 import { formatDate } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-// Imports the AppointmentTableComponent from the appointment-library, which is a reusable Angular library component.
-import { AppointmentsComponent } from 'ih-library';
-
 export const PICK_FORMATS = {
   parse: { dateInput: { month: 'short', year: 'numeric', day: 'numeric' } },
   display: {
@@ -150,23 +147,20 @@ export class DashboardComponent implements OnInit {
   @ViewChild(CompletedVisitsComponent) completedVisitsComponent: CompletedVisitsComponent;
   @ViewChild(FollowupVisitsComponent) followUpVisitsComponent: FollowupVisitsComponent;
 
-  // Define these properties in the DashboardComponent
-  @ViewChild(AppointmentsComponent) AppointmentsComponent: AppointmentsComponent;
-
   pluginConfigObs: any = {
-    pluginConfigObsFlag: "Appointments Visits Table",
+    pluginConfigObsFlag: "Awaitings",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
     mindmapURL: "https://dev.intelehealth.org:3004/api",
     tableHeader: "Appointments Visits",
     tooltipLabel: "Scheduled appointments",
     searchPlaceHolder: "Search Appointments",
-    noRecordFound: "No Appointment",
+    noRecordFound: "No any appointments scheduled.",
+    tableHeaderIcon: "assets/svgs/cam-icon.svg",
     filterObs: {
       filterFlag: true,
       filterLabel: "Filter",
       filterIcon: "assets/svgs/filter.svg"
     },
-    tableHeaderIcon: "assets/svgs/cam-icon.svg",
     tableColumns: [
       {
         label: "Patients",
@@ -177,10 +171,6 @@ export class DashboardComponent implements OnInit {
         key: "age",
       },
       {
-        label: "Starts in",
-        key: "starts_in",
-      },
-      {
         label: "Location",
         key: "location",
       },
@@ -189,29 +179,24 @@ export class DashboardComponent implements OnInit {
         key: "cheif_complaint",
       },
       {
-        label: "Contact",
-        key: "telephone",
-      },
-      {
-        label: "Action",
-        key: "actions",
+        label: "Patient Type",
+        key: "patient_type",
+        formatHtml: (rowData)=> { 
+          return `<button type="button" style="color: red;">${rowData.patient_type}</button>`
+        },
+        classList: [
+          "bold",
+          "red"
+        ]
       },
     ],
-     actionButtons: [
-    {
-      label: "Reschedule",
-      style: {
-        color: "#2E1E91",
-        backgroundColor: "#EFE8FF",
-      },
-    },
-    {
-      label: "Cancel",
-      style: {
-        color: "#FF475D",
-        backgroundColor: "#FFE8E8",
-      },
-    },
+    actionButtons: [
+      { label: "Reschedule", style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } },
+      { label: "Cancel", style: { color: "#FF475D", backgroundColor: "#FFE8E8" } }
+    ],
+    patientType: [
+      { label: "New", key: "new-patient", style: { color: "#0FD197", backgroundColor: "#E6FFF3" } },
+      { label: "Old", key: "old-patient", style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } }
     ],
   }; 
 

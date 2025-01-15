@@ -15,7 +15,7 @@ import { doctorDetails, languages, visitTypes } from '../../config/constant';
 import { MindmapService } from '../../services/mindmap.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatMenuTrigger } from '@angular/material/menu';
-
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'lib-appointments',
@@ -63,6 +63,7 @@ export class AppointmentsComponent implements OnInit {
     private toastr: ToastrService,
     private translateService: TranslateService,
     private mindmapService: MindmapService,
+    private sanitizer: DomSanitizer
     // private appConfigService: AppConfigService
   ) { 
       // Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
@@ -87,21 +88,21 @@ export class AppointmentsComponent implements OnInit {
       if (provider.attributes.length) {
         this.specialization = this.getSpecialization(provider.attributes);
       }
-      if(this.pluginConfigObs?.pluginConfigObsFlag === "Appointments Visits Table"){
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "Appointment"){
         this.getAppointments();
       }
-      if(this.pluginConfigObs?.pluginConfigObsFlag === "Awaiting Visits Table"){
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "Awaitings"){
         this.getAwaitingVisits(1);
       }
-      if(this.pluginConfigObs?.pluginConfigObsFlag === "Priority Visits Table"){
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "Priority"){
         this.getPriorityVisits(1);
       }
-      if(this.pluginConfigObs?.pluginConfigObsFlag === "InProgress Visits Table"){
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "InProgress"){
         this.getInProgressVisits(1);
       }
-      if(this.pluginConfigObs?.pluginConfigObsFlag === "Completed Visits Table"){
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "Completed"){
         this.getCompletedVisits();
-      }if(this.pluginConfigObs?.pluginConfigObsFlag === "Follow Up Visit Table"){
+      }if(this.pluginConfigObs?.pluginConfigObsFlag === "FollowUp"){
         this.getFollowUpVisit();
       }
     }
@@ -457,10 +458,12 @@ export class AppointmentsComponent implements OnInit {
           visit.patient_type = this.getDemarcation(visit?.encounters);
           this.awaitingVisits.push(visit);
         }
-        // this.dataSource.data = [...this.awaitingVisits];
+        this.dataSource.data = [...this.awaitingVisits];
+        console.log(this.dataSource.data, );
+        
         if (page == 1) {
-          // this.dataSource.paginator = this.tempPaginator;
-          // this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          this.dataSource.paginator = this.tempPaginator;
+          this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
           this.tempPaginator.length = this.awaitingVisits.length;
           this.tempPaginator.nextPage();
@@ -493,10 +496,10 @@ export class AppointmentsComponent implements OnInit {
           visit.TMH_patient_id = this.getAttributeData(visit, "TMH Case Number");
           this.inProgressVisits.push(visit);
         }
-        // this.dataSource.data = [...this.inProgressVisits];
+        this.dataSource.data = [...this.inProgressVisits];
         if (page == 1) {
-          // this.dataSource.paginator = this.tempPaginator;
-          // this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          this.dataSource.paginator = this.tempPaginator;
+          this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
           this.tempPaginator.length = this.inProgressVisits.length;
           this.tempPaginator.nextPage();
@@ -527,10 +530,10 @@ export class AppointmentsComponent implements OnInit {
           visit.person.age = this.calculateAge(visit.person.birthdate);
           this.priorityVisits.push(visit);
         }
-        // this.dataSource.data = [...this.priorityVisits];
+        this.dataSource.data = [...this.priorityVisits];
         if (page == 1) {
-          // this.dataSource.paginator = this.tempPaginator;
-          // this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          this.dataSource.paginator = this.tempPaginator;
+          this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
           this.tempPaginator.length = this.priorityVisits.length;
           this.tempPaginator.nextPage();
@@ -558,10 +561,10 @@ export class AppointmentsComponent implements OnInit {
           visit.TMH_patient_id = this.getAttributeData(visit, "TMH Case Number");
           this.completedVisits.push(visit);
         }
-        // this.dataSource.data = [...this.completedVisits];
+        this.dataSource.data = [...this.completedVisits];
         if (page == 1) {
-          // this.dataSource.paginator = this.tempPaginator;
-          // this.dataSource.filterPredicate = (data: { patient: { identifier: string; }; patient_name: { given_name: string; middle_name: string; family_name: string; }; }, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+          this.dataSource.paginator = this.tempPaginator;
+          this.dataSource.filterPredicate = (data: { patient: { identifier: string; }; patient_name: { given_name: string; middle_name: string; family_name: string; }; }, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
           this.tempPaginator.length = this.completedVisits.length;
           this.tempPaginator.nextPage();
@@ -593,10 +596,10 @@ export class AppointmentsComponent implements OnInit {
               this.followUpVisits.push(visit);
             }
           }
-          // this.dataSource.data = [...this.followUpVisits];
+          this.dataSource.data = [...this.followUpVisits];
           if (page == 1) {
-            // this.dataSource.paginator = this.tempPaginator;
-            // this.dataSource.filterPredicate = (data: { patient: { identifier: string; }; patient_name: { given_name: string; middle_name: string; family_name: string; }; }, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
+            this.dataSource.paginator = this.tempPaginator;
+            this.dataSource.filterPredicate = (data: { patient: { identifier: string; }; patient_name: { given_name: string; middle_name: string; family_name: string; }; }, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
           } else {
             // this.tempPaginator.length = this.followUpVisits.length;
             // this.tempPaginator.nextPage();
@@ -622,5 +625,13 @@ export class AppointmentsComponent implements OnInit {
     return obs;
   }
   
+  renderHtmlContent(column:any, element:any): string {
+    return typeof column.formatHtml === 'function' ? this.sanitizer.bypassSecurityTrustHtml(column.formatHtml(element)) : element[column.key];
+  }
+
+  getClasses(column:any){
+    return column.classList ? column.classList.join(" ") : "";
+  }
+
 }
 
