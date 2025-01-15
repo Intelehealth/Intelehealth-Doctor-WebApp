@@ -165,7 +165,7 @@ export class FollowupTrackerComponent {
     filteredVisits.sort((a, b) => new Date(b.followup_date) < new Date(a.followup_date) ? -1 : 1);
     this.dataSource.data = [...filteredVisits];
     this.tempPaginator.length = filteredVisits.length;
-    this.tempPaginator.nextPage();
+    //this.tempPaginator.nextPage();
     this.doctorFollowpCount = filteredVisits.length;
     this.trigger.closeMenu();
   }
