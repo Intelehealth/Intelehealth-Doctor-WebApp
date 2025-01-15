@@ -169,13 +169,24 @@ export class DashboardComponent implements OnInit {
     tableHeaderIcon: "assets/svgs/cam-icon.svg",
     tableColumns: [
       { label: "TMH Ptient id", key: "TMH_patient_id" },
-      { label: "Patients", key: "name" },
+      {
+      label: 'Patients Name',
+      key: 'name',
+      format: 'patient_name',
+      // className: { 'text-align': 'left', 'font-style': 'italic' }
+      // html:callback(row)
+      },
+      // { label: "Patients", key: "name",
+      //   format: (option) =>  {
+      //       return `<span>${option.firstName} ${option.lastName}</span>`
+      //   }
+      //  },
       { label: "Age", key: "age" },
       { label: "Starts in", key: "starts_in" },
       { label: "Location", key: "location" },
       { label: "Cheif complaint", key: "cheif_complaint" },
       { label: "Contact", key: "telephone" },
-      { label: "Patient Type", key: "patient_type" },
+      { label: "Patient Type", key: "patient_type",style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } },
       { label: "Visit Completed", key: "completed_visit_type" }, 
       { label: "Followup Date", key: "followup" },
       { label: "Visit Uploaded", key: "priority_visit_type" },
