@@ -370,21 +370,6 @@
     color: #7F7B92;
   }
 
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-    font-weight: bold;
-    line-height: 1;
-    white-space: nowrap;
-  }
-  
-  .chip mat-icon {
-    font-size: 1rem;
-    margin-right: 0.25rem;
-  }
   .userImage{
      width:32px;height:32px;border-radius: 50%;
   }
@@ -402,4 +387,30 @@
   }
   .left{
     text-align: left;
+  }
+
+  .chip {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 4px;
+    height: 32px;
+    padding: 4px 6px;
+    width: -moz-fit-content;
+    width: fit-content;
+  
+    &.green{
+      color: #0FD197;
+    }
+    &.blue{
+      color: #2E1E91;
+    }
+  }
+
+  .chip-item-blue {
+    background: var(--color-lightGray);
+  }
+  
+  .chip-item-green {
+    background: #E6FFF3;
   }
