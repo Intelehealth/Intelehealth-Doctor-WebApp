@@ -168,6 +168,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
+            "tsConfig": "projects/ih-library/tsconfig.lib.json",
             "project": "projects/ih-library/ng-package.json"
           },
           "configurations": {

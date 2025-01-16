@@ -26,9 +26,6 @@ import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from '@angular/mater
 import { formatDate } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-// Imports the AppointmentTableComponent from the appointment-library, which is a reusable Angular library component.
-import { AppointmentsComponent } from 'ih-library';
-
 export const PICK_FORMATS = {
   parse: { dateInput: { month: 'short', year: 'numeric', day: 'numeric' } },
   display: {
@@ -150,47 +147,62 @@ export class DashboardComponent implements OnInit {
   @ViewChild(CompletedVisitsComponent) completedVisitsComponent: CompletedVisitsComponent;
   @ViewChild(FollowupVisitsComponent) followUpVisitsComponent: FollowupVisitsComponent;
 
-  // Define these properties in the DashboardComponent
-  @ViewChild(AppointmentsComponent) AppointmentsComponent: AppointmentsComponent;
-
   pluginConfigObs: any = {
-    pluginConfigObsFlag: "InProgress Visits Table",
+    pluginConfigObsFlag: "InProgress",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
     mindmapURL: "https://dev.intelehealth.org:3004/api",
     tableHeader: "InProgress Visits",
     tooltipLabel: "Scheduled appointments",
     searchPlaceHolder: "Search Appointments",
-    noRecordFound: "No Appointment",
+    noRecordFound: "No any appointments scheduled.",
+    tableHeaderIcon: "assets/svgs/cam-icon.svg",
     filterObs: {
       filterFlag: true,
       filterLabel: "Filter",
       filterIcon: "assets/svgs/filter.svg"
     },
-    tableHeaderIcon: "assets/svgs/cam-icon.svg",
     tableColumns: [
-      { label: "TMH Ptient id", key: "TMH_patient_id" },
       {
-      label: 'Patients Name',
-      key: 'name',
-      format: 'patient_name',
-      // className: { 'text-align': 'left', 'font-style': 'italic' }
-      // html:callback(row)
+        label:"TMH Patient ID",
+        key: "TMH_patient_id"
       },
-      // { label: "Patients", key: "name",
-      //   format: (option) =>  {
-      //       return `<span>${option.firstName} ${option.lastName}</span>`
-      //   }
-      //  },
-      { label: "Age", key: "age" },
-      { label: "Starts in", key: "starts_in" },
-      { label: "Location", key: "location" },
-      { label: "Cheif complaint", key: "cheif_complaint" },
-      { label: "Contact", key: "telephone" },
-      { label: "Patient Type", key: "patient_type",style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } },
-      { label: "Visit Completed", key: "completed_visit_type" }, 
-      { label: "Followup Date", key: "followup" },
-      { label: "Visit Uploaded", key: "priority_visit_type" },
-      { label: "Action", key: "actions" }
+      {
+        label: "Patients",
+        key: "name",
+         classList:[
+          "left",
+          "userImage"
+        ],
+        formatHtml: (rowData)=> {
+          return `<span><img  alt="" class="userImage" src="assets/svgs/user.svg"> ${rowData.patient_name.given_name} ${rowData.patient_name.family_name} (${rowData.person.gender})</span>`
+        },
+      },
+
+     
+      {
+        label: "Age",
+        key: "patientAge",
+        classList:[
+          "left"
+        ],
+        formatHtml: (rowData)=> {
+          return `<span>${rowData.patientAge} y</span>`
+        },
+      },
+      {
+        label: "Prescription Started",
+        key: "prescription_started",
+        icon:"assets/svgs/red-pad.svg",
+        classList: [
+          "red-pill",
+        ],
+         formatHtml: (rowData)=> {
+          return `<div class="red-pill">
+          <img src="assets/svgs/red-pad.svg" alt="Prescription Started" style="margin-right: 8px; vertical-align: middle;">
+          <span>${rowData.prescription_started}</span>
+        </div>`
+        },
+      }
     ],
     actionButtons: [
       { label: "Reschedule", style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } },
@@ -200,54 +212,6 @@ export class DashboardComponent implements OnInit {
       { label: "New", key: "new-patient", style: { color: "#0FD197", backgroundColor: "#E6FFF3" } },
       { label: "Old", key: "old-patient", style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } }
     ],
-    visitType: [
-    {
-      type: "completed",
-      completed: {
-        label: "Visit Completed",
-        style: {
-          icon: "check_circle", // Material icon name
-          color: "#2E1E91",
-          backgroundColor: "#EFE8FF",
-        },
-      },
-    },
-    {
-      type: "priority",
-      priority: {
-        label: "High Priority",
-        style: {
-          icon: "priority_high",
-          color: "#FF8C00",
-          backgroundColor: "#FFF4E5",
-        },
-      },
-    },
-    {
-      type: "awaiting",
-      awaiting: {
-        label: "Awaiting",
-        style: {
-          icon: "hourglass_empty",
-          color: "#FF0000",
-          backgroundColor: "#FFE8E8",
-        },
-      },
-    },
-    {
-      type: "inProgress",
-      inProgress: {
-        label: "In Progress",
-        style: {
-          icon: "sync",
-          color: "#0000FF",
-          backgroundColor: "#E0F7FA",
-        },
-      },
-    },
-  ],
-
-   
   }; 
 
 

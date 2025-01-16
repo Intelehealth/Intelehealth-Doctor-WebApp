@@ -257,6 +257,7 @@
     white-space: nowrap;
     height: 46px;
     display: none;
+    gap: 4px;
   }
   
   .toggle-buttons {
@@ -370,17 +371,35 @@
   }
 
   .chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  font-weight: bold;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.chip mat-icon {
-  font-size: 1rem;
-  margin-right: 0.25rem;
-}
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: bold;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  
+  .chip mat-icon {
+    font-size: 1rem;
+    margin-right: 0.25rem;
+  }
+  .userImage{
+     width:32px;height:32px;border-radius: 50%;
+  }
+  .red-pill {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background:#ffe8e8;
+    border-radius: 4px;
+    height: 32px;
+    color: #ea315b;
+    padding: 4px 6px;
+    width: -moz-fit-content;
+    width: fit-content;
+  }
+  .left{
+    text-align: left;
+  }

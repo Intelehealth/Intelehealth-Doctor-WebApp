@@ -8,9 +8,65 @@
     "inlineSources": true,
     "types": [],
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "module": "es2022",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "lib": [
+      "dom",
+      "es2022"
+    ]
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictOutputAccessModifiers": true,
+    "skipTemplateCodegen": false,
+    "strictMetadataEmit": true,
+    "enableResourceInlining": false,
+    "annotateForClosureCompiler": false,
+    "compilationMode": "aot",
+    "skipDefaultLibCheck": true
   },
   "exclude": [
     "**/*.spec.ts"
   ]
 }
+
+
+// {
+//   "extends": "../../tsconfig.json",
+//   "compilerOptions": {
+//     "outDir": "../../out-tsc/lib",
+//     "declarationMap": true,
+//     "module": "es2022",
+//     "moduleResolution": "node",
+//     "declaration": true,
+//     "sourceMap": true,
+//     "inlineSources": true,
+//     "emitDecoratorMetadata": true,
+//     "experimentalDecorators": true,
+//     "importHelpers": true,
+//     "types": [],
+//     "lib": [
+//       "dom",
+//       "es2022"
+//     ]
+//   },
+//   "angularCompilerOptions": {
+//     "annotateForClosureCompiler": true,
+//     "skipTemplateCodegen": true,
+//     "strictMetadataEmit": true,
+//     "fullTemplateTypeCheck": true,
+//     "strictInjectionParameters": true,
+//     "enableResourceInlining": true
+//   },
+  // "exclude": [
+  //   "src/test.ts",
+  //   "**/*.spec.ts"
+  // ]
+// }
