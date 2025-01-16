@@ -148,10 +148,10 @@ export class DashboardComponent implements OnInit {
   @ViewChild(FollowupVisitsComponent) followUpVisitsComponent: FollowupVisitsComponent;
 
   pluginConfigObs: any = {
-    pluginConfigObsFlag: "InProgress",
+    pluginConfigObsFlag: "Appointment",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
     mindmapURL: "https://dev.intelehealth.org:3004/api",
-    tableHeader: "InProgress Visits",
+    tableHeader: "Appointment Visits",
     tooltipLabel: "Scheduled appointments",
     searchPlaceHolder: "Search Appointments",
     noRecordFound: "No any appointments scheduled.",
@@ -168,17 +168,14 @@ export class DashboardComponent implements OnInit {
       },
       {
         label: "Patients",
-        key: "name",
-         classList:[
-          "left",
-          "userImage"
+        key: "patientName",
+        classList:[
+         
         ],
-        formatHtml: (rowData)=> {
-          return `<span><img  alt="" class="userImage" src="assets/svgs/user.svg"> ${rowData.patient_name.given_name} ${rowData.patient_name.family_name} (${rowData.person.gender})</span>`
-        },
-      },
-
-     
+        // formatHtml: (rowData)=> {
+        //   return `<span><img  alt="" class="userImage" src="assets/svgs/user.svg"> <span class="font-bold ml-2">${rowData.patient_name.given_name} ${rowData.patient_name.family_name} (${rowData.person.gender})</span></span>`
+        // },
+      },     
       {
         label: "Age",
         key: "patientAge",
@@ -190,19 +187,33 @@ export class DashboardComponent implements OnInit {
         },
       },
       {
-        label: "Prescription Started",
-        key: "prescription_started",
-        icon:"assets/svgs/red-pad.svg",
-        classList: [
-          "red-pill",
+        label: "Starts in",
+        key:"starts_in",
+        classList:[
+          "alert-danger"
         ],
-         formatHtml: (rowData)=> {
-          return `<div class="red-pill">
-          <img src="assets/svgs/red-pad.svg" alt="Prescription Started" style="margin-right: 8px; vertical-align: middle;">
-          <span>${rowData.prescription_started}</span>
-        </div>`
-        },
+        formatHtml: (rowData)=>{
+          return `<span>Due: ${rowData.starts_in}</span>`
+        }
+      },
+      {
+        label: "Actions",
+        key: "actions"
       }
+      // {
+      //   label: "Prescription Started",
+      //   key: "prescription_started",
+      //   icon:"assets/svgs/red-pad.svg",
+      //   classList: [
+      //     "red-pill",
+      //   ],
+      //    formatHtml: (rowData)=> {
+      //     return `<div class="red-pill">
+      //     <img src="assets/svgs/red-pad.svg" alt="Prescription Started" style="margin-right: 8px; vertical-align: middle;">
+      //     <span>${rowData.prescription_started}</span>
+      //   </div>`
+      //   },
+      // }
     ],
     actionButtons: [
       { label: "Reschedule", style: { color: "#2E1E91", backgroundColor: "#EFE8FF" } },
