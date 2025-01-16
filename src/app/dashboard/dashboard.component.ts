@@ -38,6 +38,7 @@ export class DashboardComponent implements OnInit {
   dataSource5 = new MatTableDataSource<any>();
 
   baseUrl: string = environment.baseURL;
+  recordsFetched: number = environment.recordsPerPage;
   appointments: AppointmentModel[] = [];
   priorityVisits: CustomVisitModel[] = [];
   awaitingVisits: CustomVisitModel[] = [];
@@ -358,8 +359,8 @@ export class DashboardComponent implements OnInit {
     if (this.dataSource5.filter) {
       this.followupPaginator.firstPage();
     }
-    if (((event.pageIndex + 1) * this.pageSize3) > this.followupVisitsRecordsFetched) {
-      this.getFollowUpVisits((this.followupVisitsRecordsFetched + this.offset) / this.offset);
+    if (((event.pageIndex + 1) * this.pageSize3) > this.recordsFetched) {
+      this.getFollowUpVisits((this.recordsFetched + this.offset) / this.offset);
     } else {
       if (event.previousPageIndex < event.pageIndex) {
         this.tempPaginator4.nextPage();
@@ -645,7 +646,7 @@ export class DashboardComponent implements OnInit {
 
   applyDateFilter(showAllVisits: boolean) {
     let filteredVisits :CustomVisitModel[] = [];
-    let visits =  showAllVisits ? this.followupVisits : this.filteredFollowUpVisits;
+    let visits = this.filteredFollowUpVisits;
     this.followupVisitsCount = 0;
     if(this.fromDate && this.toDate) {
       filteredVisits = visits.filter((visit) => {
@@ -662,7 +663,7 @@ export class DashboardComponent implements OnInit {
     filteredVisits.sort((a, b) => new Date(b.followup_date) < new Date(a.followup_date) ? -1 : 1);
     this.dataSource5.data = [...filteredVisits];
     this.tempPaginator4.length = filteredVisits.length;
-    this.tempPaginator4.nextPage();
+    this.tempPaginator4.firstPage();
     this.followupVisitsCount = filteredVisits.length;
     this.trigger.closeMenu();
   }

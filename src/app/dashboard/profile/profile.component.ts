@@ -94,11 +94,11 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   languages: DataItemModel[] = [
     {
       id: 1,
-      name: 'Assamese'
+      name: 'Assamese (Asamiya)'
     },
     {
       id: 2,
-      name: 'Bengali'
+      name: 'Bengali (Bangla)'
     },
     {
       id: 3,
@@ -118,15 +118,23 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     },
     {
       id: 7,
-      name: 'Marathi'
+      name: 'Malayalam'
     },
     {
       id: 8,
-      name: 'Odiya'
+      name: 'Marathi'
     },
     {
       id: 9,
+      name: 'Odiya'
+    },
+    {
+      id: 10,
       name: 'Tamil'
+    },
+    {
+      id: 11,
+      name: 'Telugu'
     }
   ];
 
