@@ -83,7 +83,6 @@ export class AppointmentsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("this.pluginConfig",this.pluginConfigObs)
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
     let provider = getCacheData(true, doctorDetails.PROVIDER);
     if (provider) {
@@ -93,7 +92,7 @@ export class AppointmentsComponent implements OnInit {
       if(this.pluginConfigObs?.pluginConfigObsFlag === "Appointment"){
         this.getAppointments();
       }
-      if(this.pluginConfigObs?.pluginConfigObsFlag === "Awaitings"){
+      if(this.pluginConfigObs?.pluginConfigObsFlag === "Awaiting"){
         this.getAwaitingVisits(1);
       }
       if(this.pluginConfigObs?.pluginConfigObsFlag === "Priority"){
@@ -371,8 +370,7 @@ export class AppointmentsComponent implements OnInit {
   }
 
   getAttributeData(data: any, attributeName: string): { name: string; value: string } | null {
-    console.log("data",data)
-    if (data?.TMH_patient_id && Array.isArray(data.person_attribute)) {
+    if (Array.isArray(data.person_attribute)) {
       const attribute = data.person_attribute.find(
         (attr: any) => attr.person_attribute_type?.name === attributeName
       );
@@ -402,29 +400,11 @@ export class AppointmentsComponent implements OnInit {
               appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
               appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
               appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person);
-              appointment.patient_type = "new-patient"
-              appointment.visit_type = [
-              {
-                "visit_type": "completed",
-                "visit_date": "2025-01-07T00:00:00Z"
-              },
-              {
-                "visit_type": "priority"
-              },
-              {
-                "visit_type": "awaiting"
-              },
-              {
-                "visit_type": "inProgress"
-              }
-            ]
-              
               this.appointments.push(appointment);
             }
           }
         });
         this.dataSource.data = [...this.appointments];
-        console.log("dataSource",this.dataSource.data)
         this.dataSource.paginator = this.paginator;
         this.dataSource.filterPredicate = (data, filter: string) => data?.openMrsId.toLowerCase().indexOf(filter) != -1 || data?.patientName.toLowerCase().indexOf(filter) != -1;
       });
@@ -443,8 +423,6 @@ export class AppointmentsComponent implements OnInit {
         specialization = a.value;
       }
     });
-    console.log(specialization, "From specialization function return");
-    
     return specialization;
   }
 
@@ -527,8 +505,6 @@ export class AppointmentsComponent implements OnInit {
           this.awaitingVisits.push(visit);
         }
         this.dataSource.data = [...this.awaitingVisits];
-        console.log(this.dataSource.data, );
-        
         if (page == 1) {
           this.dataSource.paginator = this.tempPaginator;
           this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
@@ -546,7 +522,6 @@ export class AppointmentsComponent implements OnInit {
   * @return {void}
   */
   getInProgressVisits(page: number = 1) {
-    console.log("In progress visit")
     if(page == 1) {
       this.inProgressVisits = [];
       // this.inprogressRecordsFetched = 0;
@@ -562,15 +537,10 @@ export class AppointmentsComponent implements OnInit {
           visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z','+0530')) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
           visit.prescription_started = this.getEncounterCreated(visit, visitTypes.VISIT_NOTE);
           visit.person.age = this.calculateAge(visit.person.birthdate);
-          visit.patientName = visit?.person?.age
-          visit.patientAge = visit?.person?.age
           visit.TMH_patient_id = this.getAttributeData(visit, "TMH Case Number");
-          console.log("visit",visit)
-          console.log("visit 1",visit?.TMH_patient_id?.value)
           this.inProgressVisits.push(visit);
         }
         this.dataSource.data = [...this.inProgressVisits];
-        console.log("data Source",this.dataSource.data)
         if (page == 1) {
           this.dataSource.paginator = this.tempPaginator;
           this.dataSource.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name && this.checkPatientRegField('Middle Name') ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
@@ -666,7 +636,7 @@ export class AppointmentsComponent implements OnInit {
               visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created.replace('Z', '+0530')) : this.getEncounterCreated(visit, visitTypes.COMPLETED_VISIT);
               visit.person.age = this.calculateAge(visit.person.birthdate);
               visit.completed = this.getEncounterCreated(visit, visitTypes.VISIT_COMPLETE);
-              visit.followUp = this.getEncounterObs(visit.encounters, visitTypes.VISIT_NOTE, 163345/*Follow-up*/)?.value_text;
+              visit.followUp = this.processFollowUpDate(this.getEncounterObs(visit.encounters, visitTypes.VISIT_NOTE, 163345/*Follow-up*/)?.value_text);
               this.followUpVisits.push(visit);
             }
           }
@@ -707,5 +677,8 @@ export class AppointmentsComponent implements OnInit {
     return column.classList ? column.classList.join(" ") : "";
   }
 
+  processFollowUpDate(value: string) {
+    return value.split(',').length > 1 ? `${value.split(',')[0]}${value.split(',')[1].replace("Time:", "")}` : value;
+  };
 }
 
