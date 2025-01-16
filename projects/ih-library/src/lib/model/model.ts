@@ -244,6 +244,7 @@ export interface AppointmentModel {
   pending_visit_type?:any
   inProgress_visit_type?:any
   priority_visit_type?:any
+  patient_name?:any
 }
 
 export interface CustomVisitModel {

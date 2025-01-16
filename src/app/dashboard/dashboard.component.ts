@@ -420,33 +420,34 @@ export class DashboardComponent implements OnInit {
     tableColumns: [
       {
         label: "Patient Name",
-        key: "patient_name",
+        key: "patientName",
         formatHtml: (element)=> { 
+          console.log(element)
           return `
             <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
-            <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>
+            <span class="font-bold ml-2">${element?.patientName}  (${element?.patientGender})</span>
           `
         },
       },
       {
         label: "Age",
-        key: "age",
+        key: "patientAge",
         formatHtml: (element)=> { 
-          return `<span>${element?.person?.age} ${'y'}</span>`
+          return `<span>${element?.patientAge} ${'y'}</span>`
         },
       },
       {
         label: "Starts in",
         key: "starts_in",
         formatHtml: (element)=> { 
-          return `<span>${element?.starts_in} ${'y'}</span>`
+          return `<strong><span style="color: #ff475d">${element?.starts_in}</span></strong>`
         },
       },
       {
         label: "Location",
         key: "location",
         formatHtml: (element)=> { 
-          return `<span>${element?.location?.name}</span>`
+          return `<span>${element?.visit?.location?.name}</span>`
         },
       },
       {
@@ -461,21 +462,36 @@ export class DashboardComponent implements OnInit {
         label: "Contact",
         key: "telephone",
         formatHtml: (element)=> { 
-          return `<a *ngIf="element.telephone" href="{{ getWhatsAppLink(element.telephone) }}" target="_blank" class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp'+j">
-                    <img src="assets/svgs/whatsapp-green.svg" alt="" />
-                  </a>
-                `
+        return `<a *ngIf="element.telephone" href="{{ getWhatsAppLink(element.telephone) }}" target="_blank" class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp'+j">
+                  <img src="assets/svgs/whatsapp-green.svg" alt="" />
+                </a>
+              `
         }
       },
       {
         label: "Actions",
         key: "actions",
-        formatHtml: (element)=> { 
-          return `<img src="assets/svgs/red-pad.svg" alt="">
-          <span>${element?.followUp}</span>`
-        },
+        actionButtons: [
+          {
+            label: "Reschedule",
+            callBack: (element: any) => this.reschedule(element),
+            style: {
+              color: "#2e1e91",
+              backgroundColor: "#efe8ff",
+            },
+          },
+          {
+            label: "Cancel",
+            callBack: (element: any) => this.cancel(element),
+            style: {
+              color: "#ff475d",
+              backgroundColor: "#ffe8e8",
+            },
+          },
+        ]
       }
     ],
+    
   };
 
   pluginConfigObs6: any = {
