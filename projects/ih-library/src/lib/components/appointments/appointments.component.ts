@@ -34,13 +34,13 @@ export class AppointmentsComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild('searchInput', { static: true }) searchElement: ElementRef;
-  filteredDateAndRangeForm1: FormGroup;
+  filteredDateAndRangeForm: FormGroup;
   @ViewChild('tempPaginator') tempPaginator: MatPaginator;
   @ViewChild(MatMenuTrigger) menuTrigger: MatMenuTrigger;
 
   panelExpanded: boolean = true;
   mode: 'date' | 'range' = 'date';
-  maxDate: Date = new Date();
+  maxDate: Date;
 
   appointments: AppointmentModel[] = [];
   priorityVisits: CustomVisitModel[] = [];
@@ -70,7 +70,7 @@ export class AppointmentsComponent implements OnInit {
       // Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
       //   this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter(e=>e.is_enabled).map(e=>e.name));
       // }); 
-      this.filteredDateAndRangeForm1 = this.createFilteredDateRangeForm();
+      this.filteredDateAndRangeForm = this.createFilteredDateRangeForm();
       this.displayedColumns = this.displayedColumns.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
   }
 
@@ -107,6 +107,7 @@ export class AppointmentsComponent implements OnInit {
         this.getFollowUpVisit();
       }
     }
+    this.maxDate = this.pluginConfigObs.filterObs.filterDateMax
   }
 
   /**
@@ -323,6 +324,7 @@ export class AppointmentsComponent implements OnInit {
   setMode(mode: 'date' | 'range') {
     this.mode = mode;
   }
+
   formatDate(date: any): string {
     const localDate = new Date(date);
     const year = localDate.getFullYear();
@@ -331,16 +333,39 @@ export class AppointmentsComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  applyDateOrRangeFilter() {
-    const selectedDate = this.filteredDateAndRangeForm1.get('date')?.value;
-    const startDate = this.filteredDateAndRangeForm1.get('startDate')?.value;
-    const endDate = this.filteredDateAndRangeForm1.get('endDate')?.value;
+  convertToDate(relativeTime: string): string {
+    console.log(relativeTime, "??????????");
+    
+    const now = new Date();
+    const [value, unit] = relativeTime.split(' ');
+    const amount = parseInt(value, 10);    
+    
+    if (['hour', 'hours'].includes(unit.toLowerCase())) now.setHours(now.getHours() - amount);
+    else if (['minute', 'minutes'].includes(unit.toLowerCase())) now.setMinutes(now.getMinutes() - amount);
+    else if (['day', 'days'].includes(unit.toLowerCase())) now.setDate(now.getDate() - amount);
+    else throw new Error('Invalid time unit. Only "hours", "minutes", or "days" are supported.');
+  
+    return now.toISOString().split('T')[0];
+  }
+
+  convertToISO(followUp: string): string {
+    // const [datePart, timePart] = followUp.split(', Time: ');
+    // const fullDateTime = `${datePart} ${timePart.split(',')[0]}`;
+    const date = new Date(followUp);
+    date.setDate(date.getDate());
+    return date.toISOString();
+  }
+  
+  applyDateOrRangeFilter(dateField: string) {
+    const selectedDate = this.filteredDateAndRangeForm.get('date')?.value;
+    const startDate = this.filteredDateAndRangeForm.get('startDate')?.value;
+    const endDate = this.filteredDateAndRangeForm.get('endDate')?.value;
   
     if (selectedDate) {
       const formattedDate = this.formatDate(selectedDate);
 
       this.dataSource.filterPredicate = (data: any, filter: string) => {
-        const itemDate = this.formatDate(data.slotJsDate);
+        const itemDate = dateField !== "followUp" ? data[dateField].includes(',') ? this.formatDate(data[dateField]) : this.convertToDate(data[dateField]) : this.formatDate(this.convertToISO(data.followUp));
         return itemDate === filter;
       };
       this.dataSource.filter = formattedDate;
@@ -349,7 +374,7 @@ export class AppointmentsComponent implements OnInit {
       const formattedEndDate = this.formatDate(endDate);
   
       this.dataSource.filterPredicate = (data: any, filter: string) => {
-        const itemDate = this.formatDate(data.slotJsDate);
+        const itemDate = dateField !== "followUp" ? data[dateField].includes(',') ? this.formatDate(data[dateField]) : this.convertToDate(data[dateField]) : this.formatDate(this.convertToISO(data.followUp));
         return itemDate >= formattedStartDate && itemDate <= formattedEndDate;
       };
       this.dataSource.filter = `${formattedStartDate}:${formattedEndDate}`;
@@ -361,7 +386,7 @@ export class AppointmentsComponent implements OnInit {
   }
 
   resetDate(flag:boolean = false) {
-    this.filteredDateAndRangeForm1.reset();
+    this.filteredDateAndRangeForm.reset();
     this.dataSource.filter = '';
     this.dataSource.filterPredicate = (data: any, filter: string) => true;
     if(!flag){

@@ -160,7 +160,9 @@ export class DashboardComponent implements OnInit {
     filterObs: {
       filterFlag: true,
       filterLabel: "Filter",
-      filterIcon: "assets/svgs/filter.svg"
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "visit_created",
+      filterDateMax: new Date()
     },
     tableColumns: [
       {
@@ -233,7 +235,9 @@ export class DashboardComponent implements OnInit {
     filterObs: {
       filterFlag: true,
       filterLabel: "Filter",
-      filterIcon: "assets/svgs/filter.svg"
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "visit_created",
+      filterDateMax: new Date()
     },
     tableColumns: [
       {
@@ -292,7 +296,9 @@ export class DashboardComponent implements OnInit {
     filterObs: {
       filterFlag: true,
       filterLabel: "Filter",
-      filterIcon: "assets/svgs/filter.svg"
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "completed",
+      filterDateMax: new Date()
     },
     tableColumns: [
       {
@@ -336,8 +342,6 @@ export class DashboardComponent implements OnInit {
           "red-pill",
         ],
         formatHtml: (element)=> { 
-          // return `<img src="assets/svgs/red-pad.svg" alt="Visit Completed" style="margin-right: 8px; vertical-align: middle;">
-          // <span>${element?.completed}</span>`
           return `
             <img src="assets/svgs/red-pad.svg" alt="Visit Completed" style="margin-right: 8px; vertical-align: middle;">
             <span>${element?.completed}</span>
@@ -360,7 +364,9 @@ export class DashboardComponent implements OnInit {
     filterObs: {
       filterFlag: true,
       filterLabel: "Filter",
-      filterIcon: "assets/svgs/filter.svg"
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "followUp",
+      filterDateMax: ''
     },
     tableColumns: [
       {
@@ -415,7 +421,9 @@ export class DashboardComponent implements OnInit {
     filterObs: {
       filterFlag: true,
       filterLabel: "Filter",
-      filterIcon: "assets/svgs/filter.svg"
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "slotJsDate",
+      filterDateMax: ''
     },
     tableColumns: [
       {
@@ -491,7 +499,9 @@ export class DashboardComponent implements OnInit {
     filterObs: {
       filterFlag: true,
       filterLabel: "Filter",
-      filterIcon: "assets/svgs/filter.svg"
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "prescription_started",
+      filterDateMax: new Date()
     },
     tableColumns: [
       {
