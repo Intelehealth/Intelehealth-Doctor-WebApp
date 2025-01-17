@@ -538,7 +538,7 @@ export class DashboardComponent implements OnInit {
         label: "Starts in",
         key:"starts_in",
         classList:[
-          "alert-danger"
+          "red-pill"
         ],
         formatHtml: (element)=> {
           return `
