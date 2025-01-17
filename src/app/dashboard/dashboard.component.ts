@@ -671,7 +671,7 @@ export class DashboardComponent implements OnInit {
   resetFilter() {
     this.dataSource5.data = [...this.filteredFollowUpVisits];
     this.tempPaginator4.length = this.filteredFollowUpVisits.length;
-    this.tempPaginator4.nextPage();
+    this.tempPaginator4.firstPage();
     this.followupVisitsCount = this.filteredFollowUpVisits.length;
     this.selectAll = false;
     this.trigger.closeMenu();

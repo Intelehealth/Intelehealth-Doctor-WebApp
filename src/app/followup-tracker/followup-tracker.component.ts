@@ -165,7 +165,8 @@ export class FollowupTrackerComponent {
     filteredVisits.sort((a, b) => new Date(b.followup_date) < new Date(a.followup_date) ? -1 : 1);
     this.dataSource.data = [...filteredVisits];
     this.tempPaginator.length = filteredVisits.length;
-    //this.tempPaginator.nextPage();
+    this.tempPaginator.firstPage();
+    this.paginator.firstPage();
     this.doctorFollowpCount = filteredVisits.length;
     this.trigger.closeMenu();
   }
@@ -173,7 +174,8 @@ export class FollowupTrackerComponent {
   resetFilter() {
     this.dataSource.data = [...this.filteredFollowUpVisits];
     this.tempPaginator.length = this.filteredFollowUpVisits.length;
-    this.tempPaginator.nextPage();
+    this.tempPaginator.firstPage();
+    this.paginator.firstPage();
     this.doctorFollowpCount = this.filteredFollowUpVisits.length;
     this.selectAll = false;
     this.trigger.closeMenu();
