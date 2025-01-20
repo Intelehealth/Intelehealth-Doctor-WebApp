@@ -117,7 +117,8 @@ export class DoctorCompleted implements OnInit, AfterViewInit, OnChanges {
     }
     this.dataSource.data = [...filteredVisits];
     this.tempPaginator.length = this.doctorCompletedVisits.length;
-    this.tempPaginator.nextPage();
+    this.tempPaginator.firstPage();
+    this.paginator.firstPage();
     this.visitsCount = filteredVisits.length;
     this.trigger.closeMenu();
   }
@@ -125,7 +126,8 @@ export class DoctorCompleted implements OnInit, AfterViewInit, OnChanges {
   resetFilter() {
     this.dataSource.data = [...this.doctorCompletedVisits];
     this.tempPaginator.length = this.doctorCompletedVisits.length;
-    this.tempPaginator.nextPage();
+    this.tempPaginator.firstPage();
+    this.paginator.firstPage();
     this.visitsCount = this.doctorCompletedVisits.length;
     this.trigger.closeMenu();
     this.fromDate = null;

@@ -202,7 +202,7 @@ export class VideoCallComponent implements OnInit, OnDestroy {
       if (!this.callConnected) {
         this.socketSvc.emitEvent('call_time_up', this.nurseId);
         this.endCallInRoom();
-        this.toastr.info("Health worker not available to pick the call, please try again later.", null, { timeOut: 3000 });
+        this.toastr.info("Sevika not available to pick the call, please try again later.", null, { timeOut: 3000 });
       }
     }, ringingTimeout);
   }
@@ -313,7 +313,7 @@ export class VideoCallComponent implements OnInit, OnDestroy {
   * @return {void}
   */
   handleParticipantDisconnected() {
-    this.toastr.info("Call ended from Health Worker's end.", null, { timeOut: 2000 });
+    this.toastr.info("Call ended from Sevika's end.", null, { timeOut: 2000 });
     this.callConnected = false;
     this.socketSvc.incomingCallData = null;
     this.endCallInRoom();
@@ -410,13 +410,13 @@ export class VideoCallComponent implements OnInit, OnDestroy {
     this.socketSvc.onEvent("hw_call_reject").subscribe((data) => {
       if (data === 'app') {
         this.endCallInRoom();
-        this.toastr.info("Call rejected by Health Worker", null, { timeOut: 2000 });
+        this.toastr.info("Call rejected by Sevika", null, { timeOut: 2000 });
       }
     });
 
     this.socketSvc.onEvent("bye").subscribe((data: any) => {
       if (data === 'app') {
-        this.toastr.info("Call ended from Health Worker end.", null, { timeOut: 2000 });
+        this.toastr.info("Call ended from Sevika end.", null, { timeOut: 2000 });
       }
     });
 
