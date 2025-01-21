@@ -1594,16 +1594,18 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.diagnosisService.getObs(this.visit.patient.uuid, conceptIds.conceptFollow).subscribe((response: ObsApiResponseModel) => {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this.visit.uuid) {
-          let followUpDate: string, followUpTime: any, followUpReason: any, wantFollowUp: string, followUpType: any;
+          let followUpDate: string, followUpTime: any, followUpReason: any, wantFollowUp: string = 'No', followUpType: any;
           if (obs.value.includes('Time:')) {
-            followUpDate = (obs.value.includes('Time:')) ? moment(obs.value.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.value.split(', Remark: ')[0]).format('YYYY-MM-DD');
-            followUpTime = (obs.value.includes('Time:')) ? obs.value.split(', Time: ')[1].split(', Remark: ')[0] : null;
-            followUpReason = (obs.value.split(', Remark: ')[1]) ? obs.value.split(', Remark: ')[1].split(', ')[0] : null;
-            followUpType = obs.value.split('Type: ').length > 1 && obs.value.split('Type: ')[1].split(', Time: ')[0] !== 'null' ? obs.value.split('Type: ')[1].split(', Time: ')[0] : null;
+            const result = obs.value.split(',').filter(Boolean);
+            const time = result.find((v: string) => v.includes('Time:'))?.split('Time:')?.[1]?.trim();
+            const remark = result.find((v: string) => v.includes('Remark:'))?.split('Remark:')?.[1]?.trim();
+            const type = result.find((v: string) => v.includes('Type:'))?.split('Type:')?.[1]?.trim();
+            followUpDate = moment(result[0]).format('YYYY-MM-DD');
+            followUpTime = time ? time : null;
+            followUpReason = remark ? remark : null;
+            followUpType = type && type !== 'null' ? type : null;
             wantFollowUp = 'Yes';
-          } else {
-            wantFollowUp = 'No';
-          }
+          } 
           this.followUpDatetime = obs.value;
           this.followUpForm.patchValue({
             present: true,
