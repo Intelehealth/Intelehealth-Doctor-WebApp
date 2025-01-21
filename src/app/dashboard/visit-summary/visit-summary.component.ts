@@ -34,6 +34,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { NgxRolesService } from 'ngx-permissions';
 import diagnostics from '../../core/data/diagnostics';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { sampleWave } from 'src/config/digitalStethoSample';
 
 class PickDateAdapter extends NativeDateAdapter {
   format(date: Date, displayFormat: Object): string {
@@ -317,6 +318,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.isMCCUser = !!this.rolesService.getRole('ORGANIZATIONAL:MCC');
   }
 
+  sampleWave:any = null;
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
     this.pageTitleService.setTitle({ title: '', imgUrl: '' });
@@ -330,6 +332,24 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.dSearchSubject.pipe(debounceTime(500), distinctUntilChanged()).subscribe(searchTextValue => {
       this.searchDiagnosis(searchTextValue);
     });
+    this.sampleWave = this.convertBase64ToAudioFile(sampleWave.replace(/\n|\s/g, ''),'sample.wav');
+  }
+
+  /**
+  * Convert base64 audio wave file to audio file
+  * @param {string} base64 - Base64 encoded audio wave file
+  * @param {string} fileName - Desired file name for the audio file
+  * @returns {File} - Converted audio file
+  */
+  convertBase64ToAudioFile(base64: string, fileName: string): any {
+    const byteString = atob(base64);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    const blob = new Blob([ab], { type: 'audio/wav' });
+    return this.sanitizer.bypassSecurityTrustUrl(new Audio(URL.createObjectURL(blob))?.src);
   }
 
   checkOpenChatBoxFlag() {

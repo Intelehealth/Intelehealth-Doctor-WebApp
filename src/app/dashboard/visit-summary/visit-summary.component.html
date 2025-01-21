@@ -637,6 +637,29 @@
                           </ng-container>
                         </ng-container>
                       <!-- END Medical History -->
+
+                      <ng-container>
+                        <ng-container>
+                          <div class="cheif-complaint-wrapper">
+                            <h6 class="my-3">POC Devices</h6>
+                            <ul class="items-list pt-0">
+                              <li >
+                                <div class="list-item">
+                                  <label>Digital Stethoscope</label>
+                                  <div
+                                    class="list-item-content"
+                                  >
+                                  <audio *ngIf="sampleWave" controls>
+                                    <source [src]="sampleWave" type="audio/wav">
+                                    Your browser does not support the audio element.
+                                  </audio>
+                                  </div>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </ng-container>
+                      </ng-container>
                       
                       <!-- Additional Note -->
                         <ng-container *ngSwitchCase="pvsConstant['additional_notes'].key">
