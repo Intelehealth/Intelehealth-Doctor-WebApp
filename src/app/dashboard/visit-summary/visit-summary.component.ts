@@ -587,7 +587,9 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
             for (let i = 0; i < medicalHistory.length; i++) {
               if (medicalHistory[i]) {
                 const splitByDash = medicalHistory[i].split('-');
-                obj1.data.push({ key: splitByDash[0].replace('• ', '').trim(), value: splitByDash.slice(1, splitByDash.length).join('-').trim() });
+                if(!splitByDash.includes('• Current Vaccinations status ')){
+                  obj1.data.push({ key: splitByDash[0].replace('• ', '').trim(), value: splitByDash.slice(1, splitByDash.length).join('-').trim() });
+                } 
               }
             }
             this.patientHistoryData.push(obj1);

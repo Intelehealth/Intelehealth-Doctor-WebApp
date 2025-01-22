@@ -555,12 +555,20 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         ]
       },
       footer: (currentPage, pageCount) => {
-        return {
-          columns: [
-            { text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [20, 0, 0, 0]} ,
-            { text: '\n\n'+currentPage.toString() + ' of ' + pageCount, width:"7%", fontSize: 8, margin: [5, 5, 5, 5], alignment: 'right'}
-          ]
-        };
+        if (currentPage == pageCount) {
+          return {
+            columns: [
+              { text: "Disclaimer: If your condition does not improve after treatment, please visit your nearest hospital or consult a doctor as soon as possible. Telemedicine services are a limited consultation and are not a substitute for an in-person examination.", fontSize: 8, margin: [20, 0, 0, 0]},
+            ]
+          }
+        } else {
+          return {
+            columns: [
+              { text: 'Copyright ©2023 Intelehealth, a 501 (c)(3) & Section 8 non-profit organisation', fontSize: 8, margin: [20, 0, 0, 0]} ,
+              { text: '\n\n'+currentPage.toString() + ' of ' + pageCount, width:"7%", fontSize: 8, margin: [5, 5, 5, 5], alignment: 'right'}
+            ]
+          }
+        }
       },
       content: [
         {

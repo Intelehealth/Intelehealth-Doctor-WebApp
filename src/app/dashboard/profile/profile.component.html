@@ -268,14 +268,14 @@
             <form [formGroup]="professionalInfoForm" (ngSubmit)="updateProfile()">
               <div class="form-row">
                 <div class="form-group col-md-6">
-                  <label for="typeOfProfession">{{'Type of profession' | translate}} *</label>
+                  <label for="typeOfProfession">{{'Qualification' | translate}} *</label>
                   <ng-select class="profile-select" bindLabel="name" bindValue="name" [clearable]="false" [searchable]="false"  formControlName="typeOfProfession" placeholder="{{'Select type of profession'|translate}}" data-test-id="selTypeOf">
                     <ng-option *ngFor="let profession of professions" [value]="profession.name">
                       {{ (profession.name) |translate }}
                 </ng-option>
                   </ng-select>
                   <div *ngIf="submitted && f2.typeOfProfession.errors">
-                    <small class="error-msg" *ngIf="f2.typeOfProfession.errors.required">{{'Select type of profession'|translate}}</small>
+                    <small class="error-msg" *ngIf="f2.typeOfProfession.errors.required">{{'Select qualification'|translate}}</small>
                   </div>
                 </div>
                 <div class="form-group col-md-6">

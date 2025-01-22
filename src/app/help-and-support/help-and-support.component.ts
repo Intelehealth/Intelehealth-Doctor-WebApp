@@ -18,7 +18,7 @@ export class HelpAndSupportComponent implements OnInit {
 
   ngOnInit(): void {
     this.translateService.use(getCacheData(false, languages.SELECTED_LANGUAGE));
-    this.pageTitleService.setTitle({ title: "Help & Support", imgUrl: "assets/svgs/menu-info-circle.svg" });
+    this.pageTitleService.setTitle({ title: "Tech Support Chat", imgUrl: "assets/svgs/menu-info-circle.svg" });
   }
 
 }
