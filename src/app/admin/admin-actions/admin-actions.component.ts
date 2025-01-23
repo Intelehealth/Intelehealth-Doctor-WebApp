@@ -64,6 +64,13 @@ export class AdminActionsComponent implements OnInit {
       isLocalPath: true
     },
     {
+      title: "Patient Details",
+      desc: "Manage features/fields to be shown during patient details",
+      icon: "assets/svgs/patient-reg.svg",
+      path: "admin/actions/patient-details",
+      isLocalPath: true
+    },
+    {
       title: "Partner White Labelling",
       desc: "Upload partner logo and manage color theme",
       icon: "assets/svgs/partner-label.svg",
@@ -104,6 +111,13 @@ export class AdminActionsComponent implements OnInit {
       icon: "assets/svgs/sidebar-circle.png",
       path: "admin/actions/menu-config",
       isLocalPath: true
+    },
+    {
+      title: "Patient Visit Section Configuration",
+      desc: "Patient Visit Section Configuration",
+      icon: "assets/svgs/patient-visit-summary.svg",
+      path: "admin/actions/patient-visit-section",
+      isLocalPath: true
     }
   ];
   constructor(
@@ -117,7 +131,7 @@ export class AdminActionsComponent implements OnInit {
     this.pageTitleService.setTitle({ title: "Admin Actions", imgUrl: "assets/svgs/admin-actions.svg" });
   }
 
-  onModifyClick(item){
+  onModifyClick(item: { isLocalPath: any; path: string | URL; }){
     if(item.isLocalPath)
       this.router.navigate([item.path]);
     else

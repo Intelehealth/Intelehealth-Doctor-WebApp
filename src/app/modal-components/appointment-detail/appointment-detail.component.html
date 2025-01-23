@@ -1,7 +1,8 @@
 <div class="appointment-detail-modal">
   <div class="modal-title">
     <h6 class="mb-0">{{(data?.title) | translate}} {{'details'|translate}}</h6>
-    <button class="modal-close-btn" (click)="close(false)"><img src="assets/svgs/Close.svg" alt="" data-test-id="btnCloseAppDetail"></button>
+    <button class="modal-close-btn" (click)="close(false)"><img src="assets/svgs/Close.svg" alt=""
+        data-test-id="btnCloseAppDetail"></button>
   </div>
   <div class="modal-body">
     <div class="container-fluid">
@@ -9,9 +10,13 @@
         <div class="col-md-12 p-0">
           <div class="patient-info-con">
             <div class="patient-con">
-              <img class="mr-2" [src]="baseUrl + '/personimage/' + data?.meta.patientId" alt="" >
+              <img class="mr-2"
+                src="{{checkPatientRegField('Profile Photo') ? baseUrl + '/personimage/' + data?.meta.patientId : '' }}"
+                alt="">
               <div class="d-flex flex-column">
-                <h6 class="mb-0">{{ data?.meta.patientName|noValue:('NA'|translate) }} ({{(data?.meta.patientGender)|translate |noValue:('NA'|translate)}}, {{data?.meta.patientAge|noValue:'0'}})</h6>
+                <h6 class="mb-0">{{ data?.meta.patientName|noValue:('NA'|translate) }}
+                  ({{(data?.meta.patientGender)|translate |noValue:('NA'|translate)}},
+                  {{data?.meta.patientAge|noValue:'0'}})</h6>
                 <p class="mb-0">{{'PID'|translate}} : {{data?.meta.openMrsId}}</p>
                 <div class="anchor-con d-flex align-items-center">
                   <a class="mr-2" href="javascript:void(0)" (click)="close('view')">{{'View details'|translate}}</a>
@@ -36,8 +41,9 @@
               <div class="info-label">{{'Appointment on'|translate}}</div>
               <div class="info-con">
                 <div>
-                  {{data?.start|date:'dd MMM, yyyy'}}, {{data?.start|date:'h:mm'}}{{data?.start|date:'a'|lowercase|translate}} -
-                   {{data?.end|date:'h:mm'}} {{data?.end|date:'a'|lowercase|translate}}
+                  {{data?.start|date:'dd MMM, yyyy'}},
+                  {{data?.start|date:'h:mm'}}{{data?.start|date:'a'|lowercase|translate}} -
+                  {{data?.end|date:'h:mm'}} {{data?.end|date:'a'|lowercase|translate}}
                 </div>
                 <div class="text-important">
                   <ng-container *ngIf="data?.meta.visit_status != 'Completed' && data?.meta.visit_status != 'Ended'">
@@ -63,27 +69,38 @@
           <div class="appointment-info-con">
             <div class="info-row">
               <div class="info-label">{{'Booked by'|translate}}</div>
-              <div class="info-con" *ngIf="data?.meta.hwName">{{data?.meta.hwName}} <a href="tel:{{data?.meta.hwPhoneNo }}"><img alt="" class="ml-2" src="assets/svgs/num.svg"/></a></div>
+              <div class="info-con" *ngIf="data?.meta.hwName">{{data?.meta.hwName}} <a
+                  href="tel:{{data?.meta.hwPhoneNo }}"><img alt="" class="ml-2" src="assets/svgs/num.svg" /></a></div>
             </div>
           </div>
         </div>
         <div class="col-md-12 p-0 mt-3">
           <div class="d-flex align-items-center justify-content-center flex-wrap">
-            <ng-container *ngIf="data?.title == 'Appointment' && data?.meta.starts_in?.includes('Starts in') && (data?.meta.visit_status == 'Awaiting'||data?.meta.visit_status == 'Priority')">
-              <button class="red-btn" type="button" (click)="close('cancel')" data-test-id="btnCancelAppDetail">{{'Cancel'|translate}}</button>
-              <button class="blue-btn" type="button" (click)="close('reschedule')" data-test-id="btnRescheduleAppDetail">{{'Reschedule'|translate}}</button>
+            <ng-container
+              *ngIf="data?.title == 'Appointment' && data?.meta.starts_in?.includes('Starts in') && (data?.meta.visit_status == 'Awaiting'||data?.meta.visit_status == 'Priority')">
+              <button class="red-btn" type="button" (click)="close('cancel')"
+                data-test-id="btnCancelAppDetail">{{'Cancel'|translate}}</button>
+              <button class="blue-btn" type="button" (click)="close('reschedule')"
+                data-test-id="btnRescheduleAppDetail">{{'Reschedule'|translate}}</button>
             </ng-container>
             <ng-container *ngIf="data?.meta.visit_status == 'Completed' || data?.meta.visit_status == 'Ended'">
-              <button class="confirm-btn" type="button" (click)="close('view')" data-test-id="btnEditAppDetail">{{'Edit Prescription'|translate}}</button>
+              <button class="confirm-btn" type="button" (click)="close('view')" data-test-id="btnEditAppDetail">{{'Edit
+                Prescription'|translate}}</button>
             </ng-container>
-            <ng-container *ngIf="data?.title == 'Follow-up visit' && (data?.meta.visit_status == 'Awaiting'||data?.meta.visit_status == 'Priority'||data?.meta.visit_status == 'In-progress')">
-              <button class="confirm-btn" type="button" (click)="close('view')" data-test-id="btnProvideAppDetail">{{'Provide Prescription'|translate}}</button>
+            <ng-container
+              *ngIf="data?.title == 'Follow-up visit' && (data?.meta.visit_status == 'Awaiting'||data?.meta.visit_status == 'Priority'||data?.meta.visit_status == 'In-progress')">
+              <button class="confirm-btn" type="button" (click)="close('view')"
+                data-test-id="btnProvideAppDetail">{{'Provide Prescription'|translate}}</button>
             </ng-container>
-            <ng-container *ngIf="data?.title == 'Appointment' && data?.meta.starts_in?.includes('Awaiting') && (data?.meta.visit_status == 'Awaiting'||data?.meta.visit_status == 'Priority')">
-              <button class="confirm-btn" type="button" (click)="close('view')" data-test-id="btnProvideAppDetail">{{'Provide Prescription'|translate}}</button>
+            <ng-container
+              *ngIf="data?.title == 'Appointment' && data?.meta.starts_in?.includes('Awaiting') && (data?.meta.visit_status == 'Awaiting'||data?.meta.visit_status == 'Priority')">
+              <button class="confirm-btn" type="button" (click)="close('view')"
+                data-test-id="btnProvideAppDetail">{{'Provide Prescription'|translate}}</button>
             </ng-container>
-            <ng-container *ngIf="data?.title == 'Appointment' && data?.meta.starts_in?.includes('Starts in') && data?.meta.visit_status == 'In-progress'">
-              <button class="confirm-btn" type="button" (click)="close('view')" data-test-id="btnProvideAppDetail">{{'Provide Prescription'|translate}}</button>
+            <ng-container
+              *ngIf="data?.title == 'Appointment' && data?.meta.starts_in?.includes('Starts in') && data?.meta.visit_status == 'In-progress'">
+              <button class="confirm-btn" type="button" (click)="close('view')"
+                data-test-id="btnProvideAppDetail">{{'Provide Prescription'|translate}}</button>
             </ng-container>
           </div>
         </div>

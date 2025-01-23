@@ -8,6 +8,17 @@
                     <h6 class="mb-0">{{'Tickets' | translate}}</h6>
                     <span class="open-tickets">{{"("+openTicketsCount+" " }}{{'Open Tickets' | translate}} {{")"}}</span>
                 </div>
+                <div class="input-group search-bar ml-auto" (click)="$event.stopPropagation();">
+                  <input type="text" #searchInput class="form-control" placeholder="{{ 'Search Tickets' | translate }}" aria-label="search1" aria-describedby="basic-addon1" data-test-id="etSearchAppointmentDashboard">
+                  <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon1" *ngIf="!searchInput.value">
+                      <img src="assets/svgs/search-icon.svg" alt="" width="20px" height="20px">
+                    </span>
+                    <button data-test-id="btnResetApSerach" mat-icon-button aria-label="Reset appointment search" *ngIf="searchInput.value" (click)="clearFilter()">
+                      <mat-icon class="ml-0" style="line-height: normal;">close</mat-icon>
+                    </button>
+                  </div>
+                </div>
                 <div class="card-header-actions">
                   <button type="button" class="btn" (click)="createTicket()" data-test-id="btnAddMindmap">{{'Create Ticket' | translate}}</button>
                 </div>

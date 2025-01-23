@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { DiagnosisService } from 'src/app/services/diagnosis.service';
 import { CoreService } from 'src/app/services/core/core.service';
 import { doctorDetails, visitTypes } from 'src/config/constant';
-import { DocImagesModel, EncounterModel, ObsModel, PatientHistoryModel, PatientIdentifierModel, PatientModel, PersonAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
+import { DocImagesModel, EncounterModel, ObsModel, PatientHistoryModel, PatientIdentifierModel, PatientModel, PatientVisitSection, PersonAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
 import { TranslateService } from '@ngx-translate/core';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -14,7 +14,9 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { visit as visit_logos, logo as main_logo} from "../../utils/base64"
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Observable } from 'rxjs';
-import { calculateBMI } from 'src/app/utils/utility-functions';
+import { checkIsEnabled, VISIT_SECTIONS } from 'src/app/utils/visit-sections';
+import { calculateBMI, getFieldValueByLanguage } from 'src/app/utils/utility-functions';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-view-visit-summary',
@@ -49,6 +51,10 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
   hasPatientAddressEnabled: boolean = false;
   eventsSubscription: any;
 
+  pvsConfigs: PatientVisitSection[] = [];
+  pvsConstant = VISIT_SECTIONS;
+  sanitizedValue: SafeHtml;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
     private dialogRef: MatDialogRef<ViewVisitSummaryComponent>,
@@ -56,7 +62,9 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
     private diagnosisService: DiagnosisService,
     private coreService: CoreService,
     private translateService: TranslateService,
-    private appConfigService: AppConfigService) {
+    private appConfigService: AppConfigService,
+    private sanitizer: DomSanitizer,
+  ) {
       Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
         this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter(e=>e.is_enabled).map(e=>e.name));
       });
@@ -64,6 +72,10 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
       this.hasVitalsEnabled = this.appConfigService.patient_vitals_section;
       this.hasPatientAddressEnabled = this.appConfigService?.patient_reg_address;
       this.hasPatientOtherEnabled = this.appConfigService?.patient_reg_other;
+
+      this.pvsConfigs = this.appConfigService.patient_visit_sections.filter((pvs) =>
+        ![this.pvsConstant.refer_to_specialist.key].includes(pvs.key)
+      );
     }
 
   ngOnInit(): void {
@@ -245,7 +257,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
     const v = this.vitalObs.find(e => e.concept.uuid === uuid);
     const value = v?.value ? ( typeof v.value == 'object') ? v.value?.display : v.value : null;
     if(!value && key === 'bmi') {
-      return calculateBMI(this.vitals, this.vitalObs);
+     return calculateBMI(this.vitals, this.vitalObs);
     }
     return value
   }
@@ -288,7 +300,8 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
                   for (let k = 1; k < splitByBr.length; k++) {
                     if (splitByBr[k].trim() && splitByBr[k].trim().length > 1) {
                       const splitByDash = splitByBr[k].split('-');
-                      obj1.data.push({ key: splitByDash[0].replace('• ', ''), value: splitByDash.slice(1, splitByDash.length).join('-') });
+                      this.sanitizedValue = this.sanitizer.bypassSecurityTrustHtml(splitByDash.slice(1, splitByDash.length).join('-'));
+                      obj1.data.push({ key: splitByDash[0].replace('• ', ''), value: this.sanitizedValue });
                     }
                   }
                   this.checkUpReasonData.push(obj1);
@@ -481,9 +494,196 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
 
   /**
   * Download visit summary
-  * @return {void}
+  * @return {Promise<void>}
   */
-  async downloadVisitSummary() {
+  async downloadVisitSummary(): Promise<void> {
+    
+    const sections = [];
+
+    for(let pvsConfig of this.pvsConfigs) {
+      const is_enabled = this.checkIsVisibleSection(pvsConfig).is_enabled
+      if(is_enabled && pvsConfig.key === this.pvsConstant.consultation_details.key) {
+        sections.push([
+          {
+            colSpan: 4,
+            table: {
+              widths: [30, '*'],
+              headerRows: 1,
+              body: [
+                [ {image: 'consultation_details', width: 25, height: 25, border: [false, false, false, true] }, {text: this.getLanguageValue(pvsConfig), style: 'sectionheader', border: [false, false, false, true] }],
+                [ 
+                  {
+                    colSpan: 2,
+                    ul: [
+                      {text: [{text: 'Visit ID:', bold: true}, ` ${(this.visit?.uuid) ? this.replaceWithStar(this.visit?.uuid).toUpperCase() : "" }`], margin: [0, 5, 0, 5]},
+                      {text: [{text: 'Visit Created:', bold: true}, ` ${moment(this.visit?.startDatetime).format('DD MMM yyyy')}`],  margin: [0, 5, 0, 5]},
+                      {text: [{text: 'Appointment on:', bold: true}, ` No appointment`],  margin: [0, 5, 0, 5]},
+                      {text: [{text: 'Status:', bold: true}, ` ${this.visitStatus}`],  margin: [0, 5, 0, 5]},
+                      {text: [{text: 'Location:', bold: true}, ` ${this.clinicName}`],  margin: [0, 5, 0, 5]},
+                      {text: [{text: 'Provided by:', bold: true}, ` ${this.providerName}`],  margin: [0, 5, 0, 5]}
+                    ]
+                  }
+                  
+                ],
+              ]
+            },
+            layout: {
+              defaultBorder: false
+            }
+          }
+        ])
+      }
+
+      if(is_enabled && pvsConfig.key === this.pvsConstant.vitals.key) {
+        sections.push([
+          {
+            colSpan: 4,
+            sectionName: 'vitals',
+            table: {
+              widths: [30, '*'],
+              headerRows: 1,
+              body: [
+                [ {image: 'vitals', width: 25, height: 25, border: [false, false, false, true] }, {text: this.getLanguageValue(pvsConfig), style: 'sectionheader', border: [false, false, false, true] }],
+                [ 
+                  {
+                    colSpan: 2,
+                    ul: [
+                      ...this.getRecords('Vitals')
+                    ]
+                  }
+                ]
+              ]
+            },
+            layout: {
+              defaultBorder: false
+            }
+          },
+          
+        ])
+      }
+
+      if(is_enabled && pvsConfig.key === this.pvsConstant.check_up_reason.key) {
+        const associatedSymptoms = this.getRecords('associated_symptoms');
+        const associatedSymptomSections = [];
+        if(associatedSymptoms?.length) {
+          associatedSymptomSections.push([{ text: 'Associated symptoms', style: 'subSectionheader', colSpan: 2 }, ''])
+          associatedSymptomSections.push([
+            {
+              colSpan: 2,
+              ul: [
+                ...associatedSymptoms
+              ]
+            }
+          ])    
+        }
+        sections.push([
+          {
+            colSpan: 4,
+            sectionName: 'cheifComplaint',
+            table: {
+              widths: [30, '*'],
+              headerRows: 1,
+              body: [
+                [ {image: 'cheifComplaint', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Chief complaint', style: 'sectionheader', border: [false, false, false, true] }],
+                ...this.getRecords('symptoms'),
+                ...associatedSymptomSections
+              ]
+            },
+            layout: {
+              defaultBorder: false
+            }
+          },
+          '',
+          '',
+          ''
+        ])
+
+      }
+
+      if(is_enabled && pvsConfig.key === this.pvsConstant.physical_examination.key) {
+        const abdomenExamination = this.getRecords('abdomen_examination');
+        const abdomenSection = [];
+
+        if(abdomenExamination?.length) {
+          abdomenSection.push([{ text: 'Abdomen', style: 'subSectionheader', colSpan: 2 }, ''])
+          abdomenSection.push([
+            {
+              colSpan: 2,
+              ul: [
+                ...this.getRecords('abdomen_examination')
+              ]
+            }
+          ])
+        }
+        
+        sections.push([
+          {
+            colSpan: 4,
+            table: {
+              widths: [30, '*'],
+              headerRows: 1,
+              body: [
+                [ {image: 'physicalExamination', width: 25, height: 25, border: [false, false, false, true] }, {text: this.getLanguageValue(pvsConfig), style: 'sectionheader', border: [false, false, false, true] }],
+                ...this.getRecords('physical_examination'),
+                ...abdomenSection
+              ]
+            },
+            layout: {
+              defaultBorder: false
+            }
+          },
+          '',
+          '',
+          ''
+        ])
+      }
+
+      if(is_enabled && pvsConfig.key === this.pvsConstant.medical_history.key && this.patientHistoryData.length) {
+        sections.push([
+          {
+            colSpan: 4,
+            table: {
+              widths: [30, '*'],
+              headerRows: 1,
+              body: [
+                [ {image: 'medicalHistory', width: 25, height: 25, border: [false, false, false, true] }, {text: this.getLanguageValue(pvsConfig), style: 'sectionheader', border: [false, false, false, true] }],
+                ...this.getRecords('medical_history')
+              ]
+            },
+            layout: {
+              defaultBorder: false
+            }
+          },
+          '',
+          '',
+          ''
+        ])
+      }
+
+      if(is_enabled && pvsConfig.key === this.pvsConstant.additional_documents.key && this.additionalDocs.length) {
+        sections.push([
+          {
+            colSpan: 4,
+            table: {
+              widths: [30, '*'],
+              headerRows: 1,
+              body: [
+                [ {image: 'medicalHistory', width: 25, height: 25, border: [false, false, false, true] }, {text: this.getLanguageValue(pvsConfig), style: 'sectionheader', border: [false, false, false, true] }],
+                ...this.getRecords('additionalDocs')
+              ]
+            },
+            layout: {
+              defaultBorder: false
+            }
+          },
+          '',
+          '',
+          ''
+        ])
+      }
+        
+    }
+
     const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
     const pdfObj = {
       pageSize: 'A4',
@@ -493,7 +693,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
       header: {
         columns: [
           { text: ''},
-          { image: 'logo', width: 90, height: 30, alignment: 'right', margin: [0, 10, 10, 0] }
+          // { image: 'logo', width: 90, height: 30, alignment: 'right', margin: [0, 10, 10, 0] }
         ]
       },
       footer: (currentPage, pageCount) => {
@@ -529,7 +729,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
                     body: [
                       [
                         {
-                          image: (userImg && !userImg?.includes('application/json')) ? userImg : 'user',
+                          image: (userImg && !userImg?.includes('application/json') && this.checkPatientRegField('Profile Photo')) ? userImg : 'user',
                           width: 30,
                           height: 30,
                           margin: [0, (userImg && !userImg?.includes('application/json')) ? 15 : 5, 0, 5]
@@ -555,7 +755,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
                           {text: 'Age', style: 'subheader'},
                           `${this.patient?.person.birthdate ? this.getAge(this.patient?.person.birthdate) : this.patient?.person.age}`,
                           {text: 'Address', style: 'subheader'},
-                          `${this.patient?.person.preferredAddress.cityVillage.replace(':', ' : ')}`
+                          `${this.patient?.person?.preferredAddress?.cityVillage?.replace(':', ' : ') ?? 'None'}`
                         ]
                       ]
                     ]
@@ -609,7 +809,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
                     widths: ['100%'],
                     body: [
                       [ 
-                        [ {text: 'Contact no.', style: 'subheader'},
+                        [ {text: 'Phone Number', style: 'subheader'},
                           `${this.getPersonAttributeValue('Telephone Number') ? this.getPersonAttributeValue('Telephone Number') : 'NA'}`
                         ]
                       ],
@@ -631,154 +831,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
                   }
                 }
               ],
-              [
-                {
-                  colSpan: 4,
-                  table: {
-                    widths: [30, '*'],
-                    headerRows: 1,
-                    body: [
-                      [ {image: 'consultation_details', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Consultation details', style: 'sectionheader', border: [false, false, false, true] }],
-                      [ 
-                        {
-                          colSpan: 2,
-                          ul: [
-                            {text: [{text: 'Visit ID:', bold: true}, ` ${(this.visit?.uuid) ? this.replaceWithStar(this.visit?.uuid).toUpperCase() : "" }`], margin: [0, 5, 0, 5]},
-                            {text: [{text: 'Visit Created:', bold: true}, ` ${moment(this.visit?.startDatetime).format('DD MMM yyyy')}`],  margin: [0, 5, 0, 5]},
-                            {text: [{text: 'Appointment on:', bold: true}, ` No appointment`],  margin: [0, 5, 0, 5]},
-                            {text: [{text: 'Status:', bold: true}, ` ${this.visitStatus}`],  margin: [0, 5, 0, 5]},
-                            {text: [{text: 'Location:', bold: true}, ` ${this.clinicName}`],  margin: [0, 5, 0, 5]},
-                            {text: [{text: 'Provided by:', bold: true}, ` ${this.providerName}`],  margin: [0, 5, 0, 5]}
-                          ]
-                        }
-                        
-                      ],
-                    ]
-                  },
-                  layout: {
-                    defaultBorder: false
-                  }
-                }
-              ],
-              [
-                {
-                  colSpan: 4,
-                  sectionName: 'vitals',
-                  table: {
-                    widths: [30, '*'],
-                    headerRows: 1,
-                    body: [
-                      [ {image: 'vitals', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Vitals', style: 'sectionheader', border: [false, false, false, true] }],
-                      [ 
-                        {
-                          colSpan: 2,
-                          ul: [
-                            ...this.getRecords('Vitals')
-                          ]
-                        }
-                      ]
-                    ]
-                  },
-                  layout: {
-                    defaultBorder: false
-                  }
-                },
-                
-              ],
-              [
-                {
-                  colSpan: 4,
-                  table: {
-                    widths: [30, '*'],
-                    headerRows: 1,
-                    body: [
-                      [ {image: 'cheifComplaint', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Chief complaint', style: 'sectionheader', border: [false, false, false, true] }],
-                      ...this.getRecords('symptoms'),
-                      [{ text: 'Associated symptoms', style: 'subSectionheader', colSpan: 2 }, ''],
-                      [
-                        {
-                          colSpan: 2,
-                          ul: [
-                            ...this.getRecords('associated_symptoms')
-                          ]
-                        }
-                      ]
-                    ]
-                  },
-                  layout: {
-                    defaultBorder: false
-                  }
-                },
-                '',
-                '',
-                ''
-              ],
-              [
-                {
-                  colSpan: 4,
-                  table: {
-                    widths: [30, '*'],
-                    headerRows: 1,
-                    body: [
-                      [ {image: 'physicalExamination', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Physical examination', style: 'sectionheader', border: [false, false, false, true] }],
-                      ...this.getRecords('physical_examination'),
-                      [{ text: 'Abdomen', style: 'subSectionheader', colSpan: 2 }, ''],
-                      [
-                        {
-                          colSpan: 2,
-                          ul: [
-                            ...this.getRecords('abdomen_examination')
-                          ]
-                        }
-                      ]
-                    ]
-                  },
-                  layout: {
-                    defaultBorder: false
-                  }
-                },
-                '',
-                '',
-                ''
-              ],
-              [
-                {
-                  colSpan: 4,
-                  table: {
-                    widths: [30, '*'],
-                    headerRows: 1,
-                    body: [
-                      [ {image: 'medicalHistory', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Medical history', style: 'sectionheader', border: [false, false, false, true] }],
-                      ...this.getRecords('medical_history')
-                    ]
-                  },
-                  layout: {
-                    defaultBorder: false
-                  }
-                },
-                '',
-                '',
-                ''
-              ],
-              [
-                {
-                  colSpan: 4,
-                  table: {
-                    widths: [30, '*'],
-                    headerRows: 1,
-                    body: [
-                      [ {image: 'medicalHistory', width: 25, height: 25, border: [false, false, false, true] }, {text: 'Additional documents', style: 'sectionheader', border: [false, false, false, true] }],
-                      ...this.getRecords('additionalDocs')
-                    ]
-                  },
-                  layout: {
-                    defaultBorder: false
-                  }
-                },
-                '',
-                '',
-                ''
-              ]
+              ...sections
             ]
           },
           layout: 'noBorders'
@@ -822,10 +875,6 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
         font: 'DmSans'
       }
     };
-    pdfObj.content[0].table.body = pdfObj.content[0].table.body.filter((section:any)=>{
-      if(section[0].sectionName === 'vitals' && !this.hasVitalsEnabled) return false;
-      return true;
-    });
     pdfMake.createPdf(pdfObj).download('e-visit-summary');
   }
 
@@ -963,7 +1012,6 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
         break;
       
       case 'additionalDocs':
-        console.log(this.additionalDocs)
         if (this.additionalDocs.length) {
           let colsImages = [];
           this.additionalDocs.forEach(img => {
@@ -981,7 +1029,26 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
     return records;
   }
 
-  checkPatientRegField(fieldName): boolean{
+  checkPatientRegField(fieldName: string): boolean{
     return this.patientRegFields.indexOf(fieldName) !== -1;
+  }
+
+  checkIsVisibleSection(pvsConfig: { key: string; is_enabled: boolean; }) {
+    return checkIsEnabled(pvsConfig.key, 
+      pvsConfig.is_enabled, {
+      hasVitalsEnabled: this.hasVitalsEnabled,
+      visitEnded: true,
+      attachment_section: true
+    })
+  }
+
+  /**
+    * Retrieve the appropriate language value from an element.
+    * @param {any} element - An object containing `lang` and `name`.
+    * @return {string} - The value in the selected language or the first available one.
+    * Defaults to `element.name` if no language value is found.
+    */
+  getLanguageValue(element: any): string {
+    return getFieldValueByLanguage(element)
   }
 }

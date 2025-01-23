@@ -1,10 +1,12 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { PagerdutyList, PagerdutyModel } from 'src/app/model/model';
 import { CoreService } from 'src/app/services/core/core.service';
 import { PagerdutyService } from 'src/app/services/pagerduty.service';
@@ -27,6 +29,7 @@ export class ListTicketsComponent {
   pageSize: number = 5;
   openTicketsCount: number = 0;
   statuses = { 'triggered' : 'To Do', 'resolved': "Done", "acknowledged": "In Progress" };
+  @ViewChild('searchInput', { static: false }) searchInput: ElementRef;
 
   constructor(
     private translateService: TranslateService,
@@ -43,14 +46,15 @@ export class ListTicketsComponent {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+    this.applyFilter();
   }
 
   /**
   * Get Tickets
   * @return {void}
   */
-  getAllTickets(): void{
-    this.pagerdutyService.getAllTickets(this.pageIndex+1, this.pageSize).subscribe((res:PagerdutyList)=>{
+  getAllTickets(search:string=""): void{
+    this.pagerdutyService.getAllTickets(this.pageIndex+1, this.pageSize, search).subscribe((res:PagerdutyList)=>{
       this.ticketData = res.tickets;
       this.dataSource = new MatTableDataSource(this.ticketData);
       this.pageIndex = res.currentPage - 1;
@@ -73,6 +77,33 @@ export class ListTicketsComponent {
         this.toastr.success('Ticket has been raised successfully!', 'Ticket raised');      
       }
     });
+  }
+
+  /**
+  * Clear filter from a datasource 1
+  * @return {void}
+  */
+  applyFilter(): void {
+    fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
+      // get value
+      map((event: any) => event.target.value)
+      // Time in milliseconds between key events
+      ,debounceTime(500)        
+      // If previous query is diffent from current   
+      ,distinctUntilChanged()
+      ).subscribe((res:string) => {
+        this.getAllTickets(res);
+      });
+  }
+
+    /**
+  * Clear filter from a given datasource
+  * @param {string} dataSource - Datasource name
+  * @return {void}
+  */
+  clearFilter(): void {
+    this.searchInput.nativeElement.value = "";
+    this.getAllTickets();
   }
 }
 

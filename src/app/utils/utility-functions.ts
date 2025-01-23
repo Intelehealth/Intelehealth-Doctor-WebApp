@@ -1,7 +1,8 @@
-import { visitTypes } from "src/config/constant";
+import { languages, visitTypes } from "src/config/constant";
 import * as moment from 'moment';
 import { ProviderAttributeModel } from "../model/model";
 import { DecimalPipe } from "@angular/common";
+import { environment } from "src/environments/environment";
 
 export function getCacheData(parse: boolean, key: string) {
   if (parse) {
@@ -95,7 +96,41 @@ export function getSpecialization(attr: ProviderAttributeModel[] = []): string {
   return specialization;
 }
 
-export function calculateBMI(vitals: any, vitalObs: any) {
+/**
+* Retrieve the appropriate language value from an element.
+* @param {any} element - An object containing `lang` and `name`.
+* @return {string} - The value in the selected language or the first available one.
+* Defaults to `element.name` if no language value is found.
+*/
+interface ElementLang {
+  [key: string]: string; // Represents language code to string mappings
+}
+
+interface Element {
+  lang: ElementLang;
+  name: string;
+}
+
+export function getFieldValueByLanguage(element: Element | null | undefined): string {
+  const selectedLanguage = getCacheData(false, languages.SELECTED_LANGUAGE) as string;
+
+  // Check if selected language exists in the lang object and is not empty
+  if (element?.lang?.[selectedLanguage]?.trim()) {
+    return element.lang[selectedLanguage].trim();
+  }
+
+  // Return the first non-empty language value
+  for (const langValue of Object.values(element?.lang || {})) {
+    if (langValue.trim()) {
+      return langValue.trim();
+    }
+  }
+
+  // Fallback to element.name if no valid language value found or element is invalid
+  return element?.name || "";
+}
+
+export function calculateBMI(vitals: any, vitalObs: any, _locale: string = 'en') {
   const heightUUID = vitals?.find((v: any) => v.key === 'height_cm')?.uuid;
   const weightUUID = vitals?.find((v: any) => v.key === 'weight_kg')?.uuid;
   let height = null, weight = null;
@@ -104,8 +139,24 @@ export function calculateBMI(vitals: any, vitalObs: any) {
     weight = vitalObs.find((e: { concept: { uuid: any; }; }) => e.concept.uuid === weightUUID)?.value;
   }
   if(height && weight) {
-    const decimalPipe = new DecimalPipe('en')
+    const decimalPipe = new DecimalPipe(_locale)
     return decimalPipe.transform(weight / ((height/100) * (height/100)), "1.2-2")
   }  
   return null;
+}
+
+export function isFeaturePresent(featureName: string, notInclude = false): boolean {
+  const featureList = environment.featureList ?? []; // Extract from ENV file
+  if(notInclude) return !featureList.includes(featureName);
+  return featureList.includes(featureName);
+}
+
+export function getCallDuration(given_seconds: number){
+  let dateObj = new Date(given_seconds * 1000);
+  let hours = dateObj.getUTCHours();
+  let minutes = dateObj.getUTCMinutes();
+  let seconds = dateObj.getSeconds();
+  return hours.toString().padStart(2, '0') + ':' + 
+      minutes.toString().padStart(2, '0') + ':' + 
+      seconds.toString().padStart(2, '0');
 }

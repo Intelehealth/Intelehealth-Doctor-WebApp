@@ -171,7 +171,7 @@
                 </div>
               </div>
               <div class="con-item">
-                <img class="mr-1" [src]="baseUrl + '/personimage/' + (weekEvent.tempEvent || weekEvent.event).meta.patientId" alt="" >
+                <img class="mr-1" src="{{ checkPatientRegField('Profile Photo') ? baseUrl + '/personimage/' + (weekEvent.tempEvent || weekEvent.event).meta.patientId : '' }}" alt="" >
                 <div class="con-info">
                   <h6 class="mb-0">{{(weekEvent.tempEvent || weekEvent.event).meta?.patientName|noValue:('NA'|translate)}} ({{((weekEvent.tempEvent || weekEvent.event).meta?.patientGender)|translate|noValue:('NA'|translate)}}, {{(weekEvent.tempEvent || weekEvent.event).meta?.patientAge|noValue:'0'}})</h6>
                   <p class="mb-0">{{'Patient'|translate}}</p>
@@ -216,7 +216,7 @@
               <p class="mb-0">{{(weekEvent.tempEvent || weekEvent.event).start|date:'h:mm'}} {{(weekEvent.tempEvent || weekEvent.event).start|date:'a'|lowercase|translate}} -
                  {{(weekEvent.tempEvent || weekEvent.event).end|date:'h:mm'}}{{(weekEvent.tempEvent || weekEvent.event).end|date:'a'|lowercase|translate}}</p>
               <div class="con-item">
-                <img class="mr-1" [src]="baseUrl + '/personimage/' + (weekEvent.tempEvent || weekEvent.event).meta.patientId" alt="" >
+                <img class="mr-1" src="{{ checkPatientRegField('Profile Photo') ? baseUrl + '/personimage/' + (weekEvent.tempEvent || weekEvent.event).meta.patientId : '' }}" alt="" >
                 <div class="con-info">
                   <h6 class="mb-0">{{(weekEvent.tempEvent || weekEvent.event).meta?.patientName|noValue:('NA'|translate)}}</h6>
                   <h6 class="mb-0">({{((weekEvent.tempEvent || weekEvent.event).meta?.patientGender)|translate |noValue:('NA'|translate)}}, {{(weekEvent.tempEvent || weekEvent.event).meta?.patientAge|noValue:'0'}})</h6>

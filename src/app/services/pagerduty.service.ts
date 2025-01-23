@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from "../../environments/environment";
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 
 @Injectable({
@@ -11,8 +12,9 @@ export class PagerdutyService {
 
   constructor(private http: HttpClient) { }
 
-  getAllTickets(pageIndex:number, pageSize:number){
-    const url = `${this.baseURL}/getUserTickets?page=${pageIndex}&size=${pageSize}`;
+  getAllTickets(pageIndex:number, pageSize:number, search:string){
+    let url = `${this.baseURL}/getUserTickets?page=${pageIndex}&size=${pageSize}`;
+    if(search) url += `&search=${search}`;
     return this.http.get(url);
   }
 

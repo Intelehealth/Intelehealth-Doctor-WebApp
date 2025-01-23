@@ -7,6 +7,7 @@ import { AddLicenseKeyComponent } from 'src/app/modal-components/add-license-key
 import { AddTicketComponent } from 'src/app/modal-components/add-ticket/add-ticket.component';
 import { AppointmentDetailMonthComponent } from 'src/app/modal-components/appointment-detail-month/appointment-detail-month.component';
 import { AppointmentDetailComponent } from 'src/app/modal-components/appointment-detail/appointment-detail.component';
+import { CallHistoryComponent } from 'src/app/modal-components/call-history/call-history.component';
 import { CancelAppointmentConfirmComponent } from 'src/app/modal-components/cancel-appointment-confirm/cancel-appointment-confirm.component';
 import { ChatBoxComponent } from 'src/app/modal-components/chat-box/chat-box.component';
 import { ConfirmDayOffComponent } from 'src/app/modal-components/confirm-day-off/confirm-day-off.component';
@@ -32,6 +33,7 @@ import { SelectLanguageComponent } from 'src/app/modal-components/select-languag
 import { SharePrescriptionErrorComponent } from 'src/app/modal-components/share-prescription-error/share-prescription-error.component';
 import { SharePrescriptionSuccessComponent } from 'src/app/modal-components/share-prescription-success/share-prescription-success.component';
 import { SharePrescriptionComponent } from 'src/app/modal-components/share-prescription/share-prescription.component';
+import { SubSectionsComponent } from 'src/app/modal-components/sub-sections/sub-sections.component';
 import { UploadMindmapJsonComponent } from 'src/app/modal-components/upload-mindmap-json/upload-mindmap-json.component';
 import { VcallOverlayComponent } from 'src/app/modal-components/vcall-overlay/vcall-overlay.component';
 import { VideoCallComponent } from 'src/app/modal-components/video-call/video-call.component';
@@ -382,6 +384,24 @@ export class CoreService {
   */
   openLanguageFieldModal({ data }: { data: ILanguageFieldUpdate; }): MatDialogRef<LanguageFieldUpdate, any> {
     const dialogRef = this.dialog.open(LanguageFieldUpdate, { panelClass: 'modal-lg', hasBackdrop: true, disableClose: false, data });
+    return dialogRef;
+  }
+
+  /**
+  * Open Visit Summery Sub Section modal
+  * @return {Observable<any>} - Dialog result
+  */
+  openPatientVisitSubSectionModel({ data }: { data: any }): MatDialogRef<SubSectionsComponent, any> {
+    const dialogRef = this.dialog.open(SubSectionsComponent, { panelClass: 'modal-md', hasBackdrop: true, disableClose: false, data });
+    return dialogRef;
+  }
+
+   /**
+  * Open Patient Call Duration History modal
+  * @return {Observable<any>} - Dialog result
+  */
+   openPatientCallDurationHistoryModel({ data }: { data: any }): MatDialogRef<CallHistoryComponent, any> {
+    const dialogRef = this.dialog.open(CallHistoryComponent, { panelClass: 'modal-md', hasBackdrop: true, disableClose: false, data });
     return dialogRef;
   }
 }

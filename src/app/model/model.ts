@@ -236,8 +236,9 @@ export interface AppointmentModel {
   visitStatus: string,
   cheif_complaint?: string[],
   starts_in?: string,
-  appointmentId?: number
-  telephone?: string
+  appointmentId?: number,
+  telephone?: string,
+  TMH_patient_id?: any
 }
 
 export interface CustomVisitModel {
@@ -509,6 +510,7 @@ export interface MedicineModel {
   days?: string,
   timing?: string,
   remark?: string,
+  frequency?: string,
   uuid?: string
 }
 
@@ -526,7 +528,8 @@ export interface DiagnosisModel {
   diagnosisName?: string,
   diagnosisType?: string,
   diagnosisStatus?: string,
-  uuid?: string
+  uuid?: string,
+  diagnosisTNMStaging?: string
 }
 
 export interface DocImagesModel {
@@ -553,7 +556,8 @@ export interface FollowUpDataModel {
   wantFollowUp?: string,
   followUpDate?: string,
   followUpTime?: string,
-  followUpReason?: string
+  followUpReason?: string,
+  followUpType?: string
 }
 
 export interface HwModel {
@@ -634,7 +638,16 @@ export interface VitalModel {
   name: string,
   key: string,
   uuid: string,
-  is_mandatory: boolean
+  is_mandatory: boolean,
+  lang: object;
+}
+
+export interface DiagnosticModel {
+  name: string,
+  key: string,
+  uuid: string,
+  is_mandatory: boolean,
+  lang: object;
 }
 
 export interface FeatureModel extends BaseModel {}
@@ -668,6 +681,9 @@ export interface PatientVisitSummaryConfigModel {
   completed_visit_section: boolean
   follow_up_visit_section: boolean
   hw_interaction: boolean
+  awaiting_visits_patient_type_demarcation: boolean
+  awaiting_visit_section: boolean
+  diagnosis_at_secondary_level: boolean
 }
 
 export interface PagerdutyList {
@@ -709,7 +725,26 @@ export interface PatientVisitSection {
   is_locked: boolean;
   is_editable: boolean;
   name: string;
+  lang: string;
   key: string;
+  order: number;
+  sub_sections?: any;
   updatedAt?: string;
   createdAt?: string
+}
+
+export interface DiagnosticUnit {
+  name: string;
+  unit: string;
+  min: number;
+  max?: number;
+  percentageMin?: number;
+  percentageMax?: number;
+  percentageUnit?: string;
+  gender?: string;
+}
+
+export interface DiagnosticName {
+  name: string;
+  testName: string;
 }

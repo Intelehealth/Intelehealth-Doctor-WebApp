@@ -42,14 +42,22 @@
                     <span>{{ patient?.person?.preferredName?.givenName }}</span>
                     <span *ngIf="checkPatientRegField('Middle Name') && patient?.person?.preferredName?.middleName">{{ ' ' + patient?.person?.preferredName?.middleName }}</span>
                     <span>{{ ' ' + patient?.person?.preferredName?.familyName }}</span>
-                    <span *ngIf="checkPatientRegField('Gender')">{{ " (" + (patient?.person.gender | translate) + ") "}}</span>
+                    <!-- <span *ngIf="checkPatientRegField('Gender')">{{ " (" + (patient?.person.gender | translate) + ") "}}</span> -->
                   </h6>
-                  <p data-test-id="etPatienOpenMRSId">{{ getPatientIdentifier("OpenMRS ID") }}</p>
+                  <p data-test-id="etPatienOpenMRSId" *ngIf="isFeatureAvailable('tnmStaging')">{{ getPersonAttributeValue('TMH Case Number') }}</p>
+                  <p data-test-id="etPatienOpenMRSId" *ngIf="!isFeatureAvailable('tnmStaging')">{{ getPatientIdentifier('OpenMRS ID') }}</p>
                 </div>
               </div>
             </div>
 
-            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Age') && patient?.person.age">
+            <div class="col-md-2 patient-info-section p-3" *ngIf="checkPatientRegField('Gender') && patient?.person.gender">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatientGender">{{'Gender'|translate}}</h6>
+                <p data-test-id="etPatientGender">{{ patient?.person.gender | translate }}</p>
+              </div>
+            </div>
+
+            <div class="col-md-2 patient-info-section p-3" *ngIf="checkPatientRegField('Age') && patient?.person.age">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatientAge">{{'Age'|translate}}</h6>
                 <p data-test-id="etPatient">{{ patient?.person.birthdate ? getAge(patient?.person.birthdate) : patient?.person.age + ' years'  }}</p>
@@ -65,7 +73,7 @@
 
             <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Phone Number') && getPersonAttributeValue('Telephone Number') !== 'NA'">
               <div class="patient-info-item">
-                <h6 data-test-id="etPatient">{{'Contact no.'| translate}}</h6>
+                <h6 data-test-id="etPatient">{{'Phone Number'| translate}}</h6>
                 <div class="contact-info">
                   <p data-test-id="etPhoneNumber">
                     {{ getPersonAttributeValue("Telephone Number") }}
@@ -74,12 +82,10 @@
                       target="_blank"
                       class="icon-btn"
                       data-test-id="linkWhatsApp"
+                      (click)="startWhatsAppCall(true)"
                     >
                       <img src="assets/svgs/whatsapp-icon.svg" alt="" />
                     </a>
-                  </p>
-                  <p data-test-id="etWhatsApp">
-                    {{ getPersonAttributeValue("Telephone Number") }}
                     <a
                       href="tel:{{ getPersonAttributeValue('Telephone Number') }}"
                       target="_blank"
@@ -127,6 +133,13 @@
                 <p data-test-id="etPatient">{{ getPersonAttributeValue('Emergency Contact Type') }}</p>
               </div>
             </div>
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Email') && getPersonAttributeValue('Email') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Email' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Email') }}</p>
+              </div>
+            </div>
           </div>
 
           <button (click)="collapsedButton()" class="btn">
@@ -136,6 +149,16 @@
           <mat-tab-group class="patient-tab-group" mat-align-tabs="start" *ngIf="collapsed">
             <mat-tab label="{{'Address'| translate}}" *ngIf="hasPatientAddressEnabled">
               <div class="rows patient-info-wrapper">
+
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Household Number') && patient?.person?.preferredAddress?.address1">
+                  <div class="patient-info-item">
+                    <h6 data-test-id="etPatient">{{'Household Number' | translate}}</h6>
+                    <p data-test-id="etPatient">
+                      {{ patient?.person?.preferredAddress?.address6 }}
+                    </p>
+                  </div>
+                </div>
 
                 <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Corresponding Address 1') && patient?.person?.preferredAddress?.address1">
                   <div class="patient-info-item">
@@ -228,6 +251,41 @@
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('Caste') }}</p>
                   </div>
                 </div>
+
+                <!-- <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('TMH Case Number') && getPersonAttributeValue('TMH Case Number') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'TMH Case Number' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('TMH Case Number') }}</p>
+                  </div>
+                </div> -->
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Request ID') && getPersonAttributeValue('Request ID') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Request ID' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('Request ID') }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Discipline') && getPersonAttributeValue('Discipline') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Discipline' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('Discipline') }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Department') && getPersonAttributeValue('Department') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Department' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('Department') }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Relative Phone Number') && getPersonAttributeValue('Relative Phone Number') !== 'NA'">
+                  <div class="patient-info-item mb-3">
+                    <h6 data-test-id="etPatient">{{'Relative Phone Number' | translate}}</h6>
+                    <p data-test-id="etPatient">{{ getPersonAttributeValue('Relative Phone Number') }}</p>
+                  </div>
+                </div>
               </div>
             </mat-tab>
           </mat-tab-group>
@@ -266,465 +324,422 @@
               </button>
             </div>
             <mat-accordion class="intel-accordion-con" multi>
-              <mat-expansion-panel [expanded]="true"  data-test-id="matExpConDets">
-                <mat-expansion-panel-header  data-test-id="matExpHeaderConDets">
-                  <mat-panel-title>
-                    <div class="intel-accordion-title">
-                      <img
-                        src="assets/svgs/consultation-details.svg"
-                        alt=""
-                        width="44px"
-                      />
-                      <h6 class="mb-0 ml-2" data-test-id="etHeaderConDets">{{'Consultation details'|translate}}</h6>
-                    </div>
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-
-                <ul class="items-list">
-                  <li>
-                    <div class="list-item">
-                      <label class="border-0" data-test-id="etVisitIdConDets">{{'Visit ID'|translate}}</label>
-                      <div class="list-item-content" data-test-id="etVisitIdDataConDets">
-                        {{
-                          visit?.uuid
-                            ? (replaceWithStar(visit?.uuid) | uppercase)
-                            : ""
-                        }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etVisitCreConDets">{{'Visit Created'|translate}}</label>
-                      <div class="list-item-content" data-test-id="etVisitCreDataConDets">
-                        {{ visit?.startDatetime | date : "medium" }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etVisitUplConDets">{{'Visit Uploaded'|translate}}</label>
-                      <div class="list-item-content" data-test-id="etVisitUplDataConDets">
-                        {{ visit?.dateCreated | date : "medium" }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etAppOnConDets">{{'Appointment on'|translate}}</label>
-                      <div class="list-item-content">
-                        <span [class.text-muted]="!visitAppointment" data-test-id="etAppDataOnConDets">{{
-                          visitAppointment
-                            ? (visitAppointment | date : "dd MMM, yyyy")
-                            : ('No appointment'|translate)
-                        }}</span>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etStatusConDets">{{'Status'|translate}}</label>
-                      <div class="list-item-content">
-                        <span
-                          [ngClass]="{
-                            'text-important-red':
-                              visitStatus == 'Priority Visit',
-                            'text-important-green':
-                              [
-                                'Awaiting Visit',
-                                'In-progress Visit',
-                                'Completed Visit',
-                                'Ended Visit'
-                              ].indexOf(visitStatus) != -1
-                          }" data-test-id="etStatusDataConDets"
-                          >{{ (visitStatus)| translate }}</span
-                        >
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etLocatinConDets">{{'Location'| translate}}</label>
-                      <div class="list-item-content" data-test-id="etLocatinDataConDets">
-                        {{ clinicName | titlecase }}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="list-item">
-                      <label data-test-id="etProvidedByConDets">{{'Provided by'|translate}}</label>
-                      <div class="list-item-content">
-                        <div class="visit-provider-con">
-                          <span data-test-id="etProvidedByDataConDets"><b>{{'Nurse'|translate}} : {{ providerName }}</b></span>
+              <ng-container *ngFor="let pvsConfig of pvsConfigs; let pvsI = index;">
+                <ng-container *ngIf="checkIsVisibleSection(pvsConfig) as checkVisibleSectionConfig">
+                  <mat-expansion-panel 
+                    *ngIf="checkVisibleSectionConfig.is_enabled"
+                    [expanded]="checkVisibleSectionConfig.expanded"  
+                    data-test-id="matExpConDets" 
+                    [ngClass]="{'bg-gray': pvsI % 2 === 1}"
+                  >
+                    <mat-expansion-panel-header data-test-id="matExpHeaderConDets">
+                      <mat-panel-title>
+                        <div class="intel-accordion-title">
+                          <img
+                            *ngIf="pvsConstant[pvsConfig.key]?.logo"
+                            src="{{ pvsConstant[pvsConfig.key]?.logo }}"
+                            alt=""
+                            width="44px"
+                          />
+                          <h6 class="mb-0 ml-2" data-test-id="etHeaderConDets">{{ getLanguageValue(pvsConfig) | translate}}</h6>
                         </div>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </mat-expansion-panel>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
 
-              <mat-expansion-panel [expanded]="true" class="bg-gray" data-test-id="matExpVitals" *ngIf="hasVitalsEnabled">
-                <mat-expansion-panel-header data-test-id="matExpHeaderVitals">
-                  <mat-panel-title>
-                    <div class="intel-accordion-title">
-                      <img src="assets/svgs/vitals.svg" alt="" width="44px" />
-                      <h6 class="mb-0 ml-2" data-test-id="etheaderVitals">{{'Vitals'|translate}}</h6>
-                    </div>
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
+                    <ng-container [ngSwitch]="pvsConfig.key">
 
-                <ul class="items-list">
-                  <li *ngFor="let v of vitals;">
-                    <div class="list-item">
-                      <label class="border-0" [attr.data-test-id]="v.key">{{v.name|translate}}</label>
-                      <div
-                        class="list-item-content"
-                        [class.text-muted]="!getObsValue(v.uuid, v.key)"
-                        data-test-id="etHeightDataVitals"
-                      >
-                        {{
-                          getObsValue(v.uuid, v.key)
-                            ? getObsValue(v.uuid, v.key)
-                            : ('No information'|translate)
-                        }}
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </mat-expansion-panel>
+                      <!-- Consultation details -->
+                        <ng-container *ngSwitchCase="pvsConstant['consultation_details'].key">
+                          <ul class="items-list">
+                            <li>
+                              <div class="list-item">
+                                <label class="border-0" data-test-id="etVisitIdConDets">{{'Visit ID'|translate}}</label>
+                                <div class="list-item-content" data-test-id="etVisitIdDataConDets">
+                                  {{
+                                  visit?.uuid
+                                  ? (replaceWithStar(visit?.uuid) | uppercase)
+                                  : ""
+                                  }}
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="list-item">
+                                <label data-test-id="etVisitCreConDets">{{'Visit Created'|translate}}</label>
+                                <div class="list-item-content" data-test-id="etVisitCreDataConDets">
+                                  {{ visit?.startDatetime | date : "medium" }}
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="list-item">
+                                <label data-test-id="etVisitUplConDets">{{'Visit Uploaded'|translate}}</label>
+                                <div class="list-item-content" data-test-id="etVisitUplDataConDets">
+                                  {{ visit?.dateCreated | date : "medium" }}
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="list-item">
+                                <label data-test-id="etAppOnConDets">{{'Appointment on'|translate}}</label>
+                                <div class="list-item-content">
+                                  <span [class.text-muted]="!visitAppointment" data-test-id="etAppDataOnConDets">{{
+                                    visitAppointment
+                                    ? (visitAppointment | date : "dd MMM, yyyy")
+                                    : ('No appointment'|translate)
+                                    }}</span>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="list-item">
+                                <label data-test-id="etStatusConDets">{{'Status'|translate}}</label>
+                                <div class="list-item-content">
+                                  <span [ngClass]="{
+                                                        'text-important-red':
+                                                          visitStatus == 'Priority Visit',
+                                                        'text-important-green':
+                                                          [
+                                                            'Awaiting Visit',
+                                                            'In-progress Visit',
+                                                            'Completed Visit',
+                                                            'Ended Visit'
+                                                          ].indexOf(visitStatus) != -1
+                                                      }" data-test-id="etStatusDataConDets">{{ (visitStatus)| translate }}</span>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="list-item">
+                                <label data-test-id="etLocatinConDets">{{'Location'| translate}}</label>
+                                <div class="list-item-content" data-test-id="etLocatinDataConDets">
+                                  {{ clinicName | titlecase }}
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="list-item">
+                                <label data-test-id="etProvidedByConDets">{{'Provided by'|translate}}</label>
+                                <div class="list-item-content">
+                                  <div class="visit-provider-con">
+                                    <span data-test-id="etProvidedByDataConDets"><b>{{'Nurse'|translate}} : {{ providerName }}</b></span>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
+                        </ng-container>
+                      <!-- END Consultation details  -->
 
-              <mat-expansion-panel [expanded]="true" data-test-id="matExpCheckup">
-                <mat-expansion-panel-header data-test-id="matExpHeaderCheckup">
-                  <mat-panel-title>
-                    <div class="intel-accordion-title">
-                      <img
-                        src="assets/svgs/check-up-reason.svg"
-                        alt=""
-                        width="44px"
-                      />
-                      <h6 class="mb-0 ml-2" data-test-id="etCh-upReasCheckup">{{'Check-up reason'|translate}}</h6>
-                    </div>
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-
-                <div class="cheif-complaint-wrapper">
-                  <h6 data-test-id="etChiefComCheckup">{{'Chief Complaint'|translate}}</h6>
-                  <div class="complaint-chips">
-                    <div class="chip-item" *ngFor="let c of cheifComplaints" [attr.data-test-id]="'etChiefCom'+c.slice(0,3)+'Checkup'">
-                      {{ c }}
-                    </div>
-                  </div>
-                  <div class="check-up-reason-con">
-                    <ng-container *ngFor="let ckr of checkUpReasonData">
-                      <ng-container *ngIf="ckr.title != 'Associated symptoms'">
-                        <h6 class="my-3" [attr.data-test-id]="'etTitle'+ckr.title.slice(0,3)+'Checkup'">{{ ckr.title }}</h6>
-                        <ul class="items-list pt-0">
-                          <li *ngFor="let ckri of ckr.data">
+                      <!-- Diagnosis -->
+                      <ng-container *ngSwitchCase="pvsConstant['diagnostics'].key">
+                        <ul class="items-list">
+                          <li *ngFor="let d of diagnostics">
                             <div class="list-item">
-                              <label [attr.data-test-id]="'etKey'+ckri.key.slice(0,3)+'Checkup'">{{ ckri.key }}</label>
-                              <div
-                                class="list-item-content"
-                                [class.text-muted]="!ckri.value"
-                                [attr.data-test-id]="'etValue'+ckri.value.slice(0,4).trim()+'Checkup'"
-                              >
-                                {{ ckri.value ? ckri.value : ('None'|translate) }}
+                              <label data-test-id="etDiagnosisConDets">{{ d?.name|translate}}</label>
+                              <div class="list-item-content" data-test-id="etDiagnosisDataConDets">
+                                <span> {{
+                                  getObsValue(d.uuid, d.key)
+                                    ? getObsValue(d.uuid, d.key)
+                                    : ('No information'|translate)
+                                }}</span>
                               </div>
                             </div>
                           </li>
                         </ul>
                       </ng-container>
-                      <ng-container *ngIf="ckr.title == 'Associated symptoms'">
-                        <h6 class="my-3" [attr.data-test-id]="'etTitle'+ckr.title.slice(0,3)+'Checkup'">{{ ckr.title }}</h6>
-                        <ul class="items-list pt-0">
-                          <li *ngFor="let ckri of ckr.data">
-                            <div class="list-item-col">
-                              <label [attr.data-test-id]="'etKey'+ckri.key.slice(0,3)+'Checkup'">{{ ckri.key }}</label>
-                              <div
-                                class="list-item-content"
-                                [class.text-muted]="!ckri.value"
-                                [attr.data-test-id]="'etValue'+ckri.value.slice(0,4).trim()+'Checkup'"
-                              >
-                                {{ ckri.value ? ckri.value :  ('None'|translate) }}
+                      <!-- Vitals -->
+                        <ng-container *ngSwitchCase="pvsConstant['vitals'].key">
+                          <ul class="items-list">
+                            <li *ngFor="let v of vitals;">
+                              <div class="list-item">
+                                <label class="border-0" [attr.data-test-id]="v.key">{{getLanguageValue(v) | translate}}</label>
+                                <div
+                                  class="list-item-content"
+                                  [class.text-muted]="!getObsValue(v.uuid, v.key)"
+                                  data-test-id="etHeightDataVitals"
+                                >
+                                  {{
+                                    getObsValue(v.uuid, v.key)
+                                      ? getObsValue(v.uuid, v.key)
+                                      : ('No information'|translate)
+                                  }}
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
+                        </ng-container>
+                      <!-- END Vitals -->
+                      
+                      <!-- Checkup Reasons -->
+                        <ng-container *ngSwitchCase="pvsConstant['check_up_reason'].key">
+                          <div class="cheif-complaint-wrapper">
+                            <h6 data-test-id="etChiefComCheckup">{{'Chief Complaint'|translate}}</h6>
+                            <div class="complaint-chips">
+                              <div class="chip-item" *ngFor="let c of cheifComplaints" [attr.data-test-id]="'etChiefCom'+c.slice(0,3)+'Checkup'">
+                                {{ c }}
                               </div>
                             </div>
-                          </li>
-                        </ul>
+                            <div class="check-up-reason-con">
+                              <ng-container *ngFor="let ckr of checkUpReasonData">
+                                <ng-container *ngIf="ckr.title != 'Associated symptoms'">
+                                  <h6 class="my-3" [attr.data-test-id]="'etTitle'+ckr.title.slice(0,3)+'Checkup'">{{ ckr.title }}</h6>
+                                  <ul class="items-list pt-0">
+                                    <li *ngFor="let ckri of ckr.data">
+                                      <div class="list-item">
+                                        <label [attr.data-test-id]="'etKey'+ckri.key.slice(0,3)+'Checkup'">{{ ckri.key }}</label>
+                                        <div
+                                          class="list-item-content"
+                                          [class.text-muted]="!ckri.value"
+                                          [attr.data-test-id]="'etValue'+ckri.value.changingThisBreaksApplicationSecurity.slice(0,4).trim()+'Checkup'"
+                                          [innerHTML]="ckri.value ? ckri.value : ('None' | translate)">
+                                        </div>
+                                        <!-- <div
+                                          class="list-item-content"
+                                          [class.text-muted]="!ckri.value"
+                                          [attr.data-test-id]="'etValue'+ckri.value.changingThisBreaksApplicationSecurity.slice(0,4).trim()+'Checkup'"
+                                        >
+                                          {{ ckri.value ? ckri.value : ('None'|translate) }}
+                                        </div> -->
+                                      </div>
+                                    </li>
+                                  </ul>
+                                </ng-container>
+                                <ng-container *ngIf="ckr.title == 'Associated symptoms'">
+                                  <h6 class="my-3" [attr.data-test-id]="'etTitle'+ckr.title.slice(0,3)+'Checkup'">{{ ckr.title }}</h6>
+                                  <ul class="items-list pt-0">
+                                    <li *ngFor="let ckri of ckr.data">
+                                      <div class="list-item-col">
+                                        <label [attr.data-test-id]="'etKey'+ckri.key.slice(0,3)+'Checkup'">{{ ckri.key }}</label>
+                                        <div
+                                          class="list-item-content"
+                                          [class.text-muted]="!ckri.value"
+                                          [attr.data-test-id]="'etValue'+ckri.value.slice(0,4).trim()+'Checkup'"
+                                        >
+                                          {{ ckri.value ? ckri.value :  ('None'|translate) }}
+                                        </div>
+                                      </div>
+                                    </li>
+                                  </ul>
+                                </ng-container>
+                              </ng-container>
+                            </div>
+                          </div>
+                        </ng-container>
+                      <!-- END Checkup Reasons -->
+                      
+                      <!-- Physical examination -->
+                        <ng-container *ngSwitchCase="pvsConstant['physical_examination'].key">
+                          <ng-container *ngFor="let pe of physicalExaminationData">
+                            <div class="cheif-complaint-wrapper">
+                              <ng-container *ngIf="pe.title != 'Abdomen'">
+                                <h6 class="my-3" [attr.data-test-id]="'etTitle'+pe.title.slice(0,3)+'PhysicalExam'">{{ pe.title }}</h6>
+                                <ul class="items-list pt-0">
+                                  <li *ngFor="let pei of pe.data">
+                                    <div class="list-item">
+                                      <label [attr.data-test-id]="'etKey'+pei.key.slice(0,3)+'PhysicalExam'">{{ pei.key }}</label>
+                                      <div
+                                        class="list-item-content"
+                                        [class.text-muted]="!pei.value"
+                                        [attr.data-test-id]="'etValue'+pei.value.slice(0,2).trim()+'PhysicalExam'"
+                                      >
+                                        {{ pei.value ? pei.value : ('None'|translate) }}
+                                      </div>
+                                    </div>
+                                  </li>
+                                  <li *ngIf="getImagesBySection(pe.title).length">
+                                    <div class="list-item">
+                                      <label [attr.data-test-id]="'etEyeImgPhysicalExam'">{{'Pictures'|translate}}</label>
+                                      <div class="list-item-content">
+                                        <div class="eye-images-con">
+                                          <div
+                                            class="eye-item"
+                                            *ngFor="let e of getImagesBySection(pe.title); let x = index"
+                                          >
+                                            <img [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
+                                            <div
+                                              class="cover"
+                                              (click)="previewEyeImages(x,pe.title)"
+                                              [attr.data-test-id]="'etValue'+x+'PhysicalExam'"
+                                            >
+                                              <img
+                                                src="assets/svgs/maximize.svg"
+                                                alt=""
+                                              />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </li>
+                                </ul>
+                              </ng-container>
+                              <ng-container *ngIf="pe.title == 'Abdomen'">
+                                <h6 class="my-3" [attr.data-test-id]="'etTitle'+pe.title.slice(0,3)+'PhysicalExam'">{{ pe.title }}</h6>
+                                <ul class="items-list pt-0">
+                                  <li *ngFor="let pei of pe.data">
+                                    <div class="list-item">
+                                      <label [attr.data-test-id]="'etKey'+pei.key.slice(0,3)+'PhysicalExam'">{{ pei.key }}</label>
+                                    </div>
+                                  </li>
+                                  <li *ngIf="getImagesBySection(pe.title).length">
+                                    <div class="list-item">
+                                      <label [attr.data-test-id]="'etEyeImgPhysicalExam'">{{'Pictures'|translate}}</label>
+                                      <div class="list-item-content">
+                                        <div class="eye-images-con">
+                                          <div
+                                            class="eye-item"
+                                            *ngFor="let e of getImagesBySection(pe.title); let x = index"
+                                          >
+                                            <img [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
+                                            <div
+                                              class="cover"
+                                              (click)="previewEyeImages(x,pe.title)"
+                                              [attr.data-test-id]="'etValue'+x+'PhysicalExam'"
+                                            >
+                                              <img
+                                                src="assets/svgs/maximize.svg"
+                                                alt=""
+                                              />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </li>
+                                </ul>
+                              </ng-container>
+                            </div>
+                          </ng-container>
+                        </ng-container>
+                      <!-- END Physical examination -->
+                      
+                      <!-- Medical History -->
+                        <ng-container *ngSwitchCase="pvsConstant['medical_history'].key">
+                          <ng-container *ngFor="let ph of patientHistoryData">
+                            <div class="cheif-complaint-wrapper">
+                              <h6 class="my-3" [attr.data-test-id]="'etTitle'+ph.title.slice(0,3)+'Medicalhis'">{{ ph.title }}</h6>
+                              <ul class="items-list pt-0">
+                                <li *ngFor="let phi of ph.data; let x = index">
+                                  <div class="list-item">
+                                    <label [attr.data-test-id]="'etKey'+phi.key.slice(0,3)+'Medicalhis'">{{ phi.key }}</label>
+                                    <div
+                                      class="list-item-content"
+                                      [class.text-muted]="!phi.value"
+                                      [attr.data-test-id]="'etValue'+x+'Medicalhis'"
+                                    >
+                                      {{ phi.value ? phi.value : ('None'|translate) }}
+                                    </div>
+                                  </div>
+                                </li>
+                              </ul>
+                            </div>
+                          </ng-container>
+                        </ng-container>
+                      <!-- END Medical History -->
+                      
+                      <!-- Additional Note -->
+                        <ng-container *ngSwitchCase="pvsConstant['additional_notes'].key">
+                          <ul class="items-list">
+                            <li>
+                              <div class="d-flex justify-content-between">
+                                <span>{{ additionalNotes }}</span>
+                              </div>
+                            </li>
+                          </ul>
+                        </ng-container>
+                      <!-- END Additional Note  -->
+
+                      <!-- Additional Doc -->
+                      <ng-container *ngSwitchCase="pvsConstant['additional_documents'].key">
+                        <ng-container *ngIf="additionalDocs.length; else noAdditionaDocs">
+                          <div class="additional-doc-container">
+                            <div class="doc-item" *ngFor="let d of additionalDocs; let x = index">
+                              <img [src]="d.src" alt="" />
+                              <div class="cover" (click)="previewDocImages(x)" data-test-id="divPreviewDoc">
+                                <img src="assets/svgs/maximize.svg" alt="" />
+                              </div>
+                            </div>
+                          </div>
+                        </ng-container>
+                        
+                        <ng-template #noAdditionaDocs>
+                          <div class="no-docs">{{'No additional docs available!'|translate}}</div>
+                        </ng-template>
                       </ng-container>
-                    </ng-container>
-                  </div>
-                </div>
-              </mat-expansion-panel>
+                      <!-- END Additional Doc -->
 
-              <mat-expansion-panel [expanded]="true" class="bg-gray" data-test-id="matExpPhysicalExam">
-                <mat-expansion-panel-header data-test-id="matExpHeaderPhysicalExam">
-                  <mat-panel-title>
-                    <div class="intel-accordion-title">
-                      <img
-                        src="assets/svgs/physical-examination.svg"
-                        alt=""
-                        width="44px"
-                      />
-                      <h6 class="mb-0 ml-2" data-test-id="etPhysicalexam">{{'Physical examination'|translate}}</h6>
-                    </div>
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-
-                <ng-container *ngFor="let pe of physicalExaminationData">
-                  <div class="cheif-complaint-wrapper">
-                    <ng-container *ngIf="pe.title != 'Abdomen'">
-                      <h6 class="my-3" [attr.data-test-id]="'etTitle'+pe.title.slice(0,3)+'PhysicalExam'">{{ pe.title }}</h6>
-                      <ul class="items-list pt-0">
-                        <li *ngFor="let pei of pe.data">
-                          <div class="list-item">
-                            <label [attr.data-test-id]="'etKey'+pei.key.slice(0,3)+'PhysicalExam'">{{ pei.key }}</label>
-                            <div
-                              class="list-item-content"
-                              [class.text-muted]="!pei.value"
-                              [attr.data-test-id]="'etValue'+pei.value.slice(0,2).trim()+'PhysicalExam'"
-                            >
-                              {{ pei.value ? pei.value : ('None'|translate) }}
-                            </div>
-                          </div>
-                        </li>
-                        <li *ngIf="getImagesBySection(pe.title).length">
-                          <div class="list-item">
-                            <label [attr.data-test-id]="'etEyeImgPhysicalExam'">{{'Pictures'|translate}}</label>
-                            <div class="list-item-content">
-                              <div class="eye-images-con">
-                                <div
-                                  class="eye-item"
-                                  *ngFor="let e of getImagesBySection(pe.title); let x = index"
-                                >
-                                  <img [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
-                                  <div
-                                    class="cover"
-                                    (click)="previewEyeImages(x,pe.title)"
-                                    [attr.data-test-id]="'etValue'+x+'PhysicalExam'"
-                                  >
-                                    <img
-                                      src="assets/svgs/maximize.svg"
-                                      alt=""
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </ng-container>
-                    <ng-container *ngIf="pe.title == 'Abdomen'">
-                      <h6 class="my-3" [attr.data-test-id]="'etTitle'+pe.title.slice(0,3)+'PhysicalExam'">{{ pe.title }}</h6>
-                      <ul class="items-list pt-0">
-                        <li *ngFor="let pei of pe.data">
-                          <div class="list-item">
-                            <label [attr.data-test-id]="'etKey'+pei.key.slice(0,3)+'PhysicalExam'">{{ pei.key }}</label>
-                          </div>
-                        </li>
-                        <li *ngIf="getImagesBySection(pe.title).length">
-                          <div class="list-item">
-                            <label [attr.data-test-id]="'etEyeImgPhysicalExam'">{{'Pictures'|translate}}</label>
-                            <div class="list-item-content">
-                              <div class="eye-images-con">
-                                <div
-                                  class="eye-item"
-                                  *ngFor="let e of getImagesBySection(pe.title); let x = index"
-                                >
-                                  <img [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
-                                  <div
-                                    class="cover"
-                                    (click)="previewEyeImages(x,pe.title)"
-                                    [attr.data-test-id]="'etValue'+x+'PhysicalExam'"
-                                  >
-                                    <img
-                                      src="assets/svgs/maximize.svg"
-                                      alt=""
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </ng-container>
-                  </div>
-                </ng-container>
-              </mat-expansion-panel>
-
-              <mat-expansion-panel [expanded]="true" data-test-id="matExpMedicalHis">
-                <mat-expansion-panel-header data-test-id="matExpHeaderMedicalHis">
-                  <mat-panel-title>
-                    <div class="intel-accordion-title">
-                      <img
-                        src="assets/svgs/medical-history.svg"
-                        alt=""
-                        width="44px"
-                      />
-                      <h6 class="mb-0 ml-2" data-test-id="etMedicalHis">{{'Medical history'|translate}}</h6>
-                    </div>
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-
-                <ng-container *ngFor="let ph of patientHistoryData">
-                  <div class="cheif-complaint-wrapper">
-                    <h6 class="my-3" [attr.data-test-id]="'etTitle'+ph.title.slice(0,3)+'Medicalhis'">{{ ph.title }}</h6>
-                    <ul class="items-list pt-0">
-                      <li *ngFor="let phi of ph.data; let x = index">
-                        <div class="list-item">
-                          <label [attr.data-test-id]="'etKey'+phi.key.slice(0,3)+'Medicalhis'">{{ phi.key }}</label>
-                          <div
-                            class="list-item-content"
-                            [class.text-muted]="!phi.value"
-                            [attr.data-test-id]="'etValue'+x+'Medicalhis'"
-                          >
-                            {{ phi.value ? phi.value : ('None'|translate) }}
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </ng-container>
-              </mat-expansion-panel>
-
-              <mat-expansion-panel [expanded]="true" class="bg-gray" data-test-id="matExpAdditionalNotes" *ngIf="patientVisitSummary.notes_section">
-                <mat-expansion-panel-header data-test-id="matExpHeaderAdditionalNotes">
-                  <mat-panel-title>
-                    <div class="intel-accordion-title">
-                      <img
-                        src="assets/svgs/note-icon-green.svg"
-                        alt=""
-                        width="44px"
-                      />
-                      <h6 class="mb-0 ml-2" data-test-id="etAdditionalNotes">{{'Additional Notes'|translate}}</h6>
-                    </div>
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-                <ul class="items-list">
-                  <li>
-                    <div class="d-flex justify-content-between">
-                      <span>{{ additionalNotes }}</span>
-                    </div>
-                  </li>
-                </ul>
-              </mat-expansion-panel>
-
-              <mat-expansion-panel [expanded]="true" data-test-id="matExpAdditionalDoc" *ngIf="patientVisitSummary.attachment_section">
-                <mat-expansion-panel-header data-test-id="matExpHeaderAdditionalDoc">
-                  <mat-panel-title>
-                    <div class="intel-accordion-title">
-                      <img
-                        src="assets/svgs/additional-documents.svg"
-                        alt=""
-                        width="44px"
-                      />
-                      <h6 class="mb-0 ml-2" data-test-id="etAdditionalDoc">{{'Additional documents'|translate}}</h6>
-                    </div>
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-
-                <ng-container
-                  *ngIf="additionalDocs.length; else noAdditionaDocs"
-                >
-                  <div class="additional-doc-container">
-                    <div
-                      class="doc-item"
-                      *ngFor="let d of additionalDocs; let x = index"
-                    >
-                      <img [src]="d.src" alt="" />
-                      <div class="cover" (click)="previewDocImages(x)" data-test-id="divPreviewDoc">
-                        <img src="assets/svgs/maximize.svg" alt="" />
-                      </div>
-                    </div>
-                  </div>
-                </ng-container>
-
-                <ng-template #noAdditionaDocs>
-                  <div class="no-docs">{{'No additional docs available!'|translate}}</div>
-                </ng-template>
-              </mat-expansion-panel>
-
-              <mat-expansion-panel
-                [expanded]="!visitNotePresent"
-                *ngIf="!visitNotePresent && !visitEnded && !visitCompleted"
-                data-test-id="matExpReferToSpec"
-                >
-                <mat-expansion-panel-header data-test-id="matExpHeaderReferToSpec">
-                  <mat-panel-title>
-                    <div class="intel-accordion-title">
-                      <img
-                        src="assets/svgs/refer-specialist.svg"
-                        alt=""
-                        width="44px"
-                      />
-                      <h6 class="mb-0 ml-2" data-test-id="etReferToSpec">{{'Refer to specialist'|translate}}</h6>
-                    </div>
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-
-                <form
-                  [formGroup]="referSpecialityForm"
-                  (ngSubmit)="referSpecialist()"
-                  class="refer-form"
-                >
-                  <div class="form-group row">
-                    <label for="refer" class="col-sm-3 col-form-label" data-test-id="labelReferToSpec"
-                      >{{'Refer to another speciality'|translate}}</label
-                    >
-                    <div class="col-sm-9 d-flex align-items-center">
-                      <div class="pretty p-default p-round">
-                        <input
-                          type="radio"
-                          [value]="true"
-                          formControlName="refer"
-                          data-test-id="radioReferYes"
-                        />
-                        <div class="state p-success">
-                          <label>{{'Yes'|translate}}</label>
-                        </div>
-                      </div>
-                      <div class="pretty p-default p-round">
-                        <input
-                          type="radio"
-                          [value]="false"
-                          formControlName="refer"
-                          data-test-id="radioReferNo"
-                        />
-                        <div class="state p-success">
-                          <label>{{'No'|translate}}</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <ng-container *ngIf="referSpecialityForm.value.refer">
-                    <div class="form-group row">
-                      <label for="refer" class="col-sm-3 col-form-label"
-                        >{{'Specialization'|translate}}</label
+                      <!-- Referer to speciality -->
+                      <ng-container *ngIf="pvsConfig.is_enabled && pvsConfig?.key === pvsConstant['refer_to_specialist'].key">
+                        <form
+                        [formGroup]="referSpecialityForm"
+                        (ngSubmit)="referSpecialist()"
+                        class="refer-form"
                       >
-                      <div class="col-sm-3">
-                        <ng-select
-                          appendTo=".visit-summary-tab-group"
-                          class="visit-select"
-                          formControlName="specialization"
-                          bindLabel="name"
-                          bindValue="name"
-                          [clearable]="false"
-                          [searchable]="true"
-                          placeholder="{{'Select specialization'|translate}}"
-                          data-test-id="selectRefer"
-                        >
-                        <ng-option *ngFor="let specialization of specializations" [value]="specialization.name">
-                          {{ (specialization.name) |translate }}
-                        </ng-option>
-                        </ng-select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <button type="submit" class="next-btn" data-test-id="btnSubmitRefer">{{'Re-assign'|translate}}</button>
-                    </div>
-                  </ng-container>
-                </form>
-              </mat-expansion-panel>
+                        <div class="form-group row">
+                          <label for="refer" class="col-sm-3 col-form-label" data-test-id="labelReferToSpec"
+                            >{{'Refer to another speciality'|translate}}</label
+                          >
+                          <div class="col-sm-9 d-flex align-items-center">
+                            <div class="pretty p-default p-round">
+                              <input
+                                type="radio"
+                                [value]="true"
+                                formControlName="refer"
+                                data-test-id="radioReferYes"
+                              />
+                              <div class="state p-success">
+                                <label>{{'Yes'|translate}}</label>
+                              </div>
+                            </div>
+                            <div class="pretty p-default p-round">
+                              <input
+                                type="radio"
+                                [value]="false"
+                                formControlName="refer"
+                                data-test-id="radioReferNo"
+                              />
+                              <div class="state p-success">
+                                <label>{{'No'|translate}}</label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <ng-container *ngIf="referSpecialityForm.value.refer">
+                          <div class="form-group row">
+                            <label for="refer" class="col-sm-3 col-form-label"
+                              >{{'Specialization'|translate}}</label
+                            >
+                            <div class="col-sm-3">
+                              <ng-select
+                                appendTo=".visit-summary-tab-group"
+                                class="visit-select"
+                                formControlName="specialization"
+                                bindLabel="name"
+                                bindValue="name"
+                                [clearable]="false"
+                                [searchable]="true"
+                                placeholder="{{'Select specialization'|translate}}"
+                                data-test-id="selectRefer"
+                              >
+                              <ng-option *ngFor="let specialization of specializations" [value]="specialization.name">
+                                {{ (specialization.name) |translate }}
+                              </ng-option>
+                              </ng-select>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <button type="submit" class="next-btn" data-test-id="btnSubmitRefer">{{'Re-assign'|translate}}</button>
+                          </div>
+                        </ng-container>
+                      </form>
+                      </ng-container>
+                      <!-- END Referer to speciality -->
+
+                    </ng-container>
+                  </mat-expansion-panel>
+                </ng-container>
+              </ng-container>
             </mat-accordion>
           </mat-tab>
 
@@ -878,7 +893,13 @@
       <div class="intel-card">
         <div class="card-body">
           <mat-accordion class="intel-accordion-con" multi>
-            <mat-expansion-panel [expanded]="true" #panel1 hideToggle>
+
+            <app-notes *ngIf="appConfigService?.patient_visit_summary?.family_history_notes" [title]="'Family History Notes'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded"
+            [visit]="visit" [visitNotePresent]="visitNotePresent"></app-notes>
+            <app-notes *ngIf="appConfigService?.patient_visit_summary?.past_medical_history_notes" [title]="'Past Medical History Notes'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded"
+            [visit]="visit" [visitNotePresent]="visitNotePresent"></app-notes>
+
+            <mat-expansion-panel [expanded]="true" #panel1 hideToggle *ngIf="isSubSectionEnabled('patient_interaction','HW')" id="patientInteractionFormTemplate">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <div class="intel-accordion-title">
@@ -887,7 +908,7 @@
                       alt=""
                       width="44px"
                     />
-                    <h6 class="mb-0 ml-2">{{'Patient interaction'|translate}}</h6>
+                    <h6 class="mb-0 ml-2">{{'Discussion with Patient'|translate}}</h6>
                   </div>
                 </mat-panel-title>
                 <mat-icon>{{ panel1.expanded ? "remove" : "add" }}</mat-icon>
@@ -897,7 +918,7 @@
                 [formGroup]="patientInteractionForm"
                 (ngSubmit)="savePatientInteraction()"
               >
-                <ul class="items-list">
+                <ul class="items-list" *ngIf="!isMCCUser">
                   <li>
                     <div class="row">
                       <label class="col-sm-3 col-form-label"
@@ -926,6 +947,7 @@
                             target="_blank"
                             class="icon-btn m-0 mr-2"
                             data-test-id="linkPatientWhatsApp"
+                            (click)="startWhatsAppCall()"
                           >
                             <img src="assets/svgs/whatsapp-green.svg" alt="" />
                           </a>
@@ -943,43 +965,34 @@
                       </ng-template>
                     </div>
                   </li>
-                  <li *ngIf="!patientInteractionForm.value.present">
+                  <li *ngIf="isFeatureAvailable('callDuration')">
                     <div class="row">
                       <label class="col-sm-3 col-form-label"
-                        >{{'Have you spoken with the patient directly?'|translate}}*</label
+                        >{{'Call Duration'|translate}}</label
                       >
-                      <div class="col-sm-9 d-flex align-items-center">
-                        <div class="pretty p-default p-round">
-                          <input
-                            type="radio"
-                            value="{{'Yes' | translate}}"
-                            formControlName="spoken"
-                            data-test-id="radioSpokenYes"
-                          />
-                          <div class="state p-success">
-                            <label>{{'Yes'|translate}}</label>
-                          </div>
-                        </div>
-                        <div class="pretty p-default p-round">
-                          <input
-                            type="radio"
-                            value="{{'No' | translate}}"
-                            formControlName="spoken"
-                            data-test-id="radioSpokenNo"
-                          />
-                          <div class="state p-success">
-                            <label>{{'No'|translate}}</label>
-                          </div>
+                      <div
+                        class="col-sm-9 d-flex align-items-center"
+                      >
+                        <div class="d-flex align-items-center">
+                          <span class="text-muted">{{getCallDuration(callDuration)|translate}}</span>
+                          <button type="button" *ngIf="!isCallInProgress && arrCallDurations.length > 1" class="info_icon" (click)="openPatientCallHistory()" matTooltip="Open call history"><mat-icon *ngIf="!isCallInProgress" matTooltipPosition="right" data-test-id="matIcoHelpSent">info_outline</mat-icon></button>
+                          <button
+                              *ngIf="isCallInProgress"
+                              type="button"
+                              class="video-ctrl-btn red"
+                              (click)="endWhatsAppCall()"
+                              data-test-id="btnEnd"
+                            >
+                              <img src="assets/svgs/call-end.svg" alt="" />
+                          </button>
                         </div>
                       </div>
                     </div>
                   </li>
-
                   <li *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction">
                     <div class="row">
-                      <label class="col-sm-3 col-form-label"
-                        >{{'Have you spoken with the healthcare worker directly?'|translate}}*</label
-                      >
+                      <label class="col-sm-3 col-form-label" *ngIf="!brandName">{{'Have you spoken with the healthcare worker directly?'|translate}}*</label>
+                      <label class="col-sm-3 col-form-label" *ngIf="brandName">{{'Have you spoken with the patient directly?'|translate}}*</label>
                       <div class="col-sm-9 d-flex align-items-center">
                         <div class="pretty p-default p-round">
                           <input
@@ -1007,9 +1020,9 @@
                     </div>
                   </li>
                 </ul>
-                <div *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction" class="form-group">
+                <div *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction && !isMCCUser" class="form-group">
                   <label for="note"
-                    ><b>{{'Comment'|translate}}*&nbsp;</b>
+                    ><b>{{'Comment'|translate}}&nbsp;</b>
                     </label
                   >
                   <textarea
@@ -1023,16 +1036,16 @@
                 <div
                   class="form-group mb-0 mt-3"
                   *ngIf="
+                    !isMCCUser &&
                     isVisitNoteProvider &&
                     !visitEnded &&
-                    (!patientInteractionForm.value.present ||
-                    (!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction))
+                    (!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction)
                   "
                 >
                   <button
                     type="submit"
                     class="gray-btn"
-                    [disabled]="patientInteractionForm.invalid"
+                    [disabled]="!patientInteractionForm.value.hwSpoken"
                     data-test-id="btnSubmitPatientInteraction"
                   >
                     {{'Save'|translate}}
@@ -1044,35 +1057,22 @@
                       <tr>
                         <th scope="col">{{'Patient interaction'|translate}}</th>
                         <th scope="col">{{'Status'|translate}}</th>
+                        <th scope="col">{{'Comment'|translate}}</th>
                         <th scope="col"></th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngIf="patientInteractionForm.value.present">
-                        <td>{{'Spoken with the patient directly?'|translate}}</td>
-                        <td>{{ patientInteractionForm.value.spoken }}</td>
-                        <td class="pr-0">
-                          <button
-                            type="button"
-                            mat-icon-button
-                            class="float-right"
-                            *ngIf="isVisitNoteProvider && !visitEnded"
-                            (click)="deletePatientInteraction()"
-                            data-test-id="btnDeletePatientInteraction"
-                          >
-                            <img src="assets/svgs/delete-icon.svg" alt="" />
-                          </button>
-                        </td>
-                      </tr>
                       <tr *ngIf="patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction">
-                        <td>{{'Spoken with the healthcare worker directly?'|translate}}</td>
-                        <td>{{ patientInteractionForm.value.hwSpoken }}</td>
+                        <td *ngIf="!brandName">{{'Spoken with the healthcare worker directly?'|translate}}</td>
+                        <td *ngIf="brandName">{{'Spoken with the patient directly?'|translate}}</td>
+                        <td>{{ patientInteractionForm.value.hwSpoken.split(',')[0] }}</td>
+                        <td>{{ patientInteractionForm.value.hwSpoken.split(':')[1] ?? '-' }}</td>
                         <td class="pr-0">
                           <button
                             type="button"
                             mat-icon-button
                             class="float-right"
-                            *ngIf="isVisitNoteProvider && !visitEnded"
+                            *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
                             (click)="deleteHWInteraction()"
                             data-test-id="btnDeleteHWtInteraction"
                           >
@@ -1082,6 +1082,10 @@
                       </tr>
                     </tbody>
                   </table>
+                </div>
+                <div class="no-docs text-center font-weight-bold" 
+                  *ngIf="isMCCUser && !patientInteractionForm.value.present && !patientInteractionForm.value.hwPresent">
+                  {{ "Patient Interaction not present" | translate }}
                 </div>
               </form>
             </mat-expansion-panel>
@@ -1109,6 +1113,7 @@
                       <th scope="col">{{'Diagnosis'|translate}}</th>
                       <th scope="col">{{'Type'|translate}}</th>
                       <th scope="col">{{'Status'|translate}}</th>
+                      <th scope="col"  *ngIf="isFeatureAvailable('tnmStaging')">{{'TNM Staging'|translate}}</th>
                       <th scope="col"></th>
                     </tr>
                   </thead>
@@ -1118,11 +1123,12 @@
                         <td>{{ d.diagnosisName }}</td>
                         <td>{{ d.diagnosisType }}</td>
                         <td>{{ d.diagnosisStatus }}</td>
+                        <td *ngIf="isFeatureAvailable('tnmStaging')">{{ d.diagnosisTNMStaging ?? '-' }}</td>
                         <td class="pr-0">
                           <button
                             mat-icon-button
                             class="float-right"
-                            *ngIf="isVisitNoteProvider && !visitEnded"
+                            *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
                             (click)="deleteDiagnosis(i, d.uuid)"
                             data-test-id="{{'btnDeleteDiagnosisVisitSummary' + i}}"
                           >
@@ -1131,7 +1137,7 @@
                         </td>
                       </tr>
                     </ng-container>
-                    <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+                    <ng-container *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded">
                       <tr *ngIf="addMoreDiagnosis">
                         <td colspan="4" class="px-0">
                           <div class="form-group mb-0">
@@ -1152,7 +1158,7 @@
                 </table>
               </div>
 
-              <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+              <ng-container *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded">
                 <form
                   [formGroup]="diagnosisForm"
                   (ngSubmit)="saveDiagnosis()"
@@ -1242,11 +1248,34 @@
                               <label>{{'Confirmed'|translate}}</label>
                             </div>
                           </div>
+                          <div *ngIf="appConfigService?.patient_visit_summary?.diagnosis_under_evaluation" class="pretty p-default p-round">
+                            <input
+                              type="radio"
+                              [value]="'Under Evaluation'"
+                              formControlName="diagnosisStatus"
+                              data-test-id="radioDiagnosisStatusUnderEvaluation"
+                            />
+                            <div class="state p-success">
+                              <label>{{'Under Evaluation'|translate}}</label>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </li>
+                    <li *ngIf="isFeatureAvailable('tnmStaging')">
+                      <div class="form-group">
+                        <label for="note">{{'TNM Staging'|translate}}</label>
+                        <textarea
+                          class="form-control"
+                          rows="3"
+                          placeholder="{{'Type here'|translate}}"
+                          formControlName="diagnosisTNMStaging"
+                          data-test-id="diagnosisTNMStaging"
+                        ></textarea>
+                      </div>
+                    </li>
                   </ul>
-                  <div class="form-group mb-0">
+                  <div class="form-group mb-0" *ngIf="!isMCCUser">
                     <button
                       type="button"
                       class="white-btn mr-2 mt-3"
@@ -1266,340 +1295,17 @@
                   </div>
                 </form>
               </ng-container>
-            </mat-expansion-panel>
+            </mat-expansion-panel>  
 
-            <mat-expansion-panel [expanded]="true" #panel3 hideToggle>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <div class="intel-accordion-title">
-                    <img src="assets/svgs/note.svg" alt="" width="44px" />
-                    <h6 class="mb-0 ml-2">{{'Note'|translate}}</h6>
-                  </div>
-                </mat-panel-title>
-                <mat-icon>{{ panel3.expanded ? "remove" : "add" }}</mat-icon>
-              </mat-expansion-panel-header>
-
-              <ul class="items-list" *ngIf="notes.length">
-                <li *ngFor="let n of notes; let i = index">
-                  <div
-                    class="d-flex justify-content-between align-items-center"
-                  >
-                    <span>{{ n.value }}</span>
-                    <button
-                      mat-icon-button
-                      (click)="deleteNote(i, n.uuid)"
-                      *ngIf="isVisitNoteProvider && !visitEnded"
-                      data-test-id="{{'btnDeleteNoteVisitSummary'+i}}"
-                    >
-                      <img src="assets/svgs/delete-icon.svg" alt="" />
-                    </button>
-                  </div>
-                </li>
-              </ul>
-              <ng-template #noNotes>
-                <div class="no-docs text-center font-weight-bold">
-                  {{'No notes added!'|translate}}
-                </div>
-              </ng-template>
-              <form
-                class="mt-3"
-                [formGroup]="addNoteForm"
-                (ngSubmit)="addNote()"
-                *ngIf="isVisitNoteProvider && !visitEnded"
-              >
-                <div class="form-group" *ngIf="addMoreNote">
-                  <button
-                    type="button"
-                    class="add-more-btn"
-                    (click)="toggleNote()"
-                    data-test-id="btnAddMoreNote"
-                  >
-                    <img src="assets/svgs/plus-circle.svg" alt="" />
-                    <span class="ml-2">{{'Add more notes'|translate}}</span>
-                  </button>
-                </div>
-                <ng-container *ngIf="!addMoreNote">
-                  <div class="form-group">
-                    <label for="note"
-                      ><b>{{'Note'|translate}}*&nbsp;</b>
-                      <span class="text-muted"
-                        >({{'Not shared with patient'|translate}})</span
-                      ></label
-                    >
-                    <textarea
-                      class="form-control"
-                      rows="3"
-                      placeholder="{{'Type here'|translate}}"
-                      formControlName="note"
-                      data-test-id="etNote"
-                    ></textarea>
-                  </div>
-                  <div class="form-group">
-                    <button
-                      type="button"
-                      class="white-btn mr-2"
-                      (click)="toggleNote()"
-                      data-test-id="btnCancelNote"
-                    >
-                      {{'Cancel'|translate}}
-                    </button>
-                    <button
-                      type="submit"
-                      class="gray-btn"
-                      [disabled]="addNoteForm.invalid"
-                      data-test-id="btnSubmitNote"
-                    >
-                      {{'Add note'|translate}}
-                    </button>
-                  </div>
-                </ng-container>
-              </form>
-            </mat-expansion-panel>
-
-            <mat-expansion-panel
-              [expanded]="true"
-              #panel4
-              hideToggle
-              class="bg-gray overflow-show"
-            >
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <div class="intel-accordion-title">
-                    <img src="assets/svgs/medication.svg" alt="" width="44px" />
-                    <h6 class="mb-0 ml-2">{{'Medication'|translate}}</h6>
-                  </div>
-                </mat-panel-title>
-                <mat-icon>{{ panel4.expanded ? "remove" : "add" }}</mat-icon>
-              </mat-expansion-panel-header>
-
-              <form [formGroup]="addMedicineForm" (ngSubmit)="addMedicine()">
-                <div class="table-responsive medication-con">
-                  <table class="table" aria-describedby="">
-                    <thead>
-                      <tr>
-                        <th scope="col">{{'Drug name'|translate}}</th>
-                        <th scope="col">{{'Strength'|translate}}</th>
-                        <th scope="col">{{'No. of days'|translate}}</th>
-                        <th scope="col">{{'Timing'|translate}}</th>
-                        <th scope="col">{{'Remarks'|translate}}</th>
-                        <th scope="col"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <ng-container *ngIf="medicines.length">
-                        <tr *ngFor="let m of medicines; let i = index">
-                          <td>{{ m.drug }}</td>
-                          <td>{{ m.strength }}</td>
-                          <td>{{ m.days }}</td>
-                          <td>{{ m.timing }}</td>
-                          <td>{{ m.remark }}</td>
-                          <td class="pr-0">
-                            <button
-                              type="button"
-                              mat-icon-button
-                              class="float-right"
-                              *ngIf="isVisitNoteProvider && !visitEnded"
-                              (click)="deleteMedicine(i, m.uuid)"
-                              data-test-id="{{'btnDeleteMedVisitSummary'+i}}"
-                            >
-                              <img src="assets/svgs/delete-icon.svg" alt="" />
-                            </button>
-                          </td>
-                        </tr>
-                      </ng-container>
-                      <ng-template #noMedicines>
-                        <tr>
-                          <td colspan="6" class="text-center font-weight-bold">
-                            {{'No medicines added!'|translate}}
-                          </td>
-                        </tr>
-                      </ng-template>
-                      <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
-                        <tr *ngIf="addMoreMedicine">
-                          <td colspan="6" class="px-0">
-                            <div class="form-group mb-0">
-                              <button
-                                type="button"
-                                class="add-more-btn"
-                                (click)="toggleMedicine()"
-                                data-test-id="btnAddMoreMed"
-                              >
-                                <img src="assets/svgs/plus-circle.svg" alt="" />
-                                <span class="ml-2">{{'Add more medicine'|translate}}</span>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr *ngIf="!addMoreMedicine">
-                          <td>
-                            <div class="form-group mb-0">
-                              <input
-                                formControlName="drug"
-                                type="text"
-                                class="form-control"
-                                placeholder="{{'Enter drug'|translate}}*"
-                                [ngbTypeahead]="search3"
-                                data-test-id="etDrugName"
-                              />
-                            </div>
-                          </td>
-                          <td>
-                            <div class="form-group mb-0">
-                              <input
-                                formControlName="strength"
-                                type="text"
-                                class="form-control"
-                                placeholder="{{'Enter strength'|translate}}*"
-                                [ngbTypeahead]="search4"
-                                data-test-id="etDrugStrength"
-                              />
-                            </div>
-                          </td>
-                          <td>
-                            <div class="form-group mb-0">
-                              <input
-                                formControlName="days"
-                                type="text"
-                                class="form-control"
-                                placeholder="{{'Enter days'|translate}}*"
-                                [ngbTypeahead]="search5"
-                                data-test-id="etDays"
-                              />
-                            </div>
-                          </td>
-                          <td>
-                            <ng-select
-                              appendTo=".visit-summary-tab-group"
-                              formControlName="timing"
-                              class="visit-select custom"
-                              [items]="timingList"
-                              bindLabel="name"
-                              bindValue="name"
-                              [clearable]="false"
-                              [searchable]="true"
-                              [addTag]="true"
-                              placeholder="{{'Select timing'|translate}}*"
-                              data-test-id="selectTiming"
-                            >
-                            </ng-select>
-                          </td>
-                          <td colspan="2">
-                            <div class="form-group mb-0">
-                              <input
-                                formControlName="remark"
-                                type="text"
-                                class="form-control"
-                                placeholder="{{'Enter Remark'|translate}}*"
-                                data-test-id="etRemarkMed"
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                        <tr *ngIf="!addMoreMedicine">
-                          <td colspan="6" class="border-top-0">
-                            <div class="form-group mb-0 float-right">
-                              <button
-                                type="button"
-                                class="white-btn mr-2"
-                                (click)="toggleMedicine()"
-                                data-test-id="btnCancelMed"
-                              >
-                                {{'Cancel'|translate}}
-                              </button>
-                              <button
-                                type="submit"
-                                class="gray-btn"
-                                [disabled]="addMedicineForm.invalid"
-                                data-test-id="btnSubmitMed"
-                              >
-                                {{'Add'|translate}}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      </ng-container>
-                    </tbody>
-                  </table>
-                </div>
-              </form>
-
-              <h6 class="list-header mt-3 mb-2">{{'Additional instructions'|translate}}*</h6>
-              <ng-container *ngIf="additionalInstructions.length">
-                <ul class="items-list">
-                  <li *ngFor="let ai of additionalInstructions; let i = index">
-                    <div class="d-flex justify-content-between">
-                      <span>{{ ai.value }}</span>
-                      <button
-                        mat-icon-button
-                        *ngIf="isVisitNoteProvider && !visitEnded"
-                        (click)="deleteAdditionalInstruction(i, ai.uuid)"
-                        data-test-id="{{'btnDeleteAIVisitSummary'+i}}"
-                      >
-                        <img src="assets/svgs/delete-icon.svg" alt="" />
-                      </button>
-                    </div>
-                  </li>
-                </ul>
-              </ng-container>
-
-              <ng-template #noAdditionalInstructions>
-                <div class="no-docs text-center font-weight-bold">
-                  {{'No additional instructions added!' |translate}}
-                </div>
-              </ng-template>
-              <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
-                <div class="form-group" *ngIf="addMoreAdditionalInstruction">
-                  <button
-                    type="button"
-                    class="add-more-btn"
-                    (click)="toggleAdditionalInstruction()"
-                    data-test-id="btnAddMoreAI"
-                  >
-                    <img src="assets/svgs/plus-circle.svg" alt="" />
-                    <span class="ml-2">{{'Add more instructions'|translate}}</span>
-                  </button>
-                </div>
-                <form
-                  [formGroup]="addAdditionalInstructionForm"
-                  (ngSubmit)="addAdditionalInstruction()"
-                  *ngIf="!addMoreAdditionalInstruction"
-                >
-                  <div class="form-group">
-                    <textarea
-                      formControlName="note"
-                      class="form-control"
-                      rows="3"
-                      placeholder="{{'Type here'|translate}}"
-                      data-test-id="etAI"
-                    ></textarea>
-                  </div>
-                  <div class="form-group">
-                    <button
-                      type="button"
-                      class="white-btn mr-2"
-                      (click)="toggleAdditionalInstruction()"
-                      data-test-id="btnCancelAI"
-                    >
-                      {{'Cancel'|translate}}
-                    </button>
-                    <button
-                      type="submit"
-                      class="gray-btn"
-                      [disabled]="addAdditionalInstructionForm.invalid"
-                      data-test-id="btnSubmitAI"
-                    >
-                      {{'Save'|translate}}
-                    </button>
-                  </div>
-                </form>
-              </ng-container>
-            </mat-expansion-panel>
+            <app-notes [title]="'Note'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded" [visit]="visit"
+              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser"></app-notes>
 
             <mat-expansion-panel
               [expanded]="true"
               #panel5
               hideToggle
               class="overflow-show"
+              *ngIf="isFeatureAvailable('advice')"
             >
               <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -1611,7 +1317,7 @@
                 <mat-icon>{{ panel5.expanded ? "remove" : "add" }}</mat-icon>
               </mat-expansion-panel-header>
 
-              <ul class="items-list" *ngIf="advices.length">
+              <ul class="items-list" *ngIf="advices.length else noAdvices">
                 <li *ngFor="let ad of advices; let i = index">
                   <div class="d-flex justify-content-between">
                     <span>{{ ad.value }}</span>
@@ -1619,7 +1325,7 @@
                       mat-icon-button
                       (click)="deleteAdvice(i, ad.uuid)"
                       data-test-id="{{'btnDeleteAdviceVisitSummary'+i}}"
-                      *ngIf="isVisitNoteProvider && !visitEnded"
+                      *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
                     >
                       <img src="assets/svgs/delete-icon.svg" alt="" />
                     </button>
@@ -1627,11 +1333,11 @@
                 </li>
               </ul>
               <ng-template #noAdvices>
-                <div class="no-docs text-center font-weight-bold">
+                <div class="no-docs text-center font-weight-bold" *ngIf="isMCCUser">
                   {{'No advices added!'|translate}}
                 </div>
               </ng-template>
-              <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+              <ng-container *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded">
                 <div class="form-group mt-3" *ngIf="addMoreAdvice">
                   <button
                     type="button"
@@ -1684,270 +1390,555 @@
 
             <mat-expansion-panel
               [expanded]="true"
-              #panel6
+              #panelDoctorRcom
               hideToggle
               class="bg-gray overflow-show"
+              *ngIf="isFeatureAvailable('doctor-recommendation')"
             >
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <div class="intel-accordion-title">
-                    <img src="assets/svgs/test.svg" alt="" width="44px" />
-                    <h6 class="mb-0 ml-2">{{'Test'|translate}}</h6>
+                    <img src="assets/svgs/advice.svg" alt="" width="44px" />
+                    <h6 class="mb-0 ml-2">{{'Doctor\'s Recommendation'| translate}}</h6>
                   </div>
                 </mat-panel-title>
-                <mat-icon>{{ panel6.expanded ? "remove" : "add" }}</mat-icon>
+                <mat-icon>{{ panelDoctorRcom.expanded ? "remove" : "add" }}</mat-icon>
               </mat-expansion-panel-header>
-
-              <ul class="items-list" *ngIf="tests.length">
-                <li *ngFor="let t of tests; let i = index">
-                  <div class="d-flex justify-content-between">
-                    <span>{{ t.value }}</span>
-                    <button
-                      mat-icon-button
-                      (click)="deleteTest(i, t.uuid)"
-                      data-test-id="{{'btnDeleteTestVisitSummary'+i}}"
-                      *ngIf="isVisitNoteProvider && !visitEnded"
-                    >
-                      <img src="assets/svgs/delete-icon.svg" alt="" />
-                    </button>
-                  </div>
-                </li>
-              </ul>
-              <ng-template #noTests>
-                <div class="no-docs text-center font-weight-bold">
-                  {{'No tests added!'|translate}}
-                </div>
-              </ng-template>
-              <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
-                <div class="form-group mt-3" *ngIf="addMoreTest">
-                  <button
-                    type="button"
-                    class="add-more-btn"
-                    (click)="toggleTest()"
-                    data-test-id="btnAddMoreTest"
-                  >
-                    <img src="assets/svgs/plus-circle.svg" alt="" />
-                    <span class="ml-2">{{'Add more test'|translate}}</span>
-                  </button>
-                </div>
-                <form
-                  class="mt-3"
-                  [formGroup]="addTestForm"
-                  (ngSubmit)="addTest()"
-                  *ngIf="!addMoreTest"
-                >
-                  <div class="form-group">
-                    <label for="note"><b>{{'Test'|translate}}*</b></label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      formControlName="test"
-                      placeholder="{{'Type here'|translate}}"
-                      [ngbTypeahead]="search2"
-                      data-test-id="etTest"
-                    />
-                  </div>
-                  <div class="form-group">
-                    <button
-                      type="button"
-                      class="white-btn mr-2"
-                      (click)="toggleTest()"
-                      data-test-id="btnCancelTest"
-                    >
-                      {{'Cancel'|translate}}
-                    </button>
-                    <button
-                      type="submit"
-                      class="gray-btn"
-                      [disabled]="addTestForm.invalid"
-                      data-test-id="btnSubmitTest"
-                    >
-                      {{'Add test'|translate}}
-                    </button>
-                  </div>
-                </form>
+              <ng-container *ngIf="panelDoctorRcom.expanded">
+                <ng-template *ngTemplateOutlet="tplDrRcom"></ng-template>
               </ng-container>
             </mat-expansion-panel>
 
-            <mat-expansion-panel
-              [expanded]="true"
-              #panel7
-              hideToggle
-              class="overflow-show"
-            >
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <div class="intel-accordion-title">
-                    <img src="assets/svgs/referral.svg" alt="" width="44px" />
-                    <h6 class="mb-0 ml-2">{{'Referral-Out'|translate}}</h6>
-                  </div>
-                </mat-panel-title>
-                <mat-icon>{{ panel7.expanded ? "remove" : "add" }}</mat-icon>
-              </mat-expansion-panel-header>
+            <ng-container *ngIf="!isFeatureAvailable('doctor-recommendation')">
+              <ng-template *ngTemplateOutlet="tplDrRcom" ></ng-template>
+            </ng-container>
 
-              <form [formGroup]="addReferralForm" (ngSubmit)="addReferral()">
-                <div class="table-responsive medication-con">
-                  <table class="table" aria-describedby="">
-                    <thead>
-                      <tr>
-                        <th scope="col">{{'Referral to' | translate}}</th>
-                        <th scope="col">{{'Referral facility'|translate}}</th>
-                        <th scope="col">{{'Priority of Referral'|translate}}</th>
-                        <th scope="col">{{'Referral for (Reason)'|translate}}</th>
-                        <th scope="col"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <ng-container *ngIf="referrals.length">
-                        <tr *ngFor="let r of referrals; let i = index">
-                          <td>{{ (r.speciality) | translate }}</td>
-                          <td>{{ (r.facility) | translate }}</td>
-                          <td>{{ (r.priority) | translate }}</td>
-                          <td>{{ r.reason }}</td>
-                          <td class="pr-0">
-                            <button
-                              type="button"
-                              class="float-right"
-                              mat-icon-button
-                              (click)="deleteReferral(i, r.uuid)"
-                              data-test-id="{{'btnDeleteReferralVisitSummary'+i}}"
-                              *ngIf="isVisitNoteProvider && !visitEnded"
-                            >
-                              <img src="assets/svgs/delete-icon.svg" alt="" />
-                            </button>
-                          </td>
-                        </tr>
-                      </ng-container>
-                      <ng-template #noReferrals>
+            <ng-template #tplDrRcom >
+
+                <mat-expansion-panel
+                [expanded]="true"
+                #panel4
+                hideToggle
+                class="bg-gray overflow-show"
+              >
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <div class="intel-accordion-title">
+                      <img src="assets/svgs/medication.svg" alt="" width="44px" />
+                      <h6 class="mb-0 ml-2">{{'Medications Advised'|translate}}</h6>
+                    </div>
+                  </mat-panel-title>
+                  <mat-icon>{{ panel4.expanded ? "remove" : "add" }}</mat-icon>
+                </mat-expansion-panel-header>
+
+                <form [formGroup]="addMedicineForm" (ngSubmit)="addMedicine()">
+                  <div class="table-responsive medication-con">
+                    <table class="table" aria-describedby="">
+                      <thead>
                         <tr>
-                          <td colspan="6" class="text-center font-weight-bold">
-                            {{'No medicines added!'|translate}}
-                          </td>
+                          <th scope="col" width="20%">{{'Drug name'|translate}}</th>
+                          <th scope="col" width="15%">{{'Strength'|translate}}</th>
+                          <th scope="col" width="10%">{{'No. of days'|translate}}</th>
+                          <th scope="col" width="15%">{{'Timing'|translate}}</th>
+                          <th scope="col" width="15%">{{'Frequency'|translate}}</th>
+                          <th scope="col" width="25%">{{'Remarks'|translate}}</th>
+                          <th scope="col"></th>
                         </tr>
-                      </ng-template>
-                      <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
-                        <tr *ngIf="addMoreReferral">
-                          <td colspan="6" class="px-0">
-                            <div class="form-group mb-0">
+                      </thead>
+                      <tbody>
+                        <ng-container *ngIf="medicines.length else noMedicines">
+                          <tr *ngFor="let m of medicines; let i = index">
+                            <td>{{ m.drug }}</td>
+                            <td>{{ m.strength }}</td>
+                            <td>{{ m.days }}</td>
+                            <td>{{ m.timing }}</td>
+                            <td>{{ m?.frequency }}</td>
+                            <td>{{ m.remark }}</td>
+                            <td class="pr-0">
                               <button
                                 type="button"
-                                class="add-more-btn"
-                                (click)="toggleReferral()"
-                                data-test-id="btnAddMoreReferralVisitSummary"
+                                mat-icon-button
+                                class="float-right"
+                                *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
+                                (click)="deleteMedicine(i, m.uuid)"
+                                data-test-id="{{'btnDeleteMedVisitSummary'+i}}"
                               >
-                                <img src="assets/svgs/plus-circle.svg" alt="" />
-                                <span class="ml-2">{{'Add more Referral'|translate}}</span>
+                                <img src="assets/svgs/delete-icon.svg" alt="" />
                               </button>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr *ngIf="!addMoreReferral">
-                          <td>
-                            <div class="form-group mb-0">
+                            </td>
+                          </tr>
+                        </ng-container>
+                        <ng-template #noMedicines>
+                          <tr *ngIf="isMCCUser">
+                            <td colspan="6" class="text-center font-weight-bold">
+                              {{'No medicines added!'|translate}}
+                            </td>
+                          </tr>
+                        </ng-template>
+                        <ng-container *ngIf="isVisitNoteProvider && !visitEnded">
+                          <tr *ngIf="addMoreMedicine && !isMCCUser">
+                            <td colspan="6" class="px-0">
+                              <div class="form-group mb-0">
+                                <button
+                                  type="button"
+                                  class="add-more-btn"
+                                  (click)="toggleMedicine()"
+                                  data-test-id="btnAddMoreMed"
+                                >
+                                  <img src="assets/svgs/plus-circle.svg" alt="" />
+                                  <span class="ml-2">{{'Add more medicine'|translate}}</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr *ngIf="!addMoreMedicine && !isMCCUser">
+                            <td>
+                              <div class="form-group mb-0">
+                                <input
+                                  formControlName="drug"
+                                  type="text"
+                                  class="form-control"
+                                  placeholder="{{'Enter drug'|translate}}*"
+                                  [ngbTypeahead]="search3"
+                                  data-test-id="etDrugName"
+                                />
+                              </div>
+                            </td>
+                            <td>
+                              <div class="form-group mb-0">
+                                <input
+                                  formControlName="strength"
+                                  type="text"
+                                  class="form-control"
+                                  placeholder="{{'Enter strength'|translate}}*"
+                                  [ngbTypeahead]="search4"
+                                  data-test-id="etDrugStrength"
+                                />
+                              </div>
+                            </td>
+                            <td>
+                              <div class="form-group mb-0">
+                                <input
+                                  formControlName="days"
+                                  type="text"
+                                  class="form-control"
+                                  placeholder="{{'Enter days'|translate}}*"
+                                  [ngbTypeahead]="search5"
+                                  data-test-id="etDays"
+                                />
+                              </div>
+                            </td>
+                            <td>
                               <ng-select
                                 appendTo=".visit-summary-tab-group"
-                                class="visit-select"
-                                formControlName="speciality"
-                                bindLabel="label"
-                                bindValue="label"
-                                [clearable]="false"
-                                [searchable]="true"
-                                [addTag]="true"
-                                placeholder="{{'Select specialization'|translate}}*"
-                                data-test-id="selectReferralSpecialityVisitSummary"
-                              >
-                              <ng-option *ngFor="let specialization of refer_specializations" [value]="specialization.name">
-                                {{ (specialization.name) |translate }}
-                              </ng-option>
-                              </ng-select>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="form-group mb-0">
-                              <ng-select
-                                class="visit-select"
-                                appendTo=".visit-summary-tab-group"
-                                formControlName="facility"
-                                bindLabel="label"
-                                bindValue="label"
-                                [clearable]="false"
-                                [searchable]="true"
-                                [addTag]="true"
-                                placeholder="{{'Select facility'|translate}}*"
-                                data-test-id="selectReferralFacilityVisitSummary"
-                              >
-                              <ng-option *ngFor="let facility of facilities" [value]="facility.name">
-                                {{ (facility.name) |translate }}
-                              </ng-option>
-                              </ng-select>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="form-group mb-0">
-                              <ng-select
-                                class="visit-select"
-                                appendTo=".visit-summary-tab-group"
-                                formControlName="priority_refer"
-                                [clearable]="false"
+                                formControlName="timing"
+                                class="visit-select custom"
+                                [items]="timingList"
                                 bindLabel="name"
                                 bindValue="name"
-                                [searchable]="false"
-                                [addTag]="false"
-                                placeholder="{{'Select Priority'|translate}}*"
-                                data-test-id="selectReferralFacilityVisitSummary"
+                                [clearable]="false"
+                                [searchable]="true"
+                                [addTag]="true"
+                                placeholder="{{'Select timing'|translate}}*"
+                                data-test-id="selectTiming"
                               >
-                              <ng-option *ngFor="let ref_priority of refer_priorities" [value]="ref_priority.name">
-                                {{ (ref_priority.name) | translate }}
-                              </ng-option>
                               </ng-select>
-                            </div>
-                          </td>
-                          <td colspan="2">
-                            <div class="form-group mb-0">
-                              <input
-                                formControlName="reason"
-                                type="text"
-                                class="form-control"
-                                placeholder="{{'Enter reason'|translate}}"
-                                data-test-id="etReferralPriorityVisitSummary"
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                        <tr *ngIf="!addMoreReferral">
-                          <td colspan="6" class="border-top-0">
-                            <div class="form-group mb-0 float-right">
-                              <button
-                                type="button"
-                                class="white-btn mr-2"
-                                (click)="toggleReferral()"
-                                data-test-id="btnCancelReferralVisitSummary"
+                            </td>
+                            <td>
+                              <ng-select
+                                appendTo=".visit-summary-tab-group"
+                                formControlName="frequency"
+                                class="visit-select custom"
+                                [items]="frequencyList"
+                                [clearable]="false"
+                                [searchable]="true"
+                                [addTag]="true"
+                                placeholder="{{'Select frequency'|translate}}"
                               >
-                                {{'Cancel'|translate}}
-                              </button>
-                              <button
-                                type="submit"
-                                class="gray-btn"
-                                [disabled]="addReferralForm.invalid"
-                                data-test-id="btnSubmitReferralVisitSummary"
-                              >
-                                {{'Add'|translate}}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      </ng-container>
-                    </tbody>
-                  </table>
-                </div>
-              </form>
-            </mat-expansion-panel>
+                              </ng-select>
+                            </td>
+                            <td colspan="2">
+                              <div class="form-group mb-0">
+                                <input
+                                  formControlName="remark"
+                                  type="text"
+                                  class="form-control"
+                                  placeholder="{{'Enter Remark'|translate}}"
+                                  data-test-id="etRemarkMed"
+                                />
+                              </div>
+                            </td>
+                          </tr>
+                          <tr *ngIf="!addMoreMedicine && !isMCCUser">
+                            <td colspan="6" class="border-top-0">
+                              <div class="form-group mb-0 float-right">
+                                <button
+                                  type="button"
+                                  class="white-btn mr-2"
+                                  (click)="toggleMedicine()"
+                                  data-test-id="btnCancelMed"
+                                >
+                                  {{'Cancel'|translate}}
+                                </button>
+                                <button
+                                  type="submit"
+                                  class="gray-btn"
+                                  [disabled]="addMedicineForm.invalid"
+                                  data-test-id="btnSubmitMed"
+                                >
+                                  {{'Add'|translate}}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                  </div>
+                </form>
+
+                <h6 class="list-header mt-3 mb-2">{{'Additional instructions'|translate}}</h6>
+                <ng-container *ngIf="additionalInstructions.length else noAdditionalInstructions">
+                  <ul class="items-list">
+                    <li *ngFor="let ai of additionalInstructions; let i = index">
+                      <div class="d-flex justify-content-between">
+                        <span>{{ ai.value }}</span>
+                        <button
+                          mat-icon-button
+                          *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
+                          (click)="deleteAdditionalInstruction(i, ai.uuid)"
+                          data-test-id="{{'btnDeleteAIVisitSummary'+i}}"
+                        >
+                          <img src="assets/svgs/delete-icon.svg" alt="" />
+                        </button>
+                      </div>
+                    </li>
+                  </ul>
+                </ng-container>
+
+                <ng-template #noAdditionalInstructions>
+                  <div class="no-docs text-center font-weight-bold" *ngIf="isMCCUser">
+                    {{'No additional instructions added!' |translate}}
+                  </div>
+                </ng-template>
+                <ng-container *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded">
+                  <div class="form-group" *ngIf="addMoreAdditionalInstruction">
+                    <button
+                      type="button"
+                      class="add-more-btn"
+                      (click)="toggleAdditionalInstruction()"
+                      data-test-id="btnAddMoreAI"
+                    >
+                      <img src="assets/svgs/plus-circle.svg" alt="" />
+                      <span class="ml-2">{{'Add more instructions'|translate}}</span>
+                    </button>
+                  </div>
+                  <form
+                    [formGroup]="addAdditionalInstructionForm"
+                    (ngSubmit)="addAdditionalInstruction()"
+                    *ngIf="!addMoreAdditionalInstruction"
+                  >
+                    <div class="form-group">
+                      <textarea
+                        formControlName="note"
+                        class="form-control"
+                        rows="3"
+                        placeholder="{{'Type here'|translate}}"
+                        data-test-id="etAI"
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <button
+                        type="button"
+                        class="white-btn mr-2"
+                        (click)="toggleAdditionalInstruction()"
+                        data-test-id="btnCancelAI"
+                      >
+                        {{'Cancel'|translate}}
+                      </button>
+                      <button
+                        type="submit"
+                        class="gray-btn"
+                        [disabled]="addAdditionalInstructionForm.invalid"
+                        data-test-id="btnSubmitAI"
+                      >
+                        {{'Save'|translate}}
+                      </button>
+                    </div>
+                  </form>
+                </ng-container>
+                </mat-expansion-panel>
+                
+                <mat-expansion-panel
+                  [expanded]="true"
+                  #panel6
+                  hideToggle
+                  class="overflow-show"
+                >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <div class="intel-accordion-title">
+                        <img src="assets/svgs/test.svg" alt="" width="44px" />
+                        <h6 class="mb-0 ml-2">{{'Investigations Advised'|translate}}</h6>
+                      </div>
+                    </mat-panel-title>
+                    <mat-icon>{{ panel6.expanded ? "remove" : "add" }}</mat-icon>
+                  </mat-expansion-panel-header>
+
+                  <ul class="items-list" *ngIf="tests.length else noTests">
+                    <li *ngFor="let t of tests; let i = index">
+                      <div class="d-flex justify-content-between">
+                        <span>{{ t.value }}</span>
+                        <button
+                          mat-icon-button
+                          (click)="deleteTest(i, t.uuid)"
+                          data-test-id="{{'btnDeleteTestVisitSummary'+i}}"
+                          *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
+                        >
+                          <img src="assets/svgs/delete-icon.svg" alt="" />
+                        </button>
+                      </div>
+                    </li>
+                  </ul>
+                  <ng-template #noTests>
+                    <div class="no-docs text-center font-weight-bold" *ngIf="isMCCUser">
+                      {{'No tests added!'|translate}}
+                    </div>
+                  </ng-template>
+                  <ng-container *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded">
+                    <div class="form-group mt-3" *ngIf="addMoreTest">
+                      <button
+                        type="button"
+                        class="add-more-btn"
+                        (click)="toggleTest()"
+                        data-test-id="btnAddMoreTest"
+                      >
+                        <img src="assets/svgs/plus-circle.svg" alt="" />
+                        <span class="ml-2">{{'Add more test'|translate}}</span>
+                      </button>
+                    </div>
+                    <form
+                      class="mt-3"
+                      [formGroup]="addTestForm"
+                      (ngSubmit)="addTest()"
+                      *ngIf="!addMoreTest"
+                    >
+                      <div class="form-group">
+                        <label for="note"><b>{{'Test'|translate}}*</b></label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="test"
+                          placeholder="{{'Type here'|translate}}"
+                          [ngbTypeahead]="search2"
+                          data-test-id="etTest"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <button
+                          type="button"
+                          class="white-btn mr-2"
+                          (click)="toggleTest()"
+                          data-test-id="btnCancelTest"
+                        >
+                          {{'Cancel'|translate}}
+                        </button>
+                        <button
+                          type="submit"
+                          class="gray-btn"
+                          [disabled]="addTestForm.invalid"
+                          data-test-id="btnSubmitTest"
+                        >
+                          {{'Add Test'|translate}}
+                        </button>
+                      </div>
+                    </form>
+                  </ng-container>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel
+                  [expanded]="true"
+                  #panel7
+                  hideToggle
+                  class="overflow-show"
+                >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <div class="intel-accordion-title">
+                        <img src="assets/svgs/referral.svg" alt="" width="44px" />
+                        <h6 class="mb-0 ml-2">{{'Referral Advise'|translate}}</h6>
+                      </div>
+                    </mat-panel-title>
+                    <mat-icon>{{ panel7.expanded ? "remove" : "add" }}</mat-icon>
+                  </mat-expansion-panel-header>
+
+                  <form [formGroup]="addReferralForm" (ngSubmit)="addReferral()">
+                    <div class="table-responsive medication-con">
+                      <table class="table" aria-describedby="">
+                        <thead>
+                          <tr>
+                            <th scope="col">{{'Referral to' | translate}}</th>
+                            <th scope="col" *ngIf="isFeatureAvailable('referralFacility', true)">{{'Referral facility'|translate}}</th>
+                            <th scope="col" *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{'Priority of Referral'|translate}}</th>
+                            <th scope="col">{{'Remarks'|translate}}</th>
+                            <th scope="col"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-container *ngIf="referrals.length else noReferrals">
+                            <tr *ngFor="let r of referrals; let i = index">
+                              <td>{{ (r.speciality) | translate }}</td>
+                              <td *ngIf="isFeatureAvailable('referralFacility', true)">{{ (r.facility) | translate }}</td>
+                              <td *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{ (r.priority) | translate }}</td>
+                              <td>{{ r.reason }}</td>
+                              <td class="pr-0">
+                                <button
+                                  type="button"
+                                  class="float-right"
+                                  mat-icon-button
+                                  (click)="deleteReferral(i, r.uuid)"
+                                  data-test-id="{{'btnDeleteReferralVisitSummary'+i}}"
+                                  *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
+                                >
+                                  <img src="assets/svgs/delete-icon.svg" alt="" />
+                                </button>
+                              </td>
+                            </tr>
+                          </ng-container>
+                          <ng-template #noReferrals>
+                            <tr *ngIf="isMCCUser">
+                              <td colspan="6" class="text-center font-weight-bold">
+                                {{'No referrals added!'|translate}}
+                              </td>
+                            </tr>
+                          </ng-template>
+                          <ng-container *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded">
+                            <tr *ngIf="addMoreReferral">
+                              <td colspan="6" class="px-0">
+                                <div class="form-group mb-0">
+                                  <button
+                                    type="button"
+                                    class="add-more-btn"
+                                    (click)="toggleReferral()"
+                                    data-test-id="btnAddMoreReferralVisitSummary"
+                                  >
+                                    <img src="assets/svgs/plus-circle.svg" alt="" />
+                                    <span class="ml-2">{{'Add more Referral'|translate}}</span>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr *ngIf="!addMoreReferral && !isMCCUser">
+                              <td>
+                                <div class="form-group mb-0">
+                                  <ng-select
+                                    appendTo=".visit-summary-tab-group"
+                                    class="visit-select"
+                                    formControlName="speciality"
+                                    bindLabel="label"
+                                    bindValue="label"
+                                    [clearable]="false"
+                                    [searchable]="true"
+                                    [addTag]="true"
+                                    placeholder="{{'Select specialization'|translate}}*"
+                                    data-test-id="selectReferralSpecialityVisitSummary"
+                                  >
+                                  <ng-option *ngFor="let specialization of refer_specializations" [value]="specialization.name">
+                                    {{ (specialization.name) |translate }}
+                                  </ng-option>
+                                  </ng-select>
+                                </div>
+                              </td>
+                              <td *ngIf="isFeatureAvailable('referralFacility', true)"> 
+                                <div class="form-group mb-0">
+                                  <ng-select
+                                    class="visit-select"
+                                    appendTo=".visit-summary-tab-group"
+                                    formControlName="facility"
+                                    bindLabel="label"
+                                    bindValue="label"
+                                    [clearable]="false"
+                                    [searchable]="true"
+                                    [addTag]="true"
+                                    placeholder="{{'Select facility'|translate}}*"
+                                    data-test-id="selectReferralFacilityVisitSummary"
+                                  >
+                                  <ng-option *ngFor="let facility of facilities" [value]="facility.name">
+                                    {{ (facility.name) |translate }}
+                                  </ng-option>
+                                  </ng-select>
+                                </div>
+                              </td>
+                              <td *ngIf="isFeatureAvailable('priorityOfReferral', true)">
+                                <div class="form-group mb-0">
+                                  <ng-select
+                                    class="visit-select"
+                                    appendTo=".visit-summary-tab-group"
+                                    formControlName="priority_refer"
+                                    [clearable]="false"
+                                    bindLabel="name"
+                                    bindValue="name"
+                                    [searchable]="false"
+                                    [addTag]="false"
+                                    placeholder="{{'Select Priority'|translate}}*"
+                                    data-test-id="selectReferralFacilityVisitSummary"
+                                  >
+                                  <ng-option *ngFor="let ref_priority of refer_priorities" [value]="ref_priority.name">
+                                    {{ (ref_priority.name) | translate }}
+                                  </ng-option>
+                                  </ng-select>
+                                </div>
+                              </td>
+                              <td colspan="2">
+                                <div class="form-group mb-0">
+                                  <input
+                                    formControlName="reason"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="{{'Enter remarks'|translate}}"
+                                    data-test-id="etReferralPriorityVisitSummary"
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+                            <tr *ngIf="!addMoreReferral && !isMCCUser">
+                              <td colspan="6" class="border-top-0">
+                                <div class="form-group mb-0 float-right">
+                                  <button
+                                    type="button"
+                                    class="white-btn mr-2"
+                                    (click)="toggleReferral()"
+                                    data-test-id="btnCancelReferralVisitSummary"
+                                  >
+                                    {{'Cancel'|translate}}
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    class="gray-btn"
+                                    [disabled]="addReferralForm.invalid"
+                                    data-test-id="btnSubmitReferralVisitSummary"
+                                  >
+                                    {{'Add'|translate}}
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          </ng-container>
+                        </tbody>
+                      </table>
+                    </div>
+                  </form>
+                </mat-expansion-panel>            
+            </ng-template>
+
+            <app-follow-up-instruction [title]="'Follow up Instructions'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded" [visit]="visit"
+              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser" *ngIf="isFeatureAvailable('follow-up-instruction')"></app-follow-up-instruction>
 
             <mat-expansion-panel
               [expanded]="true"
               #panel8
               hideToggle
-              class="bg-gray"
+              
             >
               <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -1959,7 +1950,7 @@
                 <mat-icon>{{ panel8.expanded ? "remove" : "add" }}</mat-icon>
               </mat-expansion-panel-header>
 
-              <form [formGroup]="followUpForm" (ngSubmit)="saveFollowUp()" *ngIf="!followUpForm.value.present">
+              <form [formGroup]="followUpForm" (ngSubmit)="saveFollowUp()" *ngIf="!followUpForm.value.present && !isMCCUser">
                 <ul class="items-list">
                   <li>
                     <div class="row">
@@ -1996,6 +1987,37 @@
                   <ng-container
                     *ngIf="followUpForm.value.wantFollowUp == 'Yes' || followUpForm.value.wantFollowUp == 'Да'"
                   >
+                  <li *ngIf="isFeatureAvailable('followUpType')">
+                    <div class="row">
+                      <label for="follow-up" class="col-sm-3 col-form-label"
+                        >{{'Follow-up type' | translate}}</label
+                      >
+                      <div class="col-sm-9 d-flex align-items-center">
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{'In person' | translate}}"
+                            formControlName="followUpType"
+                            data-test-id="radioFollowUpInperson"
+                          />
+                          <div class="state p-success">
+                            <label>{{'In person'|translate}}</label>
+                          </div>
+                        </div>
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{'Telemedicine' | translate}}"
+                            formControlName="followUpType"
+                            data-test-id="radioFollowUpTelemedicine"
+                          />
+                          <div class="state p-success">
+                            <label>{{'Telemedicine'|translate}}</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
                     <li>
                       <div class="row">
                         <label for="follow-date" class="col-sm-3 col-form-label"
@@ -2097,6 +2119,7 @@
                   <thead>
                     <tr>
                       <th scope="col">{{'Follow Up Requested'|translate}}</th>
+                      <th scope="col" *ngIf="isFeatureAvailable('followUpType')">{{'Type'|translate}}</th>
                       <th scope="col">{{'Date'|translate}}</th>
                       <th scope="col">{{'Time'| translate}}</th>
                       <th scope="col">{{'Reason'|translate}}</th>
@@ -2106,6 +2129,7 @@
                   <tbody>
                     <tr>
                       <td>{{ followUpForm.value.wantFollowUp }}</td>
+                      <td *ngIf="isFeatureAvailable('followUpType')">{{ (followUpForm.value.followUpType) ? followUpForm.value.followUpType : '-' }}</td>
                       <td>{{ (followUpForm.value.followUpDate) ? (followUpForm.value.followUpDate|date:'dd MMMM yyyy') : '-' }}</td>
                       <td>{{ (followUpForm.value.followUpTime) ? followUpForm.value.followUpTime : '-' }}</td>
                       <td>{{ (followUpForm.value.followUpReason) ? followUpForm.value.followUpReason : '-' }}</td>
@@ -2116,7 +2140,7 @@
                           mat-icon-button
                           (click)="deleteFollowUp()"
                           data-test-id="btnDeleteFollowUp"
-                          *ngIf="isVisitNoteProvider && !visitEnded"
+                          *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
                         >
                           <img src="assets/svgs/delete-icon.svg" alt="" />
                         </button>
@@ -2125,6 +2149,234 @@
                   </tbody>
                 </table>
               </div>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel [expanded]="true" #panel9 hideToggle *ngIf="isSubSectionEnabled('patient_interaction','Patient')" class="bg-gray">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <div class="intel-accordion-title">
+                    <img
+                      src="assets/svgs/patient-interaction.svg"
+                      alt=""
+                      width="44px"
+                    />
+                    <h6 class="mb-0 ml-2">{{'Call Status'|translate}}</h6>
+                  </div>
+                </mat-panel-title>
+                <mat-icon>{{ panel9.expanded ? "remove" : "add" }}</mat-icon>
+              </mat-expansion-panel-header>
+
+              <form
+                [formGroup]="patientCallStatusForm"
+                (ngSubmit)="saveCallStatus()"
+                *ngIf="!isMCCUser"
+              >
+                <ul class="items-list">
+                  <li>
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label"
+                        >{{'Connect with patient'|translate}}</label
+                      >
+                      <div
+                        class="col-sm-9 d-flex align-items-center"
+                        *ngIf="
+                          getPersonAttributeValue('Telephone Number') != 'NA';
+                          else noContactDetails
+                        "
+                      >
+                        <div class="d-flex">
+                          <a
+                            href="tel:{{
+                              getPersonAttributeValue('Telephone Number')
+                            }}"
+                            target="_blank"
+                            class="icon-btn m-0 mr-2"
+                            data-test-id="linkPatientPhone"
+                          >
+                            <img src="assets/svgs/phone-green.svg" alt="" />
+                          </a>
+                          <a
+                            href="{{ getWhatsAppLink() }}"
+                            target="_blank"
+                            class="icon-btn m-0 mr-2"
+                            data-test-id="linkPatientWhatsApp"
+                            (click)="startWhatsAppCall(true)"
+                          >
+                            <img src="assets/svgs/whatsapp-green.svg" alt="" />
+                          </a>
+                        </div>
+                        <span class="text-muted"
+                          >{{'Click here to connect with the patient'|translate}}</span
+                        >
+                      </div>
+                      <ng-template #noContactDetails>
+                        <div class="col-sm-9 d-flex align-items-center">
+                          <span class="text-muted"
+                            >{{'Patient Mobile number is not available'|translate}}</span
+                          >
+                        </div>
+                      </ng-template>
+                    </div>
+                  </li>
+
+                  <li *ngIf="!patientCallStatusForm.value.patientPresent">
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label"
+                        >{{'Have you spoken with the patient directly?'|translate}}*</label
+                      >
+                      <div class="col-sm-9 d-flex align-items-center">
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{'Yes' | translate}}"
+                            formControlName="spoken"
+                            data-test-id="radioSpokenYes"
+                          />
+                          <div class="state p-success">
+                            <label>{{'Yes'|translate}}</label>
+                          </div>
+                        </div>
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{'No' | translate}}"
+                            formControlName="spoken"
+                            data-test-id="radioSpokenNo"
+                          />
+                          <div class="state p-success">
+                            <label>{{'No'|translate}}</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li *ngIf="!patientCallStatusForm.value.patientPresent">
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label">{{ 'Call Status' | translate }}*</label>
+                      <div class="col-sm-9 d-flex align-items-center">
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{ 'Completed' | translate }}"
+                            [attr.data-value]="'Completed'"
+                            formControlName="callStatus"
+                            (change)="onCallStatusChange($event)"
+                            data-test-id="radioCallStatusCompleted"
+                          />
+                          <div class="state p-success">
+                            <label>{{ 'Completed' | translate }}</label>
+                          </div>
+                        </div>
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{ 'Reschedule/Repeat Internally' | translate }}"
+                            [attr.data-value]="'Reschedule/Repeat Internally'"
+                            formControlName="callStatus"
+                            (change)="onCallStatusChange($event)"
+                            data-test-id="radioCallStatusReschedule"
+                          />
+                          <div class="state p-success">
+                            <label>{{ 'Reschedule/Repeat Internally' | translate }}</label>
+                          </div>
+                        </div>
+                        <div class="pretty p-default p-round">
+                          <input
+                            type="radio"
+                            value="{{ 'Close Call without Completion' | translate }}"
+                            [attr.data-value]="'Close Call without Completion'"
+                            formControlName="callStatus"
+                            (change)="onCallStatusChange($event)"
+                            data-test-id="radioCallStatusClose"
+                          />
+                          <div class="state p-success">
+                            <label>{{ 'Close Call without Completion' | translate }}</label>
+                          </div>
+                        </div>
+                  
+                      </div>
+                    </div>
+                  </li>
+                  
+                  <li *ngIf="!patientCallStatusForm.value.patientPresent && (reasonsList.length > 0)">
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label">{{ 'Select Reason' | translate }}*</label>
+                      <div class="col-sm-9">
+                        <ng-select
+                          #reasonSelect
+                          appendTo=".visit-summary-tab-group"
+                          class="visit-select"
+                          formControlName="reason"
+                          bindLabel="label"
+                          bindValue="label"
+                          placeholder="{{ 'Select a reason' | translate }}"
+                          data-test-id="selectReason"
+                        >
+                          <ng-option *ngFor="let reason of reasonsList" [value]="reason.name">
+                            {{ reason.name | translate }}
+                          </ng-option>
+                        </ng-select>
+                      </div>
+                    </div>
+                  </li>
+
+                </ul>
+                <div
+                  class="form-group mb-0 mt-3"
+                  *ngIf="
+                    isVisitNoteProvider &&
+                    !visitEnded &&
+                    !patientCallStatusForm.value.patientPresent
+                  "
+                >
+                  <button
+                    type="submit"
+                    class="gray-btn"
+                    [disabled]="patientCallStatusForm.invalid"
+                    data-test-id="btnSubmitPatientInteraction"
+                  >
+                    {{'Save'|translate}}
+                  </button>
+                </div>
+                <div class="table-responsive" *ngIf="patientCallStatusForm.value.patientPresent">
+                  <table class="table" aria-describedby="">
+                    <thead>
+                      <tr>
+                        <th scope="col">{{'Patient interaction'|translate}}</th>
+                        <th scope="col">{{'Status'|translate}}</th>
+                        <th scope="col">{{'Call status'|translate}}</th>
+                        <th scope="col">{{'Reason'|translate}}</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngIf="patientCallStatusForm.value.patientPresent">
+                        <td>{{'Spoken with the patient directly?'|translate}}</td>
+                        <td>{{ patientCallStatusForm?.value?.spoken?.split(',')[0] }}</td>
+                        <td>{{ patientCallStatusForm?.value?.spoken?.split(',')[1]?.split(':')[1] }}</td>
+                        <td>{{ patientCallStatusForm?.value?.spoken?.split(',')[2]?.split(':')[1] }}</td>
+                        <td class="pr-0">
+                          <button
+                            type="button"
+                            mat-icon-button
+                            class="float-right"
+                            *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
+                            (click)="deletePatientInteraction()"
+                            data-test-id="btnDeletePatientInteraction"
+                          >
+                            <img src="assets/svgs/delete-icon.svg" alt="" />
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="no-docs text-center font-weight-bold" 
+                  *ngIf="isMCCUser && !patientCallStatusForm.value.patientPresent">
+                  {{ "Call status not present" | translate }}
+                </div>
+              </form>
             </mat-expansion-panel>
           </mat-accordion>
         </div>
@@ -2136,7 +2388,7 @@
         type="button"
         class="blue-btn mr-2 mb-2"
         (click)="sharePrescription()"
-        *ngIf="visitNotePresent && !visitEnded && isVisitNoteProvider"
+        *ngIf="!isMCCUser && visitNotePresent && !visitEnded && isVisitNoteProvider"
         data-test-id="btnSharePrescription"
       >
         {{ visitCompleted ? ('Update'|translate): ('Share'|translate) }} {{'Prescription'|translate}}

@@ -8,6 +8,7 @@ $breadcrumb-divider: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0
 @import 'bootstrap/scss/bootstrap.scss';
 @import "angular-calendar/css/angular-calendar.css";
 @import "./app/core/directives/mat-table-responsive.directive.scss";
+@import "@sjmc11/tourguidejs/src/scss/tour.scss";
 
 @font-face {
   font-family: arty;
@@ -1071,4 +1072,46 @@ body.font-lato td {
 .custom-tooltip {
   background: #7F7B92 !important;
   color: white;
+}
+
+.help-tour-backdrop {
+  z-index: 1070;
+}
+
+.help-tour-dialog {
+  .tg-dialog-footer {
+    #tg-dialog-next-btn {
+      background: var(--color-darkBlue);
+      color: #FFFFFF;
+
+      border-radius: 8px;
+      padding: 5px 24px;
+      min-width: 100px;
+      min-height: 40px;
+      font-size: 15px;
+      line-height: 150%;
+      font-weight: bold;
+      border: 1px solid var(--color-darkBlue);
+
+      &.btn-finish{
+        background: #0FD197;
+        color: #FFFFFF;
+        border: 1px solid #FFFFFF;
+      }
+    }
+
+    #tg-dialog-prev-btn{
+      background: #FFFFFF;
+      color: var(--color-darkBlue);
+
+      border-radius: 8px;
+      padding: 5px 24px;
+      min-width: 100px;
+      min-height: 40px;
+      font-size: 15px;
+      line-height: 150%;
+      font-weight: bold;
+      border: 1px solid var(--color-darkBlue);
+    }
+  }
 }

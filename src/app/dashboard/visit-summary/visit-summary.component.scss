@@ -380,7 +380,7 @@
 
 .no-docs {
   padding: 24px 0px;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .refer-form {
@@ -408,7 +408,7 @@
 
 .form-group {
   label {
-    font-size: 14px;
+    font-size: inherit;
     color: var(--color-darkestBlue);
   }
 
@@ -875,4 +875,28 @@ th.mat-header-cell:last-child {
 .contact-info {
   display: flex;
   flex-direction: column;
+}
+
+::ng-deep .mat-tooltip  {
+  white-space: pre-line !important;
+}
+
+.info_icon{
+  color:var(--color-darkBlue);
+  margin: 0px 10px;
+  border: none;
+  background: transparent;
+}
+
+.video-ctrl-btn {
+  border: none;
+  outline: none;
+  background: var(--color-white);
+  border-radius: 50%;
+  margin: 0px 10px;
+  padding: 5px;
+}
+
+.video-ctrl-btn.red {
+  background: var(--color-red);
 }

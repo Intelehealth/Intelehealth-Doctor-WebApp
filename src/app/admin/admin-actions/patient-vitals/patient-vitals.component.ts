@@ -6,8 +6,9 @@ import { ToastrService } from 'ngx-toastr';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { PatientVitalModel } from 'src/app/model/model';
 import { ConfigService } from 'src/app/services/config.service';
-import { getCacheData } from 'src/app/utils/utility-functions';
+import { getCacheData, getFieldValueByLanguage } from 'src/app/utils/utility-functions';
 import { languages } from 'src/config/constant';
+import { CoreService } from 'src/app/services/core/core.service';
 
 @Component({
   selector: 'app-patient-vitals',
@@ -28,7 +29,8 @@ export class PatientVitalsComponent implements OnInit {
     private pageTitleService: PageTitleService,
     private translateService: TranslateService,
     private configService: ConfigService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private coreService: CoreService,
   ) { }
 
   ngOnInit(): void {
@@ -104,4 +106,39 @@ export class PatientVitalsComponent implements OnInit {
       this.getPatientVitals();
     });
   }
+
+    /**
+  * Open language field modal
+  * @return {Observable<any>} - Dialog result
+  */
+    openDialog(element: { id: any; lang: any; }): void  {
+      const id = element?.id;
+      const data = { 
+        fieldName: 'name', // Example data to pass
+        fieldValue:  element?.lang
+      };
+      const dialogRef = this.coreService.openLanguageFieldModal({ data });
+  
+      // Capture the data from the output event emitter
+      dialogRef.componentInstance.onSubmit.subscribe((result: string) => {
+        this.configService.updateVitalName(id, result).subscribe(res => {
+          dialogRef.close();
+          this.toastr.success("Patient visit sections name updated successfully!");
+          this.getPatientVitals();
+        }, (error) => {
+          dialogRef.close();
+          this.toastr.error(error?.message);
+        })
+      });
+    }
+  
+  /**
+    * Retrieve the appropriate language value from an element.
+    * @param {any} element - An object containing `lang` and `name`.
+    * @return {string} - The value in the selected language or the first available one.
+    * Defaults to `element.name` if no language value is found.
+    */
+    getLanguageValue(element: any) {
+      return getFieldValueByLanguage(element)
+    }
 }

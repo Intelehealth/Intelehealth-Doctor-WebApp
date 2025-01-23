@@ -1,0 +1,49 @@
+<div class="intel-con-modal">
+    <div class="close-btn-con">
+      <button class="modal-close-btn" (click)="close()"><img src="assets/svgs/CloseX.svg" alt="" data-test-id="btnClose"></button>
+    </div>
+    <div class="modal-con mt-5 w-100">
+        <div class="mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource">
+                <!-- Position Column -->
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef> {{'Sr. No.' | translate}} </th>
+                    <td mat-cell *matCellDef="let element; let i = index">
+                    {{ i + 1 }}
+                    </td>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef> {{'Sub Section Name' | translate}} </th>
+                    <td mat-cell *matCellDef="let element">{{element.name}}</td>
+                </ng-container>
+
+                <!-- Active Column -->
+                <ng-container matColumnDef="is_enabled">
+                    <th mat-header-cell *matHeaderCellDef> {{'Active' | translate}} </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="tooltip-box">
+                            <div class="pretty p-switch p-fill">
+                                <input type="checkbox" [checked]="element.is_enabled"
+                                    (change)="updateStatus(element.name, $event.target.checked)"
+                                    data-test-id="checkboxMindmapToggleStatus" />
+                                <div class="state">
+                                    <label></label>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+                        {{'No data to display.' | translate}}
+                    </td>
+                </tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+    </div>
+  </div>

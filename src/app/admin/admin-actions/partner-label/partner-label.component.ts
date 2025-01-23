@@ -17,6 +17,7 @@ export class PartnerLabelComponent implements OnInit{
   themeConfigURL = `${this.baseURL}/theme_config/updateThemeConfig`;
   uploadImageURL = `${this.baseURL}/theme_config/uploadImage`;
   deleteImageURL = `${this.baseURL}/theme_config/deleteImage`;
+  isJsonValid: boolean = false;
 
   commonUploadImageOptions = { 
     uploadMsg : 'File size (5-50kb), Image size (512x512px), Format (PNG)', 
@@ -54,7 +55,8 @@ export class PartnerLabelComponent implements OnInit{
     thumbnail_logo: '',
     primary_color: '',
     secondary_color: '',
-    images_with_text: []
+    images_with_text: [],
+    help_tour_config: ''
   }
 
   constructor(
@@ -156,5 +158,22 @@ export class PartnerLabelComponent implements OnInit{
     this.configService.publishConfig().subscribe(res => {
       this.toastr.success("Partner White Labelling has been successfully published", "Publish successfull!");
     });
+  }
+
+  validateJson(json: string): void {
+    try {
+      this.isJsonValid = Array.isArray(JSON.parse(json));
+    } catch (e) {
+      this.isJsonValid = false;
+      return e.message;
+    }
+  }
+
+  saveHelpTourConfig(): void {
+    if (this.isJsonValid) {
+      this.configService.updateHelpTour(JSON.parse(this.themeConfigData.help_tour_config)).subscribe(res => {
+        this.toastr.success("Help Tour Config updated successfully", "Updated Successfully");
+      });
+    }
   }
 }

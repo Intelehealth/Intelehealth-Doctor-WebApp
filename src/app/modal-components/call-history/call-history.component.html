@@ -1,0 +1,24 @@
+<div class="select-lang-modal">
+    <div class="modal-title-con">
+        <p class="mb-0 h5"><b>{{'Patient Call History'|translate}}</b></p>
+        <div class="close-btn-con">
+        <button class="modal-close-btn" (click)="dialogRef.close()"><img src="assets/svgs/CloseX.svg" alt="" data-test-id="btnClose"></button>
+        </div>
+    </div>
+    <div class="modal-con align-items-start w-100 h-300">
+        <table class="table" aria-describedby="">
+            <thead>
+              <tr>
+                <th scope="col">{{'Call Duration'|translate}}</th>
+                <th scope="col">{{'Date & Time'|translate}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let duration of callDurationHistory">
+                <td>{{ getCallDuration(duration.callDuration)}}</td>
+                <td>{{ getCallDateTime(duration.timestamp) }}</td>
+              </tr>
+            </tbody>
+        </table>
+    </div>
+  </div>
