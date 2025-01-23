@@ -342,7 +342,7 @@ export class VisitService {
             const currentComplaint = currentObs.display.split("<b>");
             for (let i = 1; i < currentComplaint.length; i++) {
               const obs1 = currentComplaint[i].split("<");
-              if (obs1[0].includes("Follow Up") || obs1[0].includes("Follow up visit")) {
+              if (obs1[0].includes("Follow Up") || obs1[0].includes("Follow-Up") || obs1[0].includes("Follow up visit")) {
                 if(currentComplaint[i].includes('Patient is feeling better')) {
                 recent.push('Patient is feeling better');
                 } else if(currentComplaint[i].includes(`Patient's condition is still the same`)) {
@@ -354,7 +354,23 @@ export class VisitService {
                 }
               }
             }
+          } else if (currentObs.concept_id == 163212) {
+            const currentComplaint = this.getData2(currentObs)?.value_text.replace(new RegExp('►', 'g'), '').split('<b>');
+            for (let i = 1; i < currentComplaint.length; i++) {
+              const obs1 = currentComplaint[i].split('<');
+              if (obs1[0].includes("Follow Up") || obs1[0].includes("Follow-Up") || obs1[0].includes("Follow up visit")) {
+                if(currentComplaint[i].includes('Patient is feeling better')) {
+                recent.push('Patient is feeling better');
+                } else if(currentComplaint[i].includes(`Patient's condition is still the same`)) {
+                  recent.push(`Patient's condition is still the same`);
+                } else if(currentComplaint[i].includes(`Patient's condition has worsened`)) {
+                  recent.push(`Patient's condition has worsened`);
+                } else {
+                  recent.push('NA');
+                }
           }
+        }
+      }
         });
       }
     });

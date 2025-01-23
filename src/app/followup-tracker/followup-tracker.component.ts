@@ -78,14 +78,22 @@ export class FollowupTrackerComponent {
               let recentVisit = visits.filter(v => v.uuid !== visit.uuid);
               if(recentVisit.length > 0) {
                    if(recentVisit.length > 1) { 
-                    let fvisits = recentVisit.filter(v => (this.visitService.getCheifComplaint1(v)).includes("Follow up visit") || (this.visitService.getCheifComplaint1(v)).includes("Follow Up"));
+                    let fvisits = recentVisit.filter(v => (this.visitService.getCheifComplaint1(v)).includes("Follow up visit") ||
+                     (this.visitService.getCheifComplaint1(v)).includes("Follow Up") || (this.visitService.getCheifComplaint1(v)).includes("Follow-Up"));
                    // let sortedVisits = fvisits.sort((a, b) => new Date(b.created_on) < new Date(a.created_on) ? -1 : 1);
-                    visit.patient_verdict =  this.visitService.getPatientVerdict(fvisits[0]);
+                   fvisits.length > 0 ? visit.patient_verdict =  this.visitService.getPatientVerdict(fvisits[0])
+                   :  visit.patient_verdict = null;
                    } else {
-                    visit.patient_verdict =  this.visitService.getPatientVerdict(recentVisit[0]);
-                   }
+                     if(this.visitService.getCheifComplaint1(recentVisit[0]).includes("Follow up visit")
+                       || (this.visitService.getCheifComplaint1(recentVisit[0])).includes("Follow Up")
+                     || (this.visitService.getCheifComplaint1(recentVisit[0])).includes("Follow-Up")) {
+                        visit.patient_verdict =  this.visitService.getPatientVerdict(recentVisit[0]);
+                     } else {
+                        visit.patient_verdict = null;
+                     }
                 
-              } else {
+                       }
+                } else {
                 visit.patient_verdict = null;
               }
               this.doctorFollowUpVisits.push(visit);
