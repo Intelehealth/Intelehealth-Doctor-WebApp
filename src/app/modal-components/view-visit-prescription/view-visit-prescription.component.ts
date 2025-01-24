@@ -1134,9 +1134,9 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         records.push({ text: [{ text: `SpO2 : `, bold: true }, `${spO2}`], margin: [0, 5, 0, 5] });
         records.push({ text: [{ text: `Respiratory Rate : `, bold: true }, `${respRate}`], margin: [0, 5, 0, 5]});
         records.push({ text: [{ text: `Hemoglobin : `, bold: true }, `${hgb}`], margin: [0, 5, 0, 5]});
-        records.push({ text: [{ text: `Blood Group : `, bold: true }, `${bloodg}`], margin: [0, 5, 0, 5]});
       //  records.push({ text: [{ text: `Sugar Level(Fasting): `, bold: true }, `${sugarF}`], margin: [0, 5, 0, 5]});
         records.push({ text: [{ text: `Sugar Level - Random : `, bold: true }, `${sugarR}`], margin: [0, 5, 0, 5]});
+        records.push({ text: [{ text: `Blood Group : `, bold: true }, `${bloodg}`], margin: [0, 5, 0, 5]});
         break;
     }
     return records;

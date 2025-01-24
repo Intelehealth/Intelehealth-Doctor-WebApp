@@ -360,15 +360,6 @@
                     </div>
                   </div>
                 </li>
-                <li>
-                  <div class="list-item">
-                    <label>{{'Blood group'|translate}}</label>
-                    <div class="list-item-content" [class.text-muted]="!getObsValue('Blood group') && !getObsValue('BLOOD TYPING')">
-                      {{(getObsValue('Blood group') || getObsValue("BLOOD TYPING") )
-                      ?(getObsValue('Blood group') || getObsValue("BLOOD TYPING")?.display):'No information' | translate}}
-                    </div>
-                  </div>
-                </li>
                 <!-- <li>
                   <div class="list-item">
                     <label>{{'Sugar Level(Fasting)'|translate}}</label>
@@ -382,6 +373,15 @@
                     <label>{{'Sugar Level - Random'|translate}}</label>
                     <div class="list-item-content" [class.text-muted]="!getObsValue('sugar random')">
                       {{(getObsValue('sugar random'))?getObsValue('sugar random'):'No information' | translate}}
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="list-item">
+                    <label>{{'Blood group'|translate}}</label>
+                    <div class="list-item-content" [class.text-muted]="!getObsValue('Blood group') && !getObsValue('BLOOD TYPING')">
+                      {{(getObsValue('Blood group') || getObsValue("BLOOD TYPING") )
+                      ?(getObsValue('Blood group') || getObsValue("BLOOD TYPING")?.display):'No information' | translate}}
                     </div>
                   </div>
                 </li>
