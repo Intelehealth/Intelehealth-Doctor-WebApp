@@ -12,7 +12,7 @@
 
 .title-con {
   padding: 24px 24px 16px;
-  background: var(--color-lightGray);
+  background: #E6FFF3;
   position: relative;
 
   .close-btn-con {
@@ -45,7 +45,7 @@
   font-family: DM Sans;
 
   .patient-info-section {
-    border-right: 1px solid rgba(178, 175, 190, 0.2);
+   // border-right: 1px solid rgba(178, 175, 190, 0.2);
 
     .patient-img-item {
       display: flex;
@@ -54,7 +54,7 @@
 
       .patient-img {
         width: 56px;
-        height: 56px;
+        height: 50px;
         border-radius: 50%;
         overflow: hidden;
       }
@@ -106,17 +106,19 @@
     align-items: center;
     border-bottom: 1px solid rgba(178, 175, 190, 0.2);
     padding: 5px 0px;
-     img {
+
+    img {
       width: 48px;
       margin-right: 10px;
-     }
-     h6 {
+    }
+
+    h6 {
       font-size: 20px;
       line-height: 150%;
       color: var(--color-darkestBlue);
       font-weight: bold;
       margin-bottom: 0px;
-     }
+    }
   }
 }
 
@@ -143,7 +145,6 @@
 
     .list-item-content {
       padding: 5px 0px;
-      width: 75%;
     }
   }
 
@@ -162,6 +163,12 @@
 .text-important-green {
   color: var(--color-green);
   font-weight: bold;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .cheif-complaint-wrapper {
@@ -306,7 +313,7 @@
 
   .items-list {
     list-style-type: none;
-    padding: 24px 0px 0px;
+    padding: 5px 0px 0px;
 
     li .list-item {
       flex-direction: column;
@@ -314,29 +321,33 @@
 
       label {
         width: 100%;
-        border-bottom: 1px solid rgba(178, 175, 190, 0.2);
+        border-top: 1px solid rgba(178, 175, 190, 0.2);
         font-weight: bold;
+        margin-top: 0.50rem;
       }
     }
 
     li .list-item-col {
       label {
         width: 100%;
-        border-bottom: 1px solid rgba(178, 175, 190, 0.2);
+        border-top: 1px solid rgba(178, 175, 190, 0.2);
         font-weight: bold;
+        margin-top: 0.50rem;
       }
     }
+
   }
 
   .data-section {
     .data-section-title {
-       img {
+      img {
         width: 38px;
         margin-right: 10px;
-       }
-       h6 {
+      }
+
+      h6 {
         font-size: 16px;
-       }
+      }
     }
   }
 
@@ -356,6 +367,15 @@
   .mobile-close-btn{
     display: block !important;
   }
+
+  .main-content{
+    padding: 10px !important;
+  }
+}
+
+.signature {
+  height: 50px;
+  width: 150px;
 }
 
 .btn_download_pdf{
@@ -371,4 +391,17 @@
 }
 .dekstop-close-btn{
   display: block;
+}
+
+.list-header {
+  font-size: 14px;
+  line-height: 150%;
+  margin-bottom: 0px;
+  font-weight: bold;
+  color: var(--color-darkestBlue);
+}
+
+.rows{
+  display: flex;
+  flex-wrap: wrap;
 }

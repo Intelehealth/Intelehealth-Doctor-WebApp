@@ -81,6 +81,7 @@ export class ViewVisitSummaryComponent implements OnInit {
             this.getEyeImages(visit);
             this.getMedicalHistory(visit.encounters);
             this.getVisitAdditionalDocs(visit);
+            this.getLocationAndSetSanch();
           }
         });
       }
@@ -462,16 +463,16 @@ export class ViewVisitSummaryComponent implements OnInit {
   * @return {void}
   */
   async downloadVisitSummary() {
-    const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
+  //  const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
     const pdfObj = {
       pageSize: 'A4',
       pageOrientation: 'portrait',
       pageMargins: [ 20, 50, 20, 20 ],
-      watermark: { text: 'INTELEHEALTH', color: 'var(--color-gray)', opacity: 0.1, bold: true, italics: false, angle: 0, fontSize: 50 },
+      watermark: { text: 'EKAL AROGYA', color: 'var(--color-gray)', opacity: 0.1, bold: true, italics: false, angle: 0, fontSize: 50 },
       header: {
         columns: [
           { text: ''},
-          { image: 'logo', width: 90, height: 30, alignment: 'right', margin: [0, 10, 10, 0] }
+          { image: 'logo', width: 50, height: 50, alignment: 'center', margin: [0, 0, 275, 0] }
         ]
       },
       footer: (currentPage, pageCount) => {
@@ -502,21 +503,22 @@ export class ViewVisitSummaryComponent implements OnInit {
               ],
               [
                 {
+                  colSpan: 4,
                   table: {
-                    widths: ['auto', '*'],
-                    body: [
+                     // widths: ['auto', '*'],
+                     body: [
                       [
-                        {
-                          image: (userImg && !userImg?.includes('application/json')) ? userImg : 'user',
-                          width: 30,
-                          height: 30,
-                          margin: [0, (userImg && !userImg?.includes('application/json')) ? 15 : 5, 0, 5]
-                        },
+                        // {
+                        //   image: (userImg && !userImg?.includes('application/json')) ? userImg : 'user',
+                        //   width: 30,
+                        //   height: 30,
+                        //   margin: [0, (userImg && !userImg?.includes('application/json')) ? 15 : 5, 0, 5]
+                        // },
                         [
                           {
-                            text: `${this.patient?.person.display} (${this.patient?.person.gender})`,
+                            text: `${this.patient?.person.display.toLocaleUpperCase()}`,
                             bold: true,
-                            margin: [0, 15, 0, 5],
+                          //  margin: [0, 0, 0, 0],
                           }
                         ]
                       ]
@@ -524,90 +526,96 @@ export class ViewVisitSummaryComponent implements OnInit {
                   },
                   layout: "noBorders"
                 },
-                {
-                  table: {
-                    widths: ['100%'],
-                    body: [
-                      [
-                        [
-                          {text: 'Age', style: 'subheader'},
-                          `${this.patient?.person.birthdate ? this.getAge(this.patient?.person.birthdate) : this.patient?.person.age}`,
-                          {text: 'Address', style: 'subheader'},
-                          `${this.patient?.person.preferredAddress.cityVillage.replace(':', ' : ')}`
-                        ]
-                      ]
-                    ]
-                  },
-                  layout:  {
-                    vLineWidth: function (i, node) {
-                      if (i === 0) {
-                        return 1;
-                      }
-                      return 0;
-                    },
-                    hLineWidth: function (i, node) {
-                      return 0;
-                    },
-                    vLineColor: function (i) {
-                      return "lightgray";
-                    },
-                  }
-                },
-                {
-                  table: {
-                    widths: ['100%'],
-                    body: [
-                      [
-                        [
-                          {text: 'Occupation', style: 'subheader'},
-                          `${this.getPersonAttributeValue('occupation')}`,
-                          {text: 'National ID', style: 'subheader'},
-                          `${this.getPersonAttributeValue('NationalID')}`
-                        ]
-                      ]
-                    ]
-                  },
-                  layout: {
-                    vLineWidth: function (i, node) {
-                      if (i === 0) {
-                        return 1;
-                      }
-                      return 0;
-                    },
-                    hLineWidth: function (i, node) {
-                      return 0;
-                    },
-                    vLineColor: function (i) {
-                      return "lightgray";
-                    },
-                  }
-                },
-                {
-                  table: {
-                    widths: ['100%'],
-                    body: [
-                      [ 
-                        [ {text: 'Contact no.', style: 'subheader'},
-                          `${this.getPersonAttributeValue('Telephone Number') ? this.getPersonAttributeValue('Telephone Number') : 'NA'}`
-                        ]
-                      ],
-                    ]
-                  },
-                  layout: {
-                    vLineWidth: function (i, node) {
-                      if (i === 0) {
-                        return 1;
-                      }
-                      return 0;
-                    },
-                    hLineWidth: function (i, node) {
-                      return 0;
-                    },
-                    vLineColor: function (i) {
-                      return "lightgray";
-                    },
-                  }
-                }
+                // {
+                //   table: {
+                //     widths: ['100%'],
+                //     body: [
+                //       [
+                //         [
+                //           {text: 'Age', style: 'subheader'},
+                //           `${this.patient?.person.birthdate ? this.getAge(this.patient?.person.birthdate) : this.patient?.person.age}`,
+                //           {text: 'Address', style: 'subheader'},
+                //           `${this.patient?.person.preferredAddress.cityVillage.replace(':', ' : ')}`
+                //         ]
+                //       ]
+                //     ]
+                //   },
+                //   layout:  {
+                //     vLineWidth: function (i, node) {
+                //       if (i === 0) {
+                //         return 1;
+                //       }
+                //       return 0;
+                //     },
+                //     hLineWidth: function (i, node) {
+                //       return 0;
+                //     },
+                //     vLineColor: function (i) {
+                //       return "lightgray";
+                //     },
+                //   }
+                // },
+                // {
+                //   table: {
+                //     widths: ['100%'],
+                //     body: [
+                //       [
+                //         [
+                //           {text: 'Occupation', style: 'subheader'},
+                //           `${this.getPersonAttributeValue('occupation')}`,
+                //           {text: 'National ID', style: 'subheader'},
+                //           `${this.getPersonAttributeValue('NationalID')}`
+                //         ]
+                //       ]
+                //     ]
+                //   },
+                //   layout: {
+                //     vLineWidth: function (i, node) {
+                //       if (i === 0) {
+                //         return 1;
+                //       }
+                //       return 0;
+                //     },
+                //     hLineWidth: function (i, node) {
+                //       return 0;
+                //     },
+                //     vLineColor: function (i) {
+                //       return "lightgray";
+                //     },
+                //   }
+                // },
+                // {
+                //   table: {
+                //     widths: ['100%'],
+                //     body: [
+                //       [ 
+                //         [ {text: 'Contact no.', style: 'subheader'},
+                //           `${this.getPersonAttributeValue('Telephone Number') ? this.getPersonAttributeValue('Telephone Number') : 'NA'}`
+                //         ]
+                //       ],
+                //     ]
+                //   },
+                //   layout: {
+                //     vLineWidth: function (i, node) {
+                //       if (i === 0) {
+                //         return 1;
+                //       }
+                //       return 0;
+                //     },
+                //     hLineWidth: function (i, node) {
+                //       return 0;
+                //     },
+                //     vLineColor: function (i) {
+                //       return "lightgray";
+                //     },
+                //   }
+                // }
+              ],
+              [
+                this.getPersonalInfo()
+              ],
+              [
+                this.getAddress()
               ],
               [
                 {
@@ -770,9 +778,17 @@ export class ViewVisitSummaryComponent implements OnInit {
         },
         subheader: {
           fontSize: 12,
-          bold: false,
-          margin: [0, 5, 0, 5],
-          color: 'var(--color-gray)'
+          bold: true,
+          margin: [0, 2, 0, 2],
+        },
+        subsubheader: {
+          fontSize: 10,
+          bold: true,
+          margin: [0, 2, 0, 2]
+        },
+        pval: {
+          fontSize: 10,
+          margin: [0, 2, 0, 2]
         },
         tableExample: {
           margin: [0, 5, 0, 5],
@@ -930,11 +946,34 @@ export class ViewVisitSummaryComponent implements OnInit {
         }
         break;
       case visitTypes.VITALS:
-        if (this.vitalObs.length) {
-          this.vitalObs.forEach(v => {
-            records.push({text: [{text: `${v.concept.display} : `, bold: true}, `${v.value}`], margin: [0, 5, 0, 5]});
-          });
-        }
+        let weightValue, heightValue, bmi, bp, pulse, temperature, spO2, respRate, hgb,bloodg, sugarF, sugarR;
+        heightValue = this.getObsValue('Height (cm)') ? this.getObsValue('Height (cm)') : `No information`;
+        weightValue = this.getObsValue('Weight (kg)') ? this.getObsValue('Weight (kg)') : 'No information';
+        bmi = (this.getObsValue('Height (cm)') && this.getObsValue('Weight (kg)')) ? Number(weightValue / ((heightValue / 100) * (heightValue / 100))).toFixed(2)
+          : `No information`;
+        bp = this.getObsValue('SYSTOLIC BLOOD PRESSURE') ? this.getObsValue('SYSTOLIC BLOOD PRESSURE') + ' / ' + this.getObsValue('DIASTOLIC BLOOD PRESSURE') : 'No information';
+        pulse = this.getObsValue('Pulse') ? this.getObsValue('Pulse') : 'No information';
+        temperature = this.getObsValue('TEMPERATURE (C)') ?
+          Number(this.getObsValue('TEMPERATURE (C)') * 9 / 5 + 32).toFixed(2) : `No information`;
+        spO2 = this.getObsValue('BLOOD OXYGEN SATURATION') ? this.getObsValue('BLOOD OXYGEN SATURATION') : 'No information';
+        respRate = this.getObsValue('Respiratory rate') ? this.getObsValue('Respiratory rate') : 'No information';
+        hgb = this.getObsValue("HGB")? this.getObsValue('HGB') : 'No information';
+        bloodg = this.getObsValue("Blood group") || this.getObsValue("BLOOD TYPING") ?  this.getObsValue("Blood group")
+        || this.getObsValue("BLOOD TYPING")?.display : 'No information';
+        sugarF = this. getObsValue("sugar fasting") ? this. getObsValue("sugar fasting") :'No information'
+        sugarR = this. getObsValue("sugar random") ? this. getObsValue("sugar random") :'No information'
+        records.push({ text: [{ text: `Height (cm) : `, bold: true }, `${heightValue}`], margin: [0, 5, 0, 5] });
+        records.push({ text: [{ text: `Weight (kg) : `, bold: true }, `${weightValue}`], margin: [0, 5, 0, 5] });
+        records.push({ text: [{ text: `BMI : `, bold: true }, `${bmi}`], margin: [0, 5, 0, 5] });
+        records.push({ text: [{ text: `BP : `, bold: true }, `${bp}`], margin: [0, 5, 0, 5] });
+        records.push({ text: [{ text: `Pulse : `, bold: true }, `${pulse}`], margin: [0, 5, 0, 5] });
+        records.push({ text: [{ text: `Temperature (F) : `, bold: true }, `${temperature}`], margin: [0, 5, 0, 5] });
+        records.push({ text: [{ text: `SpO2 : `, bold: true }, `${spO2}`], margin: [0, 5, 0, 5] });
+        records.push({ text: [{ text: `Respiratory Rate : `, bold: true }, `${respRate}`], margin: [0, 5, 0, 5]});
+        records.push({ text: [{ text: `Hemoglobin : `, bold: true }, `${hgb}`], margin: [0, 5, 0, 5]});
+      //  records.push({ text: [{ text: `Sugar Level(Fasting): `, bold: true }, `${sugarF}`], margin: [0, 5, 0, 5]});
+        records.push({ text: [{ text: `Sugar Level - Random : `, bold: true }, `${sugarR}`], margin: [0, 5, 0, 5]});
+        records.push({ text: [{ text: `Blood Group : `, bold: true }, `${bloodg}`], margin: [0, 5, 0, 5]});
         break;
       
       case 'additionalDocs':
@@ -954,5 +993,227 @@ export class ViewVisitSummaryComponent implements OnInit {
         break;
     }
     return records;
+  }
+
+
+    /**
+   * Return color code for sbp
+   * @param n 
+   * @returns 
+   */
+    getSystolicColor(n: any) {
+      let code: string = '#FF0000';
+      if (n >= 90 && n < 120) {
+        code = '#008000';
+      } else if (n >= 120 && n <= 139) {
+        code = '#d9d900';
+      }
+      return code;
+    }
+  
+    /**
+     *  Return color code for dbp
+     * @param n 
+     * @returns 
+     */
+    getDSystolicColor(n: any) {
+      let code: string = '#FF0000';
+      if (n < 80) {
+        code = '#008000';
+      } else if (n >= 80 && n <= 99) {
+        code = '#d9d900';
+      }
+      return code;
+    }
+  
+    /**
+     * Return color code for bmi
+     * @param n 
+     * @returns 
+     */
+    getBmiColor(n: any) {
+      let code: string = '#FF0000'; // red
+      if (n < 18.50) {
+        code = '#FFA500';
+      } else if (n >= 18.50 && n <= 22.99) {
+        code = '#008000';
+      } else if (n >= 23 && n <= 24.99) {
+        code = '#d9d900';
+      } else if (n >= 25 && n <= 29.99) {
+        code = '#F85E5EE6';
+      } else if (n >= 30) {
+        code = '#FF0000'
+      }
+      return code;
+    }
+
+      /**
+  * Send notification to health worker for available prescription
+  * @returns {void}
+  */
+  getLocationAndSetSanch() {
+    this.visitService.getLocations().subscribe((res: any) => {
+      const state = res.states.find(state => state?.name === this.patient?.person.preferredAddress.stateProvince);
+      if (state) {
+        let districtName = '-', sanchName='-';
+        state.districts.forEach(district => {
+          district.sanchs
+            ?.forEach(sanch => {
+              const village = sanch.villages.find(vilg => vilg.name === this.patient?.person.preferredAddress?.cityVillage);
+              if (village) {
+                sanchName = sanch.name;
+                districtName = district.name;
+              }
+            });
+        });
+        this.patient["person"]["preferredAddress"]["country"]= 'India';
+        this.patient["person"]["preferredAddress"]["countyDistrict"]= districtName;
+        this.patient["person"]["preferredAddress"]["sanch"]= sanchName;
+      }
+    })
+  }
+
+  getPersonalInfo() {
+    const data = {
+      colSpan: 4,
+      layout: 'noBorders',
+      table: {
+        widths: ['*','*','*','*'],
+        body: [
+          [
+            {
+              colSpan: 4,
+              text: `Personal Information`,
+              style: 'subheader'
+            },
+            '',
+            '',
+            ''
+          ]
+        ]
+      }
+    };
+
+    let other = [];
+    if(this.patient?.person.gender) {
+      other.push({ 
+        stack: [
+          { text: 'Gender', style: 'subsubheader' },
+          { text: this.patient?.person.gender == 'M' ? 'Male' : 'Female', style: 'pval' }
+        ] 
+      });
+    }
+    
+    if(this.patient?.person.birthdate) {
+      other.push({ 
+        stack: [
+          { text: 'Age', style: 'subsubheader' },
+          { text: this.getAge(this.patient?.person?.birthdate) , style: 'pval' }
+        ] 
+      });
+      other.push({ 
+        stack: [
+          { text: 'Date of Birth', style: 'subsubheader' },
+          { text: new Date(this.patient?.person.birthdate).toDateString(), style: 'pval' }
+        ] 
+      });
+    }
+    if(this.getPersonAttributeValue('Telephone Number')) {
+      other.push({ 
+        stack: [
+          { text: 'Phone Number', style: 'subsubheader' },
+          { text: this.getPersonAttributeValue('Telephone Number'), style: 'pval' }
+        ] 
+      });
+    }
+    const chunkSize = 4;
+    for (let i = 0; i < other.length; i += chunkSize) {
+      const chunk = other.slice(i, i + chunkSize);
+      if (chunk.length == chunkSize) {
+        data.table.body.push([...chunk]);
+      } else {
+        for (let x = chunk.length; x < chunkSize; x++) {
+          chunk[x] = '';
+        }
+        data.table.body.push([...chunk]);
+      }
+    }
+
+    return data;
+  }
+
+  getAddress() {
+    const data = {
+      colSpan: 4,
+      layout: 'noBorders',
+      table: {
+        widths: ['*','*','*','*'],
+        body: []
+      }
+    };
+      data.table.body.push([
+        {
+          colSpan: 4,
+          text: `Address`,
+          style: 'subheader'
+        },
+        '',
+        '',
+        ''
+      ]);
+      let other = [];
+     if(this.patient?.person?.preferredAddress?.country) {
+        other.push({ 
+          stack: [
+            { text: 'Country', style: 'subsubheader' },
+            { text: (this.patient?.person?.preferredAddress?.country)? (this.patient?.person?.preferredAddress?.country) : '-', style: 'pval' }
+          ] 
+        });
+      } 
+      if(this.patient?.person?.preferredAddress?.stateProvince) {
+        other.push({ 
+          stack: [
+            { text: 'State', style: 'subsubheader' },
+            { text: (this.patient?.person?.preferredAddress?.stateProvince) ? this.patient?.person?.preferredAddress?.stateProvince : '-', style: 'pval' }
+          ] 
+        });
+      }
+      if(this.patient?.person?.preferredAddress?.countyDistrict) {
+        other.push({ 
+          stack: [
+            { text: 'District', style: 'subsubheader' },
+            { text: (this.patient?.person?.preferredAddress?.countyDistrict)? this.patient?.person?.preferredAddress?.countyDistrict:'-', style: 'pval' }
+          ] 
+        });
+      } 
+      if(this.patient?.person?.preferredAddress?.sanch) {
+        other.push({ 
+          stack: [
+            { text: 'Sanch', style: 'subsubheader' },
+            { text: (this.patient?.person?.preferredAddress?.sanch) ? this.patient?.person?.preferredAddress?.sanch :'-', style: 'pval' }
+          ] 
+        });
+      } 
+      if(this.patient?.person?.preferredAddress?.cityVillage) {
+        other.push({ 
+          stack: [
+            { text: 'Village', style: 'subsubheader' },
+            { text: (this.patient?.person?.preferredAddress?.cityVillage) ? this.patient?.person?.preferredAddress?.cityVillage : '-', style: 'pval' }
+          ] 
+        });
+      }
+      const chunkSize = 4;
+      for (let i = 0; i < other.length; i += chunkSize) {
+          const chunk = other.slice(i, i + chunkSize);
+          if (chunk.length == chunkSize) {
+            data.table.body.push([...chunk]);
+          } else {
+            for (let x = chunk.length; x < chunkSize; x++) {
+              chunk[x] = '';
+            }
+            data.table.body.push([...chunk]);
+          }
+      }
+    return data;
   }
 }

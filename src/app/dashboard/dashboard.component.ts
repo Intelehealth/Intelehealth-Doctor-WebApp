@@ -153,8 +153,10 @@ export class DashboardComponent implements OnInit {
           visit.cheif_complaint = this.getCheifComplaint(visit);
           visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created) : this.getEncounterCreated(visit, visitTypes.ADULTINITIAL);
           visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
-          if (visit.cheif_complaint.filter(f => f.includes('Follow')).length > 0 && !this.visitService.getPatientVerdict(visit).includes('Patient is feeling better')) {
-            newfollowupVisits.push(visit);
+          if (visit.cheif_complaint.filter(f => f.includes('Follow')).length > 0) {
+            if(!this.visitService.getPatientVerdict(visit).includes('Patient is feeling better')) {
+              newfollowupVisits.push(visit);
+            }
           } else {
             this.awaitingVisits.push(visit);
           }
@@ -216,8 +218,10 @@ export class DashboardComponent implements OnInit {
           visit.cheif_complaint = this.getCheifComplaint(visit);
           visit.visit_created = visit?.date_created ? this.getCreatedAt(visit.date_created) : this.getEncounterCreated(visit, visitTypes.FLAGGED);
           visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
-          if (visit.cheif_complaint.filter(f => f.includes('Follow')).length > 0 && !this.visitService.getPatientVerdict(visit).includes('Patient is feeling better')) {
-            newfollowupVisits.push(visit);
+          if (visit.cheif_complaint.filter(f => f.includes('Follow')).length > 0) {
+            if(!this.visitService.getPatientVerdict(visit).includes('Patient is feeling better')) {
+              newfollowupVisits.push(visit);
+            }
           } else {
             this.priorityVisits.push(visit);
           }

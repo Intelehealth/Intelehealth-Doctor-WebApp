@@ -11,10 +11,10 @@
 <mat-dialog-content>
   <div class="main-content">
     <div class="container-fluid">
-      <div class="row patient-info-wrapper">
+      <div class="rows patient-info-wrapper">
         <div class="col-md-3 patient-info-section p-3" *ngIf="patient">
           <div class="patient-img-item mb-2">
-            <div class="patient-img">
+            <!-- <div class="patient-img">
               <img
                 src="{{ baseUrl + '/personimage/' + patient?.person.uuid }}"
 
@@ -22,10 +22,13 @@
                 width="100%"
                 height="100%"
               />
-            </div>
+            </div> -->
             <div class="ml-3">
               <h6>
-                {{ patient?.person.display }} ({{ (patient?.person.gender)| translate }})
+                <span>{{ patient?.person?.names[0]?.givenName }}</span>
+                <span *ngIf="patient?.person?.names[0]?.middleName">{{ ' ' + patient?.person?.names[0]?.middleName }}</span>
+                <span>{{ ' ' + patient?.person?.names[0]?.familyName }}</span>
+                <span>{{ " (" + (patient?.person.gender | translate) + ") "}}</span>
               </h6>
               <p>{{ getPatientIdentifier("OpenMRS ID") }}</p>
             </div>
@@ -33,39 +36,117 @@
         </div>
         <div class="col-md-3 patient-info-section p-3">
           <div class="patient-info-item mb-3">
-            <h6>{{'Age'|translate}}</h6>
-            <p>
-              {{
-                patient?.person.birthdate
-                ? getAge(patient?.person.birthdate)
-                : patient?.person.age
-              }}
-            </p>
-          </div>
-          <div class="patient-info-item">
-            <h6>{{"Address"|translate}}</h6>
-            <!-- <p>{{ patient?.person.preferredAddress.cityVillage.replace(':',' : ') }}</p> -->
+            <h6 data-test-id="etPatientAge">{{'Age'|translate}}</h6>
+            <p data-test-id="etPatient">{{ patient?.person.birthdate ? getAge(patient?.person.birthdate) : patient?.person.age + ' years'  }}</p>
           </div>
         </div>
+
         <div class="col-md-3 patient-info-section p-3">
           <div class="patient-info-item mb-3">
-            <h6>{{'Occupation'|translate}}</h6>
-            <p>{{ getPersonAttributeValue("occupation") }}</p>
-          </div>
-          <div class="patient-info-item">
-            <h6>{{'National ID'|translate}}</h6>
-            <p>{{ getPersonAttributeValue("NationalID") }}</p>
+            <h6 data-test-id="etPatientAge">{{'Date of Birth'|translate}}</h6>
+            <p data-test-id="etPatient">{{ patient?.person.birthdate | date : "dd MMM, yyyy" }}</p>
           </div>
         </div>
+
         <div class="col-md-3 patient-info-section p-3">
           <div class="patient-info-item">
-            <h6>{{'Contact no.'|translate}}</h6>
-            <p>
-              <img src="assets/svgs/phone-black.svg" alt="" />
+            <h6 data-test-id="etPatient">{{'Contact no.'| translate}}</h6>
+            <p data-test-id="etWhatsApp" *ngIf="getPersonAttributeValue('Telephone Number') === 'NA'">
+               {{ getPersonAttributeValue("Telephone Number") }}
+            </p>
+            <p data-test-id="etPhoneNumber" *ngIf="getPersonAttributeValue('Telephone Number') !== 'NA'">
               {{ getPersonAttributeValue("Telephone Number") }}
+              <a
+                href="tel:{{ getPersonAttributeValue('Telephone Number') }}"
+                target="_blank"
+                class="icon-btn"
+                data-test-id="linkPhoneNumber"
+              >
+                <img src="assets/svgs/phone-circle.svg" alt="" />
+              </a>
+              <a
+                href="{{ getWhatsAppLink() }}"
+                target="_blank"
+                class="icon-btn"
+                data-test-id="linkWhatsApp"
+              >
+                <img src="assets/svgs/whatsapp-icon.svg" alt="" />
+              </a>
             </p>
           </div>
         </div>
+        <mat-tab-group class="col-md-12 patient-tab-group" mat-align-tabs="start">
+          <mat-tab label="{{'Address'| translate}}">
+            <div class="rows patient-info-wrapper">
+              <div class="col-md-2 patient-info-section p-3">
+                <div class="patient-info-item mb-3">
+                  <h6 data-test-id="etPatient">{{'Country' | translate}}</h6>
+                  <p data-test-id="etPatient">{{ patient?.person?.preferredAddress?.country }}</p>
+                </div>
+              </div>
+
+              <div class="col-md-2 patient-info-section p-3">
+                <div class="patient-info-item mb-3">
+                  <h6 data-test-id="etPatient">{{'State' | translate}}</h6>
+                  <p data-test-id="etPatient">{{ patient?.person.preferredAddress.stateProvince }}</p>
+                </div>
+              </div>
+
+              <div class="col-md-2 patient-info-section p-3">
+                <div class="patient-info-item mb-3">
+                  <h6 data-test-id="etPatient">{{'District' | translate}}</h6>
+                  <p data-test-id="etPatient">{{ patient?.person.preferredAddress.countyDistrict }}</p>
+                </div>
+              </div>
+              
+              <div class="col-md-2 patient-info-section p-3">
+                <div class="patient-info-item mb-3">
+                  <h6 data-test-id="etPatient">{{'Sanch' | translate}}</h6>
+                  <p data-test-id="etPatient">{{ patient?.person.preferredAddress.sanch}}</p>
+                </div>
+              </div>
+              
+              <div class="col-md-2 patient-info-section p-3">
+                <div class="patient-info-item mb-3">
+                  <h6 data-test-id="etPatient">{{'Village' | translate}}</h6>
+                  <p data-test-id="etPatient">{{ patient?.person.preferredAddress.cityVillage }}</p>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- <mat-tab label="{{'Other' | translate}}">
+            <div class="rows patient-info-wrapper">
+              <div class="col-md-3 patient-info-section p-3">
+                <div class="patient-info-item mb-3">
+                  <h6 data-test-id="etPatient">{{'Occupation' | translate}}</h6>
+                  <p data-test-id="etPatient">{{ getPersonAttributeValue('occupation') }}</p>
+                </div>
+              </div>
+
+              <div class="col-md-3 patient-info-section p-3">
+                <div class="patient-info-item mb-3">
+                  <h6 data-test-id="etPatient">{{'Education' | translate}}</h6>
+                  <p data-test-id="etPatient">{{ getPersonAttributeValue('Education Level') }}</p>
+                </div>
+              </div>
+
+               <div class="col-md-3 patient-info-section p-3" *ngIf="getPersonAttributeValue('NationalID') !== 'NA'">
+                <div class="patient-info-item mb-3">
+                  <h6 data-test-id="etPatient">{{'National ID' | translate}}</h6>
+                  <p data-test-id="etPatient">{{ getPersonAttributeValue('NationalID') }}</p>
+                </div>
+              </div>
+
+              <div class="col-md-3 patient-info-section p-3" *ngIf="getPersonAttributeValue('Economic Status') !== 'NA'">
+                <div class="patient-info-item mb-3">
+                  <h6 data-test-id="etPatient">{{'Economic Category' | translate}}</h6>
+                  <p data-test-id="etPatient">{{ getPersonAttributeValue('Economic Status') }}</p>
+                </div>
+              </div>
+            </div>
+          </mat-tab> -->
+        </mat-tab-group>
       </div>
       <div class="row">
         <div class="col-md-12 px-3 mb-3">
@@ -159,7 +240,18 @@
                   <div class="list-item">
                     <label>{{'BMI'|translate}}</label>
                     <div class="list-item-content" [class.text-muted]="!getObsValue('Height (cm)') || !getObsValue('Weight (kg)')">
-                      {{(getObsValue('Height (cm)') && getObsValue('Weight (kg)'))? ((getObsValue('Weight (kg)')/((getObsValue('Height (cm)')/100)*(getObsValue('Height (cm)')/100)))|number:'1.2-2') :'No information' | translate}}
+                      <span *ngIf="getObsValue('Height (cm)') && getObsValue('Weight (kg)')">
+                        <span [style.color]="getBmiColor(getObsValue('Weight (kg)') / ((getObsValue('Height (cm)') / 100) * (getObsValue('Height (cm)') / 100)))">
+                          {{
+                            (getObsValue("Weight (kg)") /
+                              ((getObsValue("Height (cm)") / 100) *
+                                (getObsValue("Height (cm)") / 100))
+                            | number : "1.2-2")
+                          }}
+                        </span>
+                      </span>
+                      <span *ngIf="!getObsValue('Height (cm)') && !getObsValue('Weight (kg)')">
+                        {{'No information'|translate}} </span>
                     </div>
                   </div>
                 </li>
@@ -167,7 +259,16 @@
                   <div class="list-item">
                     <label>{{'BP'|translate}}</label>
                     <div class="list-item-content" [class.text-muted]="!getObsValue('SYSTOLIC BLOOD PRESSURE')">
-                      {{getObsValue('SYSTOLIC BLOOD PRESSURE') ? getObsValue('SYSTOLIC BLOOD PRESSURE') + ' / ' + getObsValue('DIASTOLIC BLOOD PRESSURE') : 'No information' | translate}}
+                      <span *ngIf="getObsValue('SYSTOLIC BLOOD PRESSURE')">
+                        <span [style.color]="getSystolicColor(getObsValue('SYSTOLIC BLOOD PRESSURE'))">
+                          {{ getObsValue("SYSTOLIC BLOOD PRESSURE") }}
+                      </span> /
+                        <span [style.color]="getDSystolicColor(getObsValue('DIASTOLIC BLOOD PRESSURE'))">
+                          {{ getObsValue("DIASTOLIC BLOOD PRESSURE") }}
+                        </span> 
+                    </span>
+                    <span *ngIf="!getObsValue('SYSTOLIC BLOOD PRESSURE')">
+                      {{'No information'|translate}} </span>
                     </div>
                   </div>
                 </li>
@@ -200,6 +301,39 @@
                     <label>{{'Respiratory Rate'|translate}}</label>
                     <div class="list-item-content" [class.text-muted]="!getObsValue('Respiratory rate')">
                       {{(getObsValue('Respiratory rate'))?getObsValue('Respiratory rate'):'No information' | translate}}
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="list-item">
+                    <label>{{'Hemoglobin'|translate}}</label>
+                    <div class="list-item-content" [class.text-muted]="!getObsValue('HGB')">
+                      {{(getObsValue('HGB'))?getObsValue('HGB'):'No information' | translate}}
+                    </div>
+                  </div>
+                </li>
+                <!-- <li>
+                  <div class="list-item">
+                    <label>{{'Sugar Level(Fasting)'|translate}}</label>
+                    <div class="list-item-content" [class.text-muted]="!getObsValue('sugar fasting')">
+                      {{(getObsValue('sugar fasting'))?getObsValue('sugar fasting'):'No information' | translate}}
+                    </div>
+                  </div>
+                </li> -->
+                <li>
+                  <div class="list-item">
+                    <label>{{'Sugar Level - Random'|translate}}</label>
+                    <div class="list-item-content" [class.text-muted]="!getObsValue('sugar random')">
+                      {{(getObsValue('sugar random'))?getObsValue('sugar random'):'No information' | translate}}
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="list-item">
+                    <label>{{'Blood group'|translate}}</label>
+                    <div class="list-item-content" [class.text-muted]="!getObsValue('Blood group') && !getObsValue('BLOOD TYPING')">
+                      {{(getObsValue('Blood group') || getObsValue("BLOOD TYPING") )
+                      ?(getObsValue('Blood group') || getObsValue("BLOOD TYPING")?.display):'No information' | translate}}
                     </div>
                   </div>
                 </li>
@@ -290,7 +424,7 @@
                                 class="eye-item"
                                 *ngFor="let e of getImagesBySection(pe.title); let x = index"
                               >
-                                <img [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
+                                <img style="width: 50px;height: 50px" [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
                                 <div
                                   class="cover"
                                   (click)="previewEyeImages(x,pe.title)"
@@ -325,7 +459,7 @@
                                 class="eye-item"
                                 *ngFor="let e of getImagesBySection(pe.title); let x = index"
                               >
-                                <img [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
+                                <img style="width: 50px;height: 50px" [src]="e.src" alt="" [attr.data-test-id]="'etImage'+x+'PhysicalExam'"/>
                                 <div
                                   class="cover"
                                   (click)="previewEyeImages(x,pe.title)"
