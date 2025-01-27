@@ -12,8 +12,8 @@
                 <div *ngIf="submitted && f1.minLength.errors" class="d-flex flex-column">
                   <small class="error-msg" *ngIf="f1.minLength.errors.required">{{'Enter Minimum Length' | translate}}</small>
                   <small class="error-msg" *ngIf="f1.minLength.errors.maxlength">{{'Maximum 2 digit number allowed' | translate}}</small>
-                  <small class="error-msg" *ngIf="f1.minLength.errors.min">{{'Value should be greater than 6' | translate}}</small>
-                  <small class="error-msg" *ngIf="f1.minLength.errors.max">{{'Value should be less than 15' | translate}}</small>
+                  <small class="error-msg" *ngIf="f1.minLength.errors.min">{{'Value should be greater than 5' | translate}}</small>
+                  <small class="error-msg" *ngIf="f1.minLength.errors.max">{{'Value should be less than 16' | translate}}</small>
                 </div>
               </div>
               <div class="form-group col-md-12">
@@ -22,11 +22,11 @@
                 <div *ngIf="submitted  && f1.maxLength.errors">
                   <small class="error-msg" *ngIf="f1.maxLength.errors.required">{{'Enter Maximum Length' | translate}}</small>
                   <small class="error-msg" *ngIf="f1.maxLength.errors.maxlength">{{'Maximum 2 digit number allowed' | translate}}</small>
-                  <small class="error-msg" *ngIf="f1.maxLength.errors.min">{{'Value should be greater than 6' | translate}}</small>
-                  <small class="error-msg" *ngIf="f1.maxLength.errors.max">{{'Value should be less than 15' | translate}}</small>
+                  <small class="error-msg" *ngIf="f1.maxLength.errors.min">{{'Value should be greater than 5' | translate}}</small>
+                  <small class="error-msg" *ngIf="f1.maxLength.errors.max">{{'Value should be less than 16' | translate}}</small>
                 </div>
                 <div *ngIf="submitted && !f1.maxLength.errors" class="d-flex flex-column">
-                  <small class="error-msg" *ngIf="patientRegValidationForm.get('minLength').value > patientRegValidationForm.get('maxLength').value">{{'Value should be equal or greater \n than Minimum Length' | translate}}</small>
+                  <small class="error-msg" *ngIf="patientRegValidationForm.get('minLength').value > patientRegValidationForm.get('maxLength').value">{{'Value should be equal or greater than Minimum Length' | translate}}</small>
                 </div>
               </div>
             </div>
