@@ -432,7 +432,7 @@ export class DashboardComponent implements OnInit {
         formatHtml: (element)=> { 
           return `
             <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
-            <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>
+            <span class="font-bold ml-2">${element?.patientName} (${element?.patientGender})</span>
           `
         },
       },
@@ -440,21 +440,21 @@ export class DashboardComponent implements OnInit {
         label: "Age",
         key: "age",
         formatHtml: (element)=> { 
-          return `<span>${element?.person?.age} ${'y'}</span>`
+          return `<span>${element?.patientAge} ${'y'}</span>`
         },
       },
       {
         label: "Starts in",
         key: "starts_in",
         formatHtml: (element)=> { 
-          return `<span>${element?.starts_in} ${'y'}</span>`
+          return `<strong><span style="color: #ff475d">${element?.starts_in}</span></strong>`
         },
       },
       {
         label: "Location",
         key: "location",
         formatHtml: (element)=> { 
-          return `<span>${element?.location?.name}</span>`
+          return `<span>${element?.visit?.location?.name}</span>`
         },
       },
       {

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, Input, SimpleChanges,EventEmitter ,Output} from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../../model/model';
@@ -74,6 +74,10 @@ export class AppointmentsComponent implements OnInit {
       this.displayedColumns = this.displayedColumns.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
   }
 
+  /**
+   * Creates a filtered date range form with required date fields
+   * @return {FormGroup} - The created form group
+   */
   createFilteredDateRangeForm(): FormGroup {
     return new FormGroup({
       date: new FormControl('', [Validators.required]),
@@ -299,32 +303,59 @@ export class AppointmentsComponent implements OnInit {
     this.isFilterApplied = false;
   }
 
-  checkPatientRegField(fieldName): boolean{
+  /**
+   * Checks if the field is in patient registration fields
+   * @param {string} fieldName - The field name
+   * @return {boolean} - True if present, else false
+   */
+  checkPatientRegField(fieldName: string): boolean {
     return this.patientRegFields.indexOf(fieldName) !== -1;
   }
 
   /**
-  * Get whatsapp link
-  * @return {string} - Whatsapp link
+  * Returns the WhatsApp link for a given telephone number
+  * @param {string} telephoneNumber - The telephone number to generate the link for
+  * @return {string} - The WhatsApp link
   */
   getWhatsAppLink(telephoneNumber: string): string {
     return this.visitService.getWhatsappLink(telephoneNumber);
   }
   
+  
+  /**
+   * Retrieves the telephone number from the person's attributes
+   * @param {AppointmentModel['visit']['person']} person - The person object containing attributes
+   * @return {string | undefined} - The person's telephone number or undefined if not found
+   */
   getTelephoneNumber(person: AppointmentModel['visit']['person']) {
     return person?.person_attribute.find((v: { person_attribute_type_id: number; }) => v.person_attribute_type_id == 8)?.value;
   }
 
+
+  /**
+   * Closes the menu if it's open
+   */
   closeMenu() {
     if (this.menuTrigger) {
       this.menuTrigger.closeMenu();
     }
   }
 
+
+  /**
+   * Sets the mode for the component (either 'date' or 'range')
+   * @param {'date' | 'range'} mode - The mode to set
+   */
   setMode(mode: 'date' | 'range') {
     this.mode = mode;
   }
 
+
+  /**
+   * Formats a date into 'YYYY-MM-DD' format
+   * @param {any} date - The date to format
+   * @return {string} - The formatted date
+   */
   formatDate(date: any): string {
     const localDate = new Date(date);
     const year = localDate.getFullYear();
@@ -333,9 +364,14 @@ export class AppointmentsComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
+
+  /**
+   * Converts a relative time string (e.g., "2 hours", "1 day") to a date string
+   * @param {string} relativeTime - The relative time string
+   * @return {string} - The resulting date in 'YYYY-MM-DD' format
+   * @throws {Error} - Throws error for invalid time units
+   */
   convertToDate(relativeTime: string): string {
-    console.log(relativeTime, "??????????");
-    
     const now = new Date();
     const [value, unit] = relativeTime.split(' ');
     const amount = parseInt(value, 10);    
@@ -348,14 +384,23 @@ export class AppointmentsComponent implements OnInit {
     return now.toISOString().split('T')[0];
   }
 
+
+  /**
+   * Converts a follow-up date string to ISO format
+   * @param {string} followUp - The follow-up date string
+   * @return {string} - The follow-up date in ISO string format
+   */
   convertToISO(followUp: string): string {
-    // const [datePart, timePart] = followUp.split(', Time: ');
-    // const fullDateTime = `${datePart} ${timePart.split(',')[0]}`;
     const date = new Date(followUp);
     date.setDate(date.getDate());
     return date.toISOString();
   }
+
   
+  /**
+   * Applies date or range filter to the data source based on selected date(s)
+   * @param {string} dateField - The field name for the date to filter
+   */
   applyDateOrRangeFilter(dateField: string) {
     const selectedDate = this.filteredDateAndRangeForm.get('date')?.value;
     const startDate = this.filteredDateAndRangeForm.get('startDate')?.value;
@@ -385,15 +430,26 @@ export class AppointmentsComponent implements OnInit {
     this.closeMenu();
   }
 
-  resetDate(flag:boolean = false) {
+  /**
+   * Resets the date filter form and clears the data source filter
+   * @param {boolean} flag - If true, doesn't close the menu
+   */
+  resetDate(flag: boolean = false) {
     this.filteredDateAndRangeForm.reset();
     this.dataSource.filter = '';
     this.dataSource.filterPredicate = (data: any, filter: string) => true;
-    if(!flag){
+    if (!flag) {
       this.closeMenu();
     }
   }
 
+
+  /**
+   * Retrieves a specific attribute data from the person's attributes
+   * @param {any} data - The data object containing person attributes
+   * @param {string} attributeName - The name of the attribute to retrieve
+   * @return {Object | null} - The attribute name and value, or null if not found
+   */
   getAttributeData(data: any, attributeName: string): { name: string; value: string } | null {
     if (Array.isArray(data.person_attribute)) {
       const attribute = data.person_attribute.find(
@@ -495,7 +551,12 @@ export class AppointmentsComponent implements OnInit {
     return created_at;
   }
 
-  getDemarcation(enc) {
+  /**
+   * Determines if the encounter is a follow-up or new visit
+   * @param {any} enc - Encounter data
+   * @return {string} - 'FOLLOW_UP' or 'NEW'
+   */
+  getDemarcation(enc: any) {
     let isFollowUp = false;
     const adlIntl = enc?.find?.(e => e?.type?.name === visitTypes.ADULTINITIAL);
     if (Array.isArray(adlIntl?.obs)) {
@@ -611,7 +672,7 @@ export class AppointmentsComponent implements OnInit {
     });
   }
 
-    /**
+  /**
    * Get completed visits count
    * @return {void}
    */
@@ -694,15 +755,33 @@ export class AppointmentsComponent implements OnInit {
     return obs;
   }
   
-  renderHtmlContent(column:any, element:any): string {
+  /**
+   * Renders HTML content for a column, sanitized for security
+   * @param {any} column - Column definition
+   * @param {any} element - Data element to render
+   * @return {string} - Formatted HTML or element value
+   */
+  renderHtmlContent(column: any, element: any): string {
     return typeof column.formatHtml === 'function' ? this.sanitizer.bypassSecurityTrustHtml(column.formatHtml(element)) : element[column.key];
   }
 
-  getClasses(column:any){
+
+  /**
+   * Returns a string of CSS classes for the column
+   * @param {any} column - Column definition
+   * @return {string} - Space-separated class names
+   */
+  getClasses(column: any): string {
     return column.classList ? column.classList.join(" ") : "";
   }
 
-  processFollowUpDate(value: string) {
+
+  /**
+   * Formats the follow-up date by cleaning up time details
+   * @param {string} value - Follow-up date string
+   * @return {string} - Formatted date
+   */
+  processFollowUpDate(value: string): string {
     return value.split(',').length > 1 ? `${value.split(',')[0]}${value.split(',')[1].replace("Time:", "")}` : value;
   };
 }
