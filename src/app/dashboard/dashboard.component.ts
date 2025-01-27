@@ -478,10 +478,24 @@ export class DashboardComponent implements OnInit {
       {
         label: "Actions",
         key: "actions",
-        formatHtml: (element)=> { 
-          return `<img src="assets/svgs/red-pad.svg" alt="">
-          <span>${element?.followUp}</span>`
-        },
+        actionButtons: [
+          {
+            label: "Reschedule",
+            callBack: (element: any) => this.reschedule(element),
+            style: {
+              color: "#2e1e91",
+              backgroundColor: "#efe8ff",
+            },
+          },
+          {
+            label: "Cancel",
+            callBack: (element: any) => this.cancel(element),
+            style: {
+              color: "#ff475d",
+              backgroundColor: "#ffe8e8",
+            },
+          },
+        ]
       }
     ],
   };

@@ -93,6 +93,23 @@
                     <ng-container *ngIf="column.key">
                       <div class="float-left" [innerHTML]="renderHtmlContent(column, element)" [ngClass]="getClasses(column)"></div>
                     </ng-container>
+
+                    <ng-container *ngIf="column.key === 'actions'">
+                      <div class="actions-btn-wrap d-flex align-items-center">
+                        <button
+                          *ngFor="let action of column.actionButtons"
+                          [ngStyle]="{
+                            color: action.style?.color,
+                            backgroundColor: action.style?.backgroundColor
+                          }"
+                          class="action-btn mr-2"
+                          type="button"
+                          (click)="$event.stopPropagation(); action.callBack(element)"
+                        >
+                          {{ action.label }}
+                        </button>
+                      </div>
+                    </ng-container>
                   </td>
                 </ng-container>
 

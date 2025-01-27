@@ -481,6 +481,7 @@ export class AppointmentsComponent implements OnInit {
               appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
               appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
               appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person);
+              appointment.uuid = appointment.visitUuid;
               this.appointments.push(appointment);
             }
           }
