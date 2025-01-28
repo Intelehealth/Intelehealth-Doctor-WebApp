@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, Input, SimpleChanges, EventEmitter, Output,ChangeDetectorRef  } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../../model/model';
@@ -57,6 +57,21 @@ export class AppointmentsComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  handleAction(action: any, element: any) {
+    if (action.label === 'Reschedule') {
+      this.reschedule(element);
+    } else if (action.label === 'Cancel') {
+      this.cancel(element);
+    }
+  }
+
+ openWhatsApp(event: MouseEvent, telephone: string): void {
+  event.stopPropagation(); // Prevent row navigation
+  const whatsappLink = `https://wa.me/${telephone}`;
+  window.open(whatsappLink, '_blank', 'noopener,noreferrer');
+}
+
+
   constructor(
     private appointmentService: AppointmentService,
     private visitService: VisitService,
@@ -64,7 +79,8 @@ export class AppointmentsComponent implements OnInit {
     private toastr: ToastrService,
     private translateService: TranslateService,
     private mindmapService: MindmapService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
     // private appConfigService: AppConfigService
   ) { 
       // Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
@@ -222,6 +238,7 @@ export class AppointmentsComponent implements OnInit {
   * @return {void}
   */
   reschedule(appointment: AppointmentModel) {
+    console.log("inside appoinments")
     const len = appointment.visit.encounters.filter((e: CustomEncounterModel) => {
       return (e.type.name == visitTypes.PATIENT_EXIT_SURVEY || e.type.name == visitTypes.VISIT_COMPLETE);
     }).length;
@@ -245,6 +262,7 @@ export class AppointmentsComponent implements OnInit {
                   this.mindmapService.notifyHwForRescheduleAppointment(this.pluginConfigObs.mindmapURL, appointment)
                   this.getAppointments();
                   this.toastr.success(this.translateService.instant("The appointment has been rescheduled successfully!"), this.translateService.instant('Rescheduling successful!'));
+                  this.cdr.detectChanges();
                 } else {
                   this.toastr.success(message, this.translateService.instant('Rescheduling failed!'));
                 }

@@ -431,7 +431,7 @@ export class DashboardComponent implements OnInit {
         label: "Patient Name",
         key: "patientName",
         formatHtml: (element)=> { 
-          console.log(element)
+          // console.log(element)
           return `
             <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
             <span class="font-bold ml-2">${element?.patientName}  (${element?.patientGender})</span>
@@ -471,34 +471,20 @@ export class DashboardComponent implements OnInit {
         label: "Doctor",
         key: "drName",
       },
-      // {
-      //   label: "Contact",
-      //   key: "telephone",
-      //   formatHtml: (element)=> { 
-      //   return `<a *ngIf="element.telephone" href="{{ getWhatsAppLink(element.telephone) }}" target="_blank" class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp'+j">
-      //             <img src="assets/svgs/whatsapp-green.svg" alt="" />
-      //           </a>
-      //         `
-      //   }
-      // },
+    
       {
         label: "Contact",
         key: "telephone", 
-        formatHtml: (element) => { 
-          if (!element?.telephone) return "";
-          const whatsappLink = `https://wa.me/${element.telephone}?text=Hello%20I'm%20calling%20for%20consultation`;
-          return `<a href="${whatsappLink}" target="_blank" class="icon-btn m-0" rel="noopener noreferrer">
-                    <img src="assets/svgs/whatsapp-green.svg" alt="WhatsApp" />
-                  </a>`;
-        }    
+          formatHtml: () => {
+          return ""; // Do not return the telephone number
+        }  
       },
-            {
+      {
         label: "Actions",
         key: "actions",
         actionButtons: [
           {
             label: "Reschedule",
-            callBack: (element: any) => this.reschedule(element),
             style: {
               color: "#2e1e91",
               backgroundColor: "#efe8ff",
@@ -506,7 +492,6 @@ export class DashboardComponent implements OnInit {
           },
           {
             label: "Cancel",
-            callBack: (element: any) => this.cancel(element),
             style: {
               color: "#ff475d",
               backgroundColor: "#ffe8e8",
@@ -517,8 +502,6 @@ export class DashboardComponent implements OnInit {
     ],
     
   };
-
-  
 
   pluginConfigObs6: any = {
     anchorId: "anchor-inprogress",
@@ -591,6 +574,9 @@ export class DashboardComponent implements OnInit {
       // }
     ],
   }; 
+
+
+
 
   getHoursLeft(dateString: string): number {
   if (!dateString) return NaN;
@@ -1120,6 +1106,7 @@ export class DashboardComponent implements OnInit {
   * @return {void}
   */
   reschedule(appointment: AppointmentModel) {
+    console.log("inside dashboard")
     const len = appointment.visit.encounters.filter((e: CustomEncounterModel) => {
       return (e.type.name == visitTypes.PATIENT_EXIT_SURVEY || e.type.name == visitTypes.VISIT_COMPLETE);
     }).length;

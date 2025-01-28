@@ -94,6 +94,12 @@
                     </ng-container>
 
                     <!-- Starts In Column -->
+                    <ng-container *ngIf="column.key === 'telephone' && element.telephone">
+                      <a (click)="openWhatsApp($event, element.telephone)" class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp' + j">
+                        <img src="assets/svgs/whatsapp-green.svg" alt="WhatsApp" />
+                      </a>
+                    </ng-container>
+
                     <!-- <ng-container *ngIf="column.key === 'telephone' && element.telephone">
                       <a [href]="getWhatsAppLink(element.telephone)" target="_blank" 
                         class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp' + j">
@@ -104,17 +110,18 @@
                     <ng-container *ngIf="column.key === 'actions'">
                       <div class="actions-btn-wrap d-flex align-items-center">
                         <button
-                          *ngFor="let action of column.actionButtons"
-                          [ngStyle]="{
-                            color: action.style?.color,
-                            backgroundColor: action.style?.backgroundColor
-                          }"
-                          class="action-btn mr-2"
-                          type="button"
-                          (click)="$event.stopPropagation(); action.callBack(element)"
-                        >
-                          {{ action.label }}
-                        </button>
+                        *ngFor="let action of column.actionButtons"
+                        [ngStyle]="{
+                          color: action.style?.color,
+                          backgroundColor: action.style?.backgroundColor
+                        }"
+                        class="action-btn mr-2"
+                        type="button"
+                       (click)="$event.stopPropagation(); handleAction(action, element)"
+                      >
+                        {{ action.label }}
+                      </button>
+
                       </div>
                     </ng-container>
                   </td>
