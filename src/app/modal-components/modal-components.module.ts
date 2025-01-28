@@ -52,6 +52,7 @@ import { AddTicketComponent } from './add-ticket/add-ticket.component';
 import { LanguageFieldUpdate } from './language-fields-update/language-fields-update.component';
 import { SubSectionsComponent } from './sub-sections/sub-sections.component';
 import { MatTableModule } from '@angular/material/table';
+import { PatientRegValidationsComponent } from './patient-reg-validations/patient-reg-validations.component';
 
 @NgModule({
     declarations: [
@@ -90,7 +91,8 @@ import { MatTableModule } from '@angular/material/table';
         PasswordResetComponent,
         AddTicketComponent,
         LanguageFieldUpdate,
-        SubSectionsComponent
+        SubSectionsComponent,
+        PatientRegValidationsComponent
     ],
     imports: [
         CommonModule,
