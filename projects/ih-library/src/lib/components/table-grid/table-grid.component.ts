@@ -19,11 +19,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { formatDate } from '@angular/common';
 
 @Component({
-  selector: 'lib-appointments',
-  templateUrl: './appointments.component.html',
-  styleUrls: ['./appointments.component.scss']
+  selector: 'lib-table-grid',
+  templateUrl: './table-grid.component.html',
+  styleUrls: ['./table-grid.component.scss']
 })
-export class AppointmentsComponent implements OnInit {
+export class TableGridComponent implements OnInit {
   
   @Input() pluginConfigObs: any;
   displayedAppointmentColumns: any = [];
@@ -785,5 +785,14 @@ export class AppointmentsComponent implements OnInit {
   processFollowUpDate(value: string): string {
     return value.split(',').length > 1 ? `${value.split(',')[0]}${value.split(',')[1].replace("Time:", "")}` : value;
   };
+
+  // Method to handle the action based on the button clicked
+  handleAction(action: any, element: any) {
+    if (action.label === 'Reschedule') {
+      this.reschedule(element);
+    } else if (action.label === 'Cancel') {
+      this.cancel(element);
+    }
+  }
 }
 

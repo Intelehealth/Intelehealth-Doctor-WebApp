@@ -104,14 +104,15 @@
                           }"
                           class="action-btn mr-2"
                           type="button"
-                          (click)="$event.stopPropagation(); action.callBack(element)"
+                          (click)="$event.stopPropagation(); handleAction(action, element)"
                         >
-                          {{ action.label }}
+                          {{ action.label | translate }}
                         </button>
                       </div>
                     </ng-container>
                   </td>
                 </ng-container>
+    
 
                 <!-- No Data Row -->
                 <tr class="mat-row" *matNoDataRow>

@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { IhLibraryComponent } from './ih-library.component';
-import { AppointmentsComponent } from './components/appointments/appointments.component';
+import { TableGridComponent } from './components/table-grid/table-grid.component';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
@@ -41,7 +41,7 @@ registerLocaleData(localeEn);
 @NgModule({
   declarations: [
     IhLibraryComponent,
-    AppointmentsComponent,
+    TableGridComponent,
   ],
   imports: [
     ModalComponentsModule,
@@ -86,7 +86,7 @@ registerLocaleData(localeEn);
   ],
   exports: [
     IhLibraryComponent,
-    AppointmentsComponent,
+    TableGridComponent,
     MatPaginatorModule,
     MatTooltipModule,
     MatInputModule,
