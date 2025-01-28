@@ -93,6 +93,14 @@
                       <div class="float-left" [innerHTML]="renderHtmlContent(column, element)" [ngClass]="getClasses(column)"></div>
                     </ng-container>
 
+                    <!-- Starts In Column -->
+                    <!-- <ng-container *ngIf="column.key === 'telephone' && element.telephone">
+                      <a [href]="getWhatsAppLink(element.telephone)" target="_blank" 
+                        class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp' + j">
+                        <img src="assets/svgs/whatsapp-green.svg" alt="WhatsApp" />45
+                      </a>
+                    </ng-container> -->
+
                     <ng-container *ngIf="column.key === 'actions'">
                       <div class="actions-btn-wrap d-flex align-items-center">
                         <button
@@ -103,7 +111,7 @@
                           }"
                           class="action-btn mr-2"
                           type="button"
-                          (click)="action.callBack(element)"
+                          (click)="$event.stopPropagation(); action.callBack(element)"
                         >
                           {{ action.label }}
                         </button>

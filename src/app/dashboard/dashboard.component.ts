@@ -25,6 +25,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
 import { formatDate } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { DomSanitizer, SafeHtml, SafeUrl  } from '@angular/platform-browser';
 
 export const PICK_FORMATS = {
   parse: { dateInput: { month: 'short', year: 'numeric', day: 'numeric' } },
@@ -442,15 +443,18 @@ export class DashboardComponent implements OnInit {
         key: "patientAge",
         formatHtml: (element)=> { 
           return `<span>${element?.patientAge} ${'y'}</span>`
-          return `<span>${element?.patientAge} ${'y'}</span>`
         },
       },
-      {
+     {
         label: "Starts in",
         key: "starts_in",
-        formatHtml: (element)=> { 
-          return `<strong><span style="color: #ff475d">${element?.starts_in}</span></strong>`
-        },
+        formatHtml: (element) => {
+          if (!element?.starts_in) return "<span>N/A</span>";
+          const hoursLeft = this.getHoursLeft(element.starts_in);
+          let color = "#28a745"; // Green for more than 24 hours
+          if (hoursLeft <= 0) color = "#ff475d"; // Red if overdue
+          return `<strong><span style="color: ${color}">${element?.starts_in}</span></strong>`;
+        }
       },
       {
         label: "Location",
@@ -467,17 +471,28 @@ export class DashboardComponent implements OnInit {
         label: "Doctor",
         key: "drName",
       },
+      // {
+      //   label: "Contact",
+      //   key: "telephone",
+      //   formatHtml: (element)=> { 
+      //   return `<a *ngIf="element.telephone" href="{{ getWhatsAppLink(element.telephone) }}" target="_blank" class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp'+j">
+      //             <img src="assets/svgs/whatsapp-green.svg" alt="" />
+      //           </a>
+      //         `
+      //   }
+      // },
       {
         label: "Contact",
-        key: "telephone",
-        formatHtml: (element)=> { 
-        return `<a *ngIf="element.telephone" href="{{ getWhatsAppLink(element.telephone) }}" target="_blank" class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp'+j">
-                  <img src="assets/svgs/whatsapp-green.svg" alt="" />
-                </a>
-              `
-        }
+        key: "telephone", 
+        formatHtml: (element) => { 
+          if (!element?.telephone) return "";
+          const whatsappLink = `https://wa.me/${element.telephone}?text=Hello%20I'm%20calling%20for%20consultation`;
+          return `<a href="${whatsappLink}" target="_blank" class="icon-btn m-0" rel="noopener noreferrer">
+                    <img src="assets/svgs/whatsapp-green.svg" alt="WhatsApp" />
+                  </a>`;
+        }    
       },
-      {
+            {
         label: "Actions",
         key: "actions",
         actionButtons: [
@@ -502,6 +517,8 @@ export class DashboardComponent implements OnInit {
     ],
     
   };
+
+  
 
   pluginConfigObs6: any = {
     anchorId: "anchor-inprogress",
@@ -575,8 +592,22 @@ export class DashboardComponent implements OnInit {
     ],
   }; 
 
+  getHoursLeft(dateString: string): number {
+  if (!dateString) return NaN;
+
+  const now = new Date();
+  const targetDate = new Date(dateString);
+  
+  // Calculate the time difference in milliseconds
+  const diffMs = targetDate.getTime() - now.getTime();
+
+  // Convert milliseconds to hours
+  return Math.floor(diffMs / (1000 * 60 * 60));
+}
+
 
   constructor(
+    private sanitizer: DomSanitizer,
     private pageTitleService: PageTitleService,
     private appointmentService: AppointmentService,
     private visitService: VisitService,
@@ -1248,8 +1279,10 @@ export class DashboardComponent implements OnInit {
   * Get whatsapp link
   * @return {string} - Whatsapp link
   */
-  getWhatsAppLink(telephoneNumber: string): string {
-    return this.visitService.getWhatsappLink(telephoneNumber);
+  getWhatsAppLink(telephoneNumber: string): string  {
+    //  const url = this.visitService.getWhatsappLink(telephoneNumber);
+    // return this.sanitizer.bypassSecurityTrustUrl(url);
+   return this.visitService.getWhatsappLink(telephoneNumber);
   }
 
   getTelephoneNumber(person: AppointmentModel['visit']['person']): any {
