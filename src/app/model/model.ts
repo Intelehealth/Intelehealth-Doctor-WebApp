@@ -345,6 +345,8 @@ export interface PatientModel {
     gender?: string,
     attributes?: PersonAttributeModel[],
     preferredAddress?: {
+      address6: string,
+      address3: string,
       address2: string,
       address1: string,
       cityVillage?: string,
@@ -595,6 +597,7 @@ export interface PatientRegistrationFieldsModel {
   is_mandatory: boolean,
   is_editable: boolean,
   is_locked: boolean
+  validations?: any
 }
 
 export interface SpecializationModel {

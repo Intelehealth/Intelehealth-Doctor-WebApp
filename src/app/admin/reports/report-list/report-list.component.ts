@@ -15,6 +15,11 @@ export class ReportListComponent {
       id: 1,
       name: 'List of Patients between two dates',
       buttonName: "Create Report"
+    },
+    {
+      id: 2,
+      name: 'List of Visits between two dates',
+      buttonName: "Create Report"
     }
   ];
 

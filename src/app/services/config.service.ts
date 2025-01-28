@@ -423,4 +423,18 @@ export class ConfigService {
     const url = `${this.baseURL}/roster-questionnaire/getByKey/${key}`;
     return this.http.get(url);
   }
+
+  /**
+   * Update patient reg field validations
+   * @param {boolean} id - id of patient reg field
+   * @param {any} validations - validations
+   * @return {Observable<any>}
+   */
+  updatePatientRegValidations(
+    id: number,
+    validations: any
+  ): Observable<any> {
+    const url = `${this.baseURL}/pr/updateValidations/${id}`;
+    return this.http.put(url, { validations });
+  }
 }

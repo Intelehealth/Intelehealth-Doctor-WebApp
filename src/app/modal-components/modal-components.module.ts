@@ -53,6 +53,7 @@ import { LanguageFieldUpdate } from './language-fields-update/language-fields-up
 import { SubSectionsComponent } from './sub-sections/sub-sections.component';
 import { MatTableModule } from '@angular/material/table';
 import { CallHistoryComponent } from './call-history/call-history.component';
+import { PatientRegValidationsComponent } from './patient-reg-validations/patient-reg-validations.component';
 
 @NgModule({
     declarations: [
@@ -92,7 +93,8 @@ import { CallHistoryComponent } from './call-history/call-history.component';
         AddTicketComponent,
         LanguageFieldUpdate,
         SubSectionsComponent,
-        CallHistoryComponent
+        CallHistoryComponent,
+        PatientRegValidationsComponent
     ],
     imports: [
         CommonModule,

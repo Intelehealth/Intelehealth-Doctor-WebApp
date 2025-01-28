@@ -126,6 +126,15 @@
         <mat-tab label="{{'Address'| translate}}" *ngIf="hasPatientAddressEnabled">
           <div class="rows patient-info-wrapper">
 
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Household Number') && patient?.person?.preferredAddress?.address6">
+              <div class="patient-info-item">
+                <h6 data-test-id="etPatient">{{'Household number' | translate}}</h6>
+                <p data-test-id="etPatient">
+                  {{ patient?.person?.preferredAddress?.address6 }}
+                </p>
+              </div>
+            </div>
+
             <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Corresponding Address 1') && patient?.person?.preferredAddress?.address1">
               <div class="patient-info-item">
                 <h6 data-test-id="etPatient">{{'Corresponding address 1' | translate}}</h6>
@@ -140,6 +149,15 @@
                 <h6 data-test-id="etPatient">{{'Corresponding address 2' | translate}}</h6>
                 <p data-test-id="etPatient">
                   {{ patient?.person?.preferredAddress?.address2 }}
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Block') && patient?.person?.preferredAddress?.address3">
+              <div class="patient-info-item">
+                <h6 data-test-id="etPatient">{{'Block' | translate}}</h6>
+                <p data-test-id="etPatient">
+                  {{ patient?.person?.preferredAddress?.address3 }}
                 </p>
               </div>
             </div>
@@ -540,7 +558,7 @@
           <div class="data-section">
             <div class="data-section-title">
               <img src="assets/svgs/test.svg" alt="" />
-              <h6>{{'Doctor's Recommendation'|translate}}</h6>
+              <h6>{{'Doctor\'s Recommendation'|translate}}</h6>
             </div>
             <div class="data-section-content pt-3">
               <ng-template *ngTemplateOutlet="tplDrRcom"></ng-template>

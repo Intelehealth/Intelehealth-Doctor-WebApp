@@ -6104,5 +6104,17 @@
   "No Follow Up Instructions added": "No Follow Up Instructions added",
   "No followup added": "No followup added",
   "Doctor's Recommendation": "Doctor's Recommendation",
-  "No data available!": "No data available!"
+  "No data available!": "No data available!",
+  "Field Validations": "Field Validations",
+  "Minimum Length": "Minimum Length",
+  "Enter Minimum Length": "Enter Minimum Length",
+  "Maximum 2 digit number allowed": "Maximum 2 digit number allowed",
+  "Value should be greater than 5": "Value should be greater than 5",
+  "Value should be less than 16": "Value should be less than 16",
+  "Maximum Length": "Maximum Length",
+  "Enter Maximum Length": "Enter Maximum Length",
+  "Value should be equal or greater than Minimum Length": "Value should be equal or greater than Minimum Length",
+  "Save Validations": "Save Validations",
+  "Do you feel that this case is fit for another specialist doctor? If yes, refer the case to a suitable specialist doctor from the options given below.": "Do you feel that this case is fit for another specialist doctor? If yes, refer the case to a suitable specialist doctor from the options given below.",
+  "Use this if you wish to seek a second opinion from an external facility.":"Use this if you wish to seek a second opinion from an external facility."
 }

@@ -564,13 +564,13 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
                         let splitByHyphen = itemList.split(" - ");
                         let value = splitByHyphen.pop() || "";
                         if(this.isValidUnitFormat(value)){
-                          if (this.checkTestUnitValues(diagnostics.testUnits, value, splitByHyphen)) {
+                          if (this.checkTestUnitValues(diagnostics?.testUnits, value, splitByHyphen)) {
                             value = `<span class="light-green">${value}</span>`;
                           } else {
                             value = `<span class="red-color">${value}</span>`;
                           }
                         } else {
-                          if(this.checkTestNameValues(diagnostics.testNames, value)) {
+                          if(this.checkTestNameValues(diagnostics?.testNames, value)) {
                             value = `<span class="light-green">${value}</span>`;
                           }
                         }
@@ -614,8 +614,8 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     let [unitCount, unitType] = value.split(" ");
 
     for (let unit = 0; unit < diagnosticsUnit.length; unit++) {
-      if (diagnosticsUnit[unit].name.toLowerCase() === popValue.toLowerCase()){
-        if (value.includes(diagnosticsUnit[unit].unit.toLowerCase()) && (diagnosticsUnit[unit].unit.length === unitType.length)){
+      if (diagnosticsUnit[unit]?.name?.toLowerCase() === popValue?.toLowerCase()){
+        if (value.includes(diagnosticsUnit[unit]?.unit?.toLowerCase()) && (diagnosticsUnit[unit]?.unit?.length === unitType?.length)){
           if (Number(unitCount) >= diagnosticsUnit[unit].min && Number(unitCount) <= diagnosticsUnit[unit].max){
             return true;
           } else {
@@ -635,7 +635,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
  */
   checkTestNameValues(diagnosticsName: DiagnosticName[], value: string): boolean {
     for (let name = 0; name < diagnosticsName.length; name++) {
-      if (diagnosticsName[name].testName.toLowerCase() === value.toLowerCase()){
+      if (diagnosticsName[name]?.testName?.toLowerCase() === value?.toLowerCase()){
         return true;
       }
     }
@@ -1574,16 +1574,18 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.diagnosisService.getObs(this.visit.patient.uuid, conceptIds.conceptFollow).subscribe((response: ObsApiResponseModel) => {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this.visit.uuid) {
-          let followUpDate: string, followUpTime: any, followUpReason: any, wantFollowUp: string, followUpType: any;
+          let followUpDate: string, followUpTime: any, followUpReason: any, wantFollowUp: string = 'No', followUpType: any;
           if (obs.value.includes('Time:')) {
-            followUpDate = (obs.value.includes('Time:')) ? moment(obs.value.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.value.split(', Remark: ')[0]).format('YYYY-MM-DD');
-            followUpTime = (obs.value.includes('Time:')) ? obs.value.split(', Time: ')[1].split(', Remark: ')[0] : null;
-            followUpReason = (obs.value.split(', Remark: ')[1]) ? obs.value.split(', Remark: ')[1].split(', ')[0] : null;
-            followUpType = obs.value.split('Type: ').length > 1 && obs.value.split('Type: ')[1].split(', Time: ')[0] !== 'null' ? obs.value.split('Type: ')[1].split(', Time: ')[0] : null;
+            const result = obs.value.split(',').filter(Boolean);
+            const time = result.find((v: string) => v.includes('Time:'))?.split('Time:')?.[1]?.trim();
+            const remark = result.find((v: string) => v.includes('Remark:'))?.split('Remark:')?.[1]?.trim();
+            const type = result.find((v: string) => v.includes('Type:'))?.split('Type:')?.[1]?.trim();
+            followUpDate = moment(result[0]).format('YYYY-MM-DD');
+            followUpTime = time ? time : null;
+            followUpReason = remark ? remark : null;
+            followUpType = type && type !== 'null' ? type : null;
             wantFollowUp = 'Yes';
-          } else {
-            wantFollowUp = 'No';
-          }
+          } 
           this.followUpDatetime = obs.value;
           this.followUpForm.patchValue({
             present: true,
@@ -1618,7 +1620,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
         return;
       }
       body.value = (this.followUpForm.value.followUpReason) ?
-        `${moment(this.followUpForm.value.followUpDate).format('YYYY-MM-DD')}, Time: ${this.followUpForm.value.followUpTime}, Remark: ${this.followUpForm.value.followUpReason},  Type: ${this.followUpForm.value.followUpType}` : `${moment(this.followUpForm.value.followUpDate).format('YYYY-MM-DD')}, Time: ${this.followUpForm.value.followUpTime}`;
+        `${moment(this.followUpForm.value.followUpDate).format('YYYY-MM-DD')}, Time: ${this.followUpForm.value.followUpTime}, Remark: ${this.followUpForm.value.followUpReason},  Type: ${this.followUpForm.value.followUpType}` : `${moment(this.followUpForm.value.followUpDate).format('YYYY-MM-DD')}, Time: ${this.followUpForm.value.followUpTime}, Type: ${this.followUpForm.value.followUpType}`;
     }
     this.encounterService.postObs(body).subscribe((res: ObsModel) => {
       if (res) {

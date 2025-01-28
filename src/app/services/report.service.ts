@@ -14,5 +14,10 @@ export class ReoportService {
       return this.http.get(
         `${environment.base}/pl/${body.selectedData.value.field1}/${body.selectedData.value.field2}`, { reportProgress: true, observe: "events" });
     }
+
+    if (body.reportId === 2) {
+      return this.http.get(
+        `${environment.base}/vl/${body.selectedData.value.field1}/${body.selectedData.value.field2}`, { reportProgress: true, observe: "events" });
+    }
   }
 }

@@ -6105,5 +6105,17 @@
   "No Follow Up Instructions added": "No Follow Up Instructions added",
   "No followup added": "Продолжение не добавлено",
   "Doctor's Recommendation": "Рекомендация врача",
-  "No data available!": "Нет данных!"
+  "No data available!": "Нет данных!",
+  "Field Validations": "Полевые проверки",
+  "Minimum Length": "Минимальная длина",
+  "Enter Minimum Length": "Введите минимальную длину",
+  "Maximum 2 digit number allowed": "Разрешено максимальное двухзначное число.",
+  "Value should be greater than 5": "Значение должно быть больше 5.",
+  "Value should be less than 16": "Значение должно быть меньше 16.",
+  "Maximum Length": "Максимальная длина",
+  "Enter Maximum Length": "Введите максимальную длину",
+  "Value should be equal or greater than Minimum Length": "Значение должно быть равно или больше минимальной длины.",
+  "Save Validations": "Сохранить проверки",
+  "Do you feel that this case is fit for another specialist doctor? If yes, refer the case to a suitable specialist doctor from the options given below.": "Считаете ли вы, что этот случай подходит другому врачу-специалисту? Если да, направьте случай к подходящему врачу-специалисту из вариантов, приведенных ниже.",
+  "Use this if you wish to seek a second opinion from an external facility.":"Используйте это, если вы хотите получить второе мнение от стороннего учреждения."
 }

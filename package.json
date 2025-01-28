@@ -47,7 +47,7 @@
     "intl-tel-input": "^17.0.19",
     "jquery": "^3.5.1",
     "libphonenumber-js": "^1.10.18",
-    "livekit-client": "v2.0.10",
+    "livekit-client": "^2.8.0",
     "moment": "^2.29.4",
     "ng-otp-input": "^1.8.5",
     "ng2-pdf-viewer": "^9.1.3",

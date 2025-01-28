@@ -149,7 +149,7 @@ export class VisitService {
   * @param {string} v - response format
   * @return {Observable<any>}
   */
-  patientInfo(id, v = 'custom:(uuid,attributes,identifiers,person:(uuid,display,gender,preferredName:(givenName,familyName,middleName),birthdate,age,preferredAddress:(cityVillage,address1,address2,country,stateProvince,countyDistrict,postalCode),attributes:(value,attributeType:(display))))'): Observable<any> {
+  patientInfo(id, v = 'custom:(uuid,attributes,identifiers,person:(uuid,display,gender,preferredName:(givenName,familyName,middleName),birthdate,age,preferredAddress:(cityVillage,address1,address2,address3,address6,country,stateProvince,countyDistrict,postalCode),attributes:(value,attributeType:(display))))'): Observable<any> {
     // tslint:disable-next-line: max-line-length
     const url = `${this.baseURL}/patient/${id}?v=${v}`;
     return this.http.get(url);

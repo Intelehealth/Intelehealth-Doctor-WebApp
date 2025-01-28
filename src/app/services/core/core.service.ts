@@ -22,6 +22,7 @@ import { ILanguageFieldUpdate, LanguageFieldUpdate } from 'src/app/modal-compone
 import { NoInternetComponent } from 'src/app/modal-components/no-internet/no-internet.component';
 import { PasswordResetSuccessComponent } from 'src/app/modal-components/password-reset-success/password-reset-success.component';
 import { PasswordResetComponent } from 'src/app/modal-components/password-reset/password-reset.component';
+import { PatientRegValidationsComponent } from 'src/app/modal-components/patient-reg-validations/patient-reg-validations.component';
 import { RaiseTicketComponent } from 'src/app/modal-components/raise-ticket/raise-ticket.component';
 import { ReportErrorComponent } from 'src/app/modal-components/report-error/report-error.component';
 import { ReportGeneratorComponent } from 'src/app/modal-components/report-generator/report-generator.component';
@@ -402,6 +403,15 @@ export class CoreService {
   */
    openPatientCallDurationHistoryModel({ data }: { data: any }): MatDialogRef<CallHistoryComponent, any> {
     const dialogRef = this.dialog.open(CallHistoryComponent, { panelClass: 'modal-md', hasBackdrop: true, disableClose: false, data });
+    return dialogRef;
+  }
+
+  /**
+  * Open Patient Reg Validations modal
+  * @return {Observable<any>} - Dialog result
+  */
+  openPatientRegValidationsModal(data): MatDialogRef<PatientRegValidationsComponent, any> {
+    const dialogRef = this.dialog.open(PatientRegValidationsComponent, { panelClass: 'modal-md', hasBackdrop: true, disableClose: true, data });
     return dialogRef;
   }
 }

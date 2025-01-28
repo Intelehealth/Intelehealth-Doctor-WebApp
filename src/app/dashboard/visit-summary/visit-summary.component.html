@@ -151,9 +151,9 @@
               <div class="rows patient-info-wrapper">
 
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Household Number') && patient?.person?.preferredAddress?.address1">
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Household Number') && patient?.person?.preferredAddress?.address6">
                   <div class="patient-info-item">
-                    <h6 data-test-id="etPatient">{{'Household Number' | translate}}</h6>
+                    <h6 data-test-id="etPatient">{{'Household number' | translate}}</h6>
                     <p data-test-id="etPatient">
                       {{ patient?.person?.preferredAddress?.address6 }}
                     </p>
@@ -174,6 +174,15 @@
                     <h6 data-test-id="etPatient">{{'Corresponding address 2' | translate}}</h6>
                     <p data-test-id="etPatient">
                       {{ patient?.person?.preferredAddress?.address2 }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Block') && patient?.person?.preferredAddress?.address3">
+                  <div class="patient-info-item">
+                    <h6 data-test-id="etPatient">{{'Block' | translate}}</h6>
+                    <p data-test-id="etPatient">
+                      {{ patient?.person?.preferredAddress?.address3 }}
                     </p>
                   </div>
                 </div>
@@ -342,6 +351,7 @@
                             width="44px"
                           />
                           <h6 class="mb-0 ml-2" data-test-id="etHeaderConDets">{{ getLanguageValue(pvsConfig) | translate}}</h6>
+                          <mat-icon *ngIf="pvsConfig.is_enabled && pvsConfig?.key === pvsConstant['refer_to_specialist'].key" aria-hidden="false" class="info-icon" aria-label="help icon" matTooltip="{{'Do you feel that this case is fit for another specialist doctor? If yes, refer the case to a suitable specialist doctor from the options given below.' | translate}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
                         </div>
                       </mat-panel-title>
                     </mat-expansion-panel-header>
@@ -1767,6 +1777,7 @@
                       <div class="intel-accordion-title">
                         <img src="assets/svgs/referral.svg" alt="" width="44px" />
                         <h6 class="mb-0 ml-2">{{'Referral Advise'|translate}}</h6>
+                        <mat-icon aria-hidden="false" class="info-icon" aria-label="help icon" matTooltip="{{'Use this if you wish to seek a second opinion from an external facility.' | translate}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
                       </div>
                     </mat-panel-title>
                     <mat-icon>{{ panel7.expanded ? "remove" : "add" }}</mat-icon>
