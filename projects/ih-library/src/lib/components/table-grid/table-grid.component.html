@@ -94,6 +94,14 @@
                       <div class="float-left" [innerHTML]="renderHtmlContent(column, element)" [ngClass]="getClasses(column)"></div>
                     </ng-container>
 
+                    <!-- Starts In Column -->
+                    <ng-container *ngIf="column.key === 'telephone' && element.telephone">
+                      <a (click)="openWhatsApp($event, element.telephone)" class="float-left icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp' + j">
+                        <img src="assets/svgs/whatsapp-green.svg" alt="WhatsApp" />
+                      </a>
+                    </ng-container>
+
+                    <!-- Actions In Column -->
                     <ng-container *ngIf="column.key === 'actions'">
                       <div class="actions-btn-wrap d-flex align-items-center">
                         <button

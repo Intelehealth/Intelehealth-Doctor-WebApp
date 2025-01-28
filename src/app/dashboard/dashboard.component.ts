@@ -427,6 +427,13 @@ export class DashboardComponent implements OnInit {
     },
     tableColumns: [
       {
+        label:"TMH Patient ID",
+        key: "TMH_patient_id",
+        formatHtml: (element)=> {
+          return `<span>${element?.TMH_patient_id?.value ? element?.TMH_patient_id?.value : ''}</span>`
+        },
+      },
+      {
         label: "Patient",
         key: "patient_name",
         formatHtml: (element)=> { 
@@ -446,33 +453,35 @@ export class DashboardComponent implements OnInit {
       {
         label: "Starts in",
         key: "starts_in",
-        formatHtml: (element)=> { 
-          return `<strong><span style="color: #ff475d">${element?.starts_in}</span></strong>`
-        },
+        formatHtml: (element) => {
+          let  color = '';
+          if (element.starts_in.includes('Due'))
+            color = "#FF475D"; // red color
+          if (element.starts_in.includes('Hour') || element.starts_in.includes('Minute'))
+            color = "#0FD197"; // green color
+          return `<strong><span style="color: ${color}">${element?.starts_in}</span></strong>`;
+        }
       },
-      {
-        label: "Location",
-        key: "location",
-        formatHtml: (element)=> { 
-          return `<span>${element?.visit?.location?.name}</span>`
-        },
-      },
-      {
-        label: "Chief Complaint",
-        key: "cheif_complaint",
-      },
-      {
-        label: "Doctor",
-        key: "drName",
-      },
+      // {
+      //   label: "Location",
+      //   key: "location",
+      //   formatHtml: (element)=> { 
+      //     return `<span>${element?.visit?.location?.name}</span>`
+      //   },
+      // },
+      // {
+      //   label: "Chief Complaint",
+      //   key: "cheif_complaint",
+      // },
+      // {
+      //   label: "Doctor",
+      //   key: "drName",
+      // },
       {
         label: "Contact",
         key: "telephone",
-        formatHtml: (element)=> { 
-          return `<a *ngIf="element.telephone" href="{{ getWhatsAppLink(element.telephone) }}" target="_blank" class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp'+j">
-                    <img src="assets/svgs/whatsapp-green.svg" alt="" />
-                  </a>
-                `
+        formatHtml: () => {
+          return ""; // Do not return the telephone number
         }
       },
       {
