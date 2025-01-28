@@ -84,7 +84,8 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div class="mat-elevation-z8">
-            <table mat-table [dataSource]="dataSource">
+              <table mat-table [dataSource]="dataSource">
+
                 <ng-container *ngFor="let column of displayedAppointmentColumns" [matColumnDef]="column.key">
                   <th mat-header-cell *matHeaderCellDef>{{ column.label | translate }}</th>
 
@@ -95,37 +96,31 @@
 
                     <!-- Starts In Column -->
                     <ng-container *ngIf="column.key === 'telephone' && element.telephone">
-                      <a (click)="openWhatsApp($event, element.telephone)" class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp' + j">
+                      <a (click)="openWhatsApp($event, element.telephone)" class="float-left icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp' + j">
                         <img src="assets/svgs/whatsapp-green.svg" alt="WhatsApp" />
                       </a>
                     </ng-container>
 
-                    <!-- <ng-container *ngIf="column.key === 'telephone' && element.telephone">
-                      <a [href]="getWhatsAppLink(element.telephone)" target="_blank" 
-                        class="icon-btn m-0" [attr.data-test-id]="'linkPatientWhatsApp' + j">
-                        <img src="assets/svgs/whatsapp-green.svg" alt="WhatsApp" />45
-                      </a>
-                    </ng-container> -->
-
+                    <!-- Actions In Column -->
                     <ng-container *ngIf="column.key === 'actions'">
                       <div class="actions-btn-wrap d-flex align-items-center">
                         <button
-                        *ngFor="let action of column.actionButtons"
-                        [ngStyle]="{
-                          color: action.style?.color,
-                          backgroundColor: action.style?.backgroundColor
-                        }"
-                        class="action-btn mr-2"
-                        type="button"
-                       (click)="$event.stopPropagation(); handleAction(action, element)"
-                      >
-                        {{ action.label }}
-                      </button>
-
+                          *ngFor="let action of column.actionButtons"
+                          [ngStyle]="{
+                            color: action.style?.color,
+                            backgroundColor: action.style?.backgroundColor
+                          }"
+                          class="action-btn mr-2"
+                          type="button"
+                          (click)="$event.stopPropagation(); handleAction(action, element)"
+                        >
+                          {{ action.label | translate }}
+                        </button>
                       </div>
                     </ng-container>
                   </td>
                 </ng-container>
+    
 
                 <!-- No Data Row -->
                 <tr class="mat-row" *matNoDataRow>
@@ -137,8 +132,8 @@
                 <!-- Row Definitions -->
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; let x = index; columns: displayedColumns;" [attr.data-test-id]="'tr' + x" [routerLink]="['/dashboard/visit-summary', row.uuid]"></tr>
+                
               </table>
-
               <mat-paginator #tempPaginator hidePageSize [pageSizeOptions]="[5, 10, 20]" aria-label="Select page of periodic elements"></mat-paginator>
             </div>
           </mat-expansion-panel>

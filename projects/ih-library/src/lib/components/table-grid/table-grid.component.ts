@@ -19,11 +19,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { formatDate } from '@angular/common';
 
 @Component({
-  selector: 'lib-appointments',
-  templateUrl: './appointments.component.html',
-  styleUrls: ['./appointments.component.scss']
+  selector: 'lib-table-grid',
+  templateUrl: './table-grid.component.html',
+  styleUrls: ['./table-grid.component.scss']
 })
-export class AppointmentsComponent implements OnInit {
+export class TableGridComponent implements OnInit {
   
   @Input() pluginConfigObs: any;
   displayedAppointmentColumns: any = [];
@@ -499,6 +499,7 @@ export class AppointmentsComponent implements OnInit {
               appointment.cheif_complaint = this.getCheifComplaint(appointment.visit);
               appointment.starts_in = checkIfDateOldThanOneDay(appointment.slotJsDate);
               appointment.telephone = this.getTelephoneNumber(appointment?.visit?.person);
+              appointment.TMH_patient_id = this.getAttributeData(appointment.visit, "TMH Case Number");
               appointment.uuid = appointment.visitUuid;
               this.appointments.push(appointment);
             }
@@ -803,5 +804,29 @@ export class AppointmentsComponent implements OnInit {
   processFollowUpDate(value: string): string {
     return value.split(',').length > 1 ? `${value.split(',')[0]}${value.split(',')[1].replace("Time:", "")}` : value;
   };
+
+  /**
+   * Executes the action based on its label (Reschedule or Cancel)
+   * @param {any} action - Action object
+   * @param {any} element - Element to perform the action on
+   */
+  handleAction(action: any, element: any) {
+    if (action.label === 'Reschedule') {
+      this.reschedule(element);
+    } else if (action.label === 'Cancel') {
+      this.cancel(element);
+    }
+  }
+
+  /**
+   * Opens a WhatsApp chat with the given phone number
+   * @param {MouseEvent} event - The click event to prevent row navigation
+   * @param {string} telephone - Phone number for WhatsApp
+   */
+  openWhatsApp(event: MouseEvent, telephone: string): void {
+    event.stopPropagation(); // Prevent row navigation
+    const whatsappLink = `https://wa.me/${telephone}`;
+    window.open(whatsappLink, '_blank', 'noopener,noreferrer');
+  }
 }
 

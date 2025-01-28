@@ -6105,5 +6105,10 @@
   "No Follow Up Instructions added": "No Follow Up Instructions added",
   "No followup added": "Продолжение не добавлено",
   "Doctor's Recommendation": "Рекомендация врача",
-  "No data available!": "Нет данных!"
+  "No data available!": "Нет данных!",
+  "Reset": "Сброс",
+  "Apply": "Применять",
+  "Range": "Диапазон",
+  "Patient Type": "Тип пациента",
+  "FollowUp Date": "Дата продолжения"
 }

@@ -148,7 +148,7 @@ export class DashboardComponent implements OnInit {
   @ViewChild(CompletedVisitsComponent) completedVisitsComponent: CompletedVisitsComponent;
   @ViewChild(FollowupVisitsComponent) followUpVisitsComponent: FollowupVisitsComponent;
 
-  pluginConfigObs1: any = {
+  pluginConfigObsAwaiting: any = {
     anchorId: "anchor-awaiting",
     pluginConfigObsFlag: "Awaiting",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
@@ -167,7 +167,7 @@ export class DashboardComponent implements OnInit {
     },
     tableColumns: [
       {
-        label: "Patient Name",
+        label: "Patient",
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
@@ -190,7 +190,7 @@ export class DashboardComponent implements OnInit {
         },
       },
       {
-        label: "Cheif complaint",
+        label: "Chief Complaint",
         key: "cheif_complaint",
       },
       {
@@ -223,7 +223,7 @@ export class DashboardComponent implements OnInit {
     ],
   }; 
 
-  pluginConfigObs2: any = {
+  pluginConfigObsPriority: any = {
     anchorId: "anchor-priority",
     pluginConfigObsFlag: "Priority",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
@@ -242,7 +242,7 @@ export class DashboardComponent implements OnInit {
     },
     tableColumns: [
       {
-        label: "Patient Name",
+        label: "Patient",
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
@@ -265,7 +265,7 @@ export class DashboardComponent implements OnInit {
         },
       },
       {
-        label: "Cheif complaint",
+        label: "Chief Complaint",
         key: "cheif_complaint",
       },
       {
@@ -284,7 +284,7 @@ export class DashboardComponent implements OnInit {
     ],
   }; 
 
-  pluginConfigObs3: any = {
+  pluginConfigObsCompleted: any = {
     anchorId: "anchor-completed",
     pluginConfigObsFlag: "Completed",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
@@ -310,7 +310,7 @@ export class DashboardComponent implements OnInit {
         },
       },
       {
-        label: "Patient Name",
+        label: "Patient",
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
@@ -333,7 +333,7 @@ export class DashboardComponent implements OnInit {
         },
       },
       {
-        label: "Cheif complaint",
+        label: "Chief Complaint",
         key: "cheif_complaint",
       },
       {
@@ -352,7 +352,7 @@ export class DashboardComponent implements OnInit {
     ],
   }; 
 
-  pluginConfigObs4: any = {
+  pluginConfigObsFollowUp: any = {
     anchorId: "anchor-follow up",
     pluginConfigObsFlag: "FollowUp",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
@@ -371,7 +371,7 @@ export class DashboardComponent implements OnInit {
     },
     tableColumns: [
       {
-        label: "Patient Name",
+        label: "Patient",
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
@@ -409,14 +409,14 @@ export class DashboardComponent implements OnInit {
     ],
   }; 
 
-  pluginConfigObs5: any = {
+  pluginConfigObsAppointment: any = {
     anchorId: "anchor-appointment",
     pluginConfigObsFlag: "Appointment",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
     mindmapURL: "https://dev.intelehealth.org:3004/api",
     tableHeader: "Appointments",
     tooltipLabel: "Scheduled appointments",
-    searchPlaceHolder: "Search appointments",
+    searchPlaceHolder: "Search Appointments",
     noRecordFound: "No any appointments scheduled.",
     tableHeaderIcon: "assets/svgs/cam-icon.svg",
     filterObs: {
@@ -428,13 +428,20 @@ export class DashboardComponent implements OnInit {
     },
     tableColumns: [
       {
-        label: "Patient Name",
-        key: "patientName",
+        label:"TMH Patient ID",
+        key: "TMH_patient_id",
+        formatHtml: (element)=> {
+          return `<span>${element?.TMH_patient_id?.value ? element?.TMH_patient_id?.value : ''}</span>`
+        },
+      },
+      {
+        label: "Patient",
+        key: "patient_name",
         formatHtml: (element)=> { 
           // console.log(element)
           return `
             <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
-            <span class="font-bold ml-2">${element?.patientName}  (${element?.patientGender})</span>
+            <span class="font-bold ml-2">${element?.patientName} (${this.translateService.instant(element?.patientGender)})</span>
           `
         },
       },
@@ -449,35 +456,35 @@ export class DashboardComponent implements OnInit {
         label: "Starts in",
         key: "starts_in",
         formatHtml: (element) => {
-          if (!element?.starts_in) return "<span>N/A</span>";
-          const hoursLeft = this.getHoursLeft(element.starts_in);
-          let color = "#28a745"; // Green for more than 24 hours
-          if (hoursLeft <= 0) color = "#ff475d"; // Red if overdue
+          let  color = '';
+          if (element.starts_in.includes('Due'))
+            color = "#FF475D"; // red color
+          if (element.starts_in.includes('Hour') || element.starts_in.includes('Minute'))
+            color = "#0FD197"; // green color
           return `<strong><span style="color: ${color}">${element?.starts_in}</span></strong>`;
         }
       },
-      {
-        label: "Location",
-        key: "location",
-        formatHtml: (element)=> { 
-          return `<span>${element?.visit?.location?.name}</span>`
-        },
-      },
-      {
-        label: "Cheif complaint",
-        key: "cheif_complaint",
-      },
-      {
-        label: "Doctor",
-        key: "drName",
-      },
-    
+      // {
+      //   label: "Location",
+      //   key: "location",
+      //   formatHtml: (element)=> { 
+      //     return `<span>${element?.visit?.location?.name}</span>`
+      //   },
+      // },
+      // {
+      //   label: "Chief Complaint",
+      //   key: "cheif_complaint",
+      // },
+      // {
+      //   label: "Doctor",
+      //   key: "drName",
+      // },
       {
         label: "Contact",
-        key: "telephone", 
-          formatHtml: () => {
+        key: "telephone",
+        formatHtml: () => {
           return ""; // Do not return the telephone number
-        }  
+        }
       },
       {
         label: "Actions",
@@ -503,7 +510,7 @@ export class DashboardComponent implements OnInit {
     
   };
 
-  pluginConfigObs6: any = {
+  pluginConfigObsInProgress: any = {
     anchorId: "anchor-inprogress",
     pluginConfigObsFlag: "InProgress",
     baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
