@@ -372,18 +372,48 @@ export class TableGridComponent implements OnInit {
    * @throws {Error} - Throws error for invalid time units
    */
   convertToDate(relativeTime: string): string {
+    //console.log("date 1", relativeTime);
+
+    // Check if it's an ISO date
+    if (!isNaN(Date.parse(relativeTime))) {
+        return new Date(relativeTime).toISOString().split('T')[0];
+    }
+
+    // Remove unnecessary words like "ago"
+    relativeTime = relativeTime.replace(/ ago/i, '').trim();
+
+    const parts = relativeTime.split(' ');
+    if (parts.length !== 2) {
+        throw new Error('Invalid format. Expected format: "<value> <unit>" (e.g., "5 hours")');
+    }
+
+    const [value, unit] = parts;
+    const amount = parseInt(value, 10);
+
+    if (isNaN(amount)) {
+        throw new Error('Invalid value. Expected a number before the time unit.');
+    }
+
     const now = new Date();
-    const [value, unit] = relativeTime.split(' ');
-    const amount = parseInt(value, 10);    
-    
-    if (['hour', 'hours'].includes(unit.toLowerCase())) now.setHours(now.getHours() - amount);
-    else if (['minute', 'minutes'].includes(unit.toLowerCase())) now.setMinutes(now.getMinutes() - amount);
-    else if (['day', 'days'].includes(unit.toLowerCase())) now.setDate(now.getDate() - amount);
-    else throw new Error('Invalid time unit. Only "hours", "minutes", or "days" are supported.');
-  
+    switch (unit.toLowerCase()) {
+        case 'hour':
+        case 'hours':
+            now.setHours(now.getHours() - amount);
+            break;
+        case 'minute':
+        case 'minutes':
+            now.setMinutes(now.getMinutes() - amount);
+            break;
+        case 'day':
+        case 'days':
+            now.setDate(now.getDate() - amount);
+            break;
+        default:
+            throw new Error('Invalid time unit. Only "hours", "minutes", or "days" are supported.');
+    }
+
     return now.toISOString().split('T')[0];
   }
-
 
   /**
    * Converts a follow-up date string to ISO format
@@ -395,40 +425,63 @@ export class TableGridComponent implements OnInit {
     date.setDate(date.getDate());
     return date.toISOString();
   }
-
   
   /**
    * Applies date or range filter to the data source based on selected date(s)
    * @param {string} dateField - The field name for the date to filter
    */
   applyDateOrRangeFilter(dateField: string) {
+    console.log("date", dateField);
     const selectedDate = this.filteredDateAndRangeForm.get('date')?.value;
     const startDate = this.filteredDateAndRangeForm.get('startDate')?.value;
     const endDate = this.filteredDateAndRangeForm.get('endDate')?.value;
-  
-    if (selectedDate) {
-      const formattedDate = this.formatDate(selectedDate);
 
-      this.dataSource.filterPredicate = (data: any, filter: string) => {
-        const itemDate = dateField !== "followUp" ? data[dateField].includes(',') ? this.formatDate(data[dateField]) : this.convertToDate(data[dateField]) : this.formatDate(this.convertToISO(data.followUp));
-        return itemDate === filter;
-      };
-      this.dataSource.filter = formattedDate;
+    if (selectedDate) {
+        const formattedDate = this.formatDate(selectedDate);
+
+        this.dataSource.filterPredicate = (data: any, filter: string) => {
+            let itemDate = data[dateField];
+
+            // Check if it's an ISO date and format it
+            if (!isNaN(Date.parse(itemDate))) {
+                itemDate = this.formatDate(itemDate);
+            } else if (dateField !== "followUp") {
+                itemDate = itemDate.includes(',') ? this.formatDate(itemDate) : this.convertToDate(itemDate);
+            } else {
+                itemDate = this.formatDate(this.convertToISO(data.followUp));
+            }
+
+            return itemDate === filter;
+        };
+
+        this.dataSource.filter = formattedDate;
     } else if (startDate && endDate) {
-      const formattedStartDate = this.formatDate(startDate);
-      const formattedEndDate = this.formatDate(endDate);
-  
-      this.dataSource.filterPredicate = (data: any, filter: string) => {
-        const itemDate = dateField !== "followUp" ? data[dateField].includes(',') ? this.formatDate(data[dateField]) : this.convertToDate(data[dateField]) : this.formatDate(this.convertToISO(data.followUp));
-        return itemDate >= formattedStartDate && itemDate <= formattedEndDate;
-      };
-      this.dataSource.filter = `${formattedStartDate}:${formattedEndDate}`;
+        const formattedStartDate = this.formatDate(startDate);
+        const formattedEndDate = this.formatDate(endDate);
+
+        this.dataSource.filterPredicate = (data: any, filter: string) => {
+            let itemDate = data[dateField];
+
+            // Check if it's an ISO date and format it
+            if (!isNaN(Date.parse(itemDate))) {
+                itemDate = this.formatDate(itemDate);
+            } else if (dateField !== "followUp") {
+                itemDate = itemDate.includes(',') ? this.formatDate(itemDate) : this.convertToDate(itemDate);
+            } else {
+                itemDate = this.formatDate(this.convertToISO(data.followUp));
+            }
+
+            return itemDate >= formattedStartDate && itemDate <= formattedEndDate;
+        };
+
+        this.dataSource.filter = `${formattedStartDate}:${formattedEndDate}`;
     } else {
-      this.dataSource.filter = '';
+        this.dataSource.filter = '';
     }
     this.tempPaginator.firstPage();
     this.closeMenu();
   }
+
 
   /**
    * Resets the date filter form and clears the data source filter
