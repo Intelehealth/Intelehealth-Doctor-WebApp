@@ -4,17 +4,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { NgxDropzoneModule } from 'ngx-dropzone';
-import { MomentModule } from 'ngx-moment';
 import { MatListModule } from '@angular/material/list';
 import { RescheduleAppointmentComponent } from './reschedule-appointment/reschedule-appointment.component';
 import { RescheduleAppointmentConfirmComponent } from './reschedule-appointment-confirm/reschedule-appointment-confirm.component';
 import { CancelAppointmentConfirmComponent } from './cancel-appointment-confirm/cancel-appointment-confirm.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { SignaturePadModule } from 'angular2-signaturepad';
-import { ImageCropperModule } from 'ngx-image-cropper';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
@@ -37,14 +32,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
         ReactiveFormsModule,
         MatIconModule,
         MatButtonModule,
-        NgxDropzoneModule,
-        MomentModule,
         MatListModule,
         MatDatepickerModule,
-        PdfViewerModule,
         NgSelectModule,
-        SignaturePadModule,
-        ImageCropperModule,
         MatProgressBarModule,
         MatTabsModule,
         MatTableModule,
