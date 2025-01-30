@@ -10,10 +10,9 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { doctorDetails, visitTypes } from 'src/config/constant';
-import { DiagnosisModel, EncounterModel, EncounterProviderModel, FollowUpDataModel, MedicineModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PersonAttributeModel, ProviderAttributeModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel } from 'src/app/model/model';
+import { DiagnosisModel, EncounterModel, FollowUpDataModel, ObsApiResponseModel, ObsModel, PatientIdentifierModel, PatientModel, PersonAttributeModel, ProviderModel, ReferralModel, TestModel, VisitAttributeModel, VisitModel } from 'src/app/model/model';
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 import { precription, logo } from "../../utils/base64"
-import { getCacheData } from 'src/app/utils/utility-functions';
 
 @Component({
   selector: 'app-view-visit-prescription',
@@ -43,7 +42,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   tests: TestModel[] = [];
   referrals: ReferralModel[] = [];
   followUp: FollowUpDataModel;
-  consultedDoctor: any;
+  consultedDoctor: ProviderModel;
 
   conceptDiagnosis = '537bb20d-d09d-4f88-930b-cc45c7d662df';
   conceptNote = '162169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
@@ -112,10 +111,10 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
             this.getCheckUpReason(visit.encounters);
             this.getVitalObs(visit.encounters);
 
-            visit.encounters.forEach((encounter: EncounterModel) => {
+            visit.encounters.forEach((encounter) => {
               if (encounter.encounterType.display === visitTypes.VISIT_NOTE) {
                 this.completedEncounter = encounter;
-                this.consultedDoctor = getCacheData(true,doctorDetails.PROVIDER);
+                this.consultedDoctor = encounter.encounterProviders[0].provider;
 
                 if (this.isDownloadPrescription) {
                   this.setSignature(this.signature?.value, this.signatureType?.value);
@@ -974,7 +973,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                   alignment: 'right',
                   stack: [
                     { image: `${this.signature?.value}`, width: 100, height: 100, margin: [0, 5, 0, 5] },
-                    { text: `Dr. ${this.consultedDoctor?.person?.preferredName.display}`, margin: [0, -30, 0, 0]},
+                    { text: `Dr. ${this.consultedDoctor?.person?.display}`, margin: [0, -30, 0, 0]},
                     { text: `${this.qualification?.value}`},
                     { text: `Registration No. ${this.registrationNo?.value}`},
                   ]

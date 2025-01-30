@@ -34,7 +34,7 @@
               />
             </div> -->
             <div class="ml-3">
-              <h6>
+              <h6 class="text-wrap">
                 <span>{{ patient?.person?.names[0]?.givenName }}</span>
                 <span *ngIf="patient?.person?.names[0]?.middleName">{{ ' ' + patient?.person?.names[0]?.middleName }}</span>
                 <span>{{ ' ' + patient?.person?.names[0]?.familyName }}</span>
@@ -419,7 +419,7 @@
                   <div class="list-item">
                     <label class="border-0">{{'Name'|translate}}</label>
                     <div class="list-item-content">
-                      {{ consultedDoctor ? consultedDoctor?.person?.preferredName.display : ('NA'|translate) }}
+                      {{ consultedDoctor ? consultedDoctor?.person?.display : ('NA'|translate) }}
                     </div>
                   </div>
                 </li>

@@ -39,7 +39,7 @@ export class SearchedPatientsComponent {
   view(uuid: string) {
     this.visitService.recentVisits(uuid).subscribe((response: RecentVisitsApiResponseModel) => {
       if(response.results?.length > 0){
-        this.router.navigate(['/dashboard/visit-summary', response.results[0].uuid]);
+        this.router.navigate(['/dashboard/visit-summary', response.results[response.results?.length-1].uuid]);
         this.close(true);
       } else {
         this.toastr.error(this.translateService.instant('Visit Not Found for this patient'), this.translateService.instant('Visit Not Found!'));

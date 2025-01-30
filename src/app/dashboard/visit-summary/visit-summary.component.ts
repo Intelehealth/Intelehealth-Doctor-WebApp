@@ -212,7 +212,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       days: new FormControl(null, [Validators.required, Validators.pattern(/^[0-9]*$/)]),
       timing: new FormControl(null, [Validators.required]),
       remark: new FormControl(null),
-      route: new FormControl(null,  [Validators.pattern(/^[A-Za-z]*$/)])
+      route: new FormControl(null)
     });
 
     this.addAdditionalInstructionForm = new FormGroup({
@@ -580,13 +580,13 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       if (enc.encounterType.display === visitTypes.ADULTINITIAL) {
         enc.obs.forEach((obs: ObsModel) => {
           if (obs.concept.display === visitTypes.MEDICAL_HISTORY) {
-            const medicalHistory = this.visitService.getData(obs)?.value.split('<br/>');
+            const medicalHistory = this.visitService.getData(obs)?.value?.split('<br/>');
             const obj1: PatientHistoryModel = {};
             obj1.title = this.translateService.instant('Patient history');
             obj1.data = [];
             for (let i = 0; i < medicalHistory.length; i++) {
               if (medicalHistory[i]) {
-                const splitByDash = medicalHistory[i].split('-');
+                const splitByDash = medicalHistory[i]?.split('-');
                 if(!splitByDash.includes('• Current Vaccinations status ')){
                   obj1.data.push({ key: splitByDash[0].replace('• ', '').trim(), value: splitByDash.slice(1, splitByDash.length).join('-').trim() });
                 } 
