@@ -192,20 +192,33 @@ export class DashboardComponent implements OnInit {
         label: "Chief Complaint",
         key: "cheif_complaint",
       },
-      {
-        label: "Patient Type",
-        key: "patient_type",
-        classList: [
-          "chip",
-          "chip-item-green",
-          "green"
-        ],
-        formatHtml: (element)=> { 
-          return `
-            <span>${element?.patient_type}</span>
-          `
-        },
+     {
+      label: "Patient Type",
+      key: "patient_type",
+      classList: (element) => {
+        if (element?.patient_type?.toLowerCase() === "new") return ["chip", "chip-item-green", "green"];
+        if (element?.patient_type?.toLowerCase() === "followup") return ["chip", "chip-item-blue", "blue"];
+        return ["chip"]; // Default fallback class
       },
+      formatHtml: (element) => {
+        return element?.patient_type || "N/A"; // Only return text
+      }
+    },
+
+      // {
+      //   label: "Patient Type",
+      //   key: "patient_type",
+      //   classList: [
+      //     "chip",
+      //     "chip-item-green",
+      //     "green"
+      //   ],
+      //   formatHtml: (element)=> { 
+      //     return `
+      //       <span>${element?.patient_type}</span>
+      //     `
+      //   },
+      // },
       {
         label: "Visit Uploaded",
         key: "visit_created",

@@ -779,16 +779,26 @@ export class TableGridComponent implements OnInit {
   renderHtmlContent(column: any, element: any): string {
     return typeof column.formatHtml === 'function' ? this.sanitizer.bypassSecurityTrustHtml(column.formatHtml(element)) : element[column.key];
   }
-
-
+    
   /**
    * Returns a string of CSS classes for the column
    * @param {any} column - Column definition
    * @return {string} - Space-separated class names
    */
-  getClasses(column: any): string {
-    return column.classList ? column.classList.join(" ") : "";
+  // getClasses(column: any): string {
+  //   return column.classList ? column.classList.join(" ") : "";
+  // }
+  getClasses(column: any, element: any): string {
+  let classList = [];
+
+  // If column has a static classList (array or string), add it
+  if (column.classList) {
+    classList = typeof column.classList === "function" ? column.classList(element) : column.classList;
   }
+
+  return classList.join(" ");
+}
+
 
 
   /**
