@@ -380,6 +380,7 @@
                             width="44px"
                           />
                           <h6 class="mb-0 ml-2" data-test-id="etHeaderConDets">{{ getLanguageValue(pvsConfig) | translate}}</h6>
+                          <mat-icon *ngIf="pvsConfig.is_enabled && pvsConfig?.key === pvsConstant['refer_to_specialist'].key" aria-hidden="false" class="info-icon" aria-label="help icon" matTooltip="{{'Do you feel that this case is fit for another specialist doctor? If yes, refer the case to a suitable specialist doctor from the options given below.' | translate}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
                         </div>
                       </mat-panel-title>
                     </mat-expansion-panel-header>
@@ -1763,6 +1764,7 @@
                       <div class="intel-accordion-title">
                         <img src="assets/svgs/referral.svg" alt="" width="44px" />
                         <h6 class="mb-0 ml-2">{{'Referral Advise'|translate}}</h6>
+                        <mat-icon aria-hidden="false" class="info-icon" aria-label="help icon" matTooltip="{{'Use this if you wish to seek a second opinion from an external facility.' | translate}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
                       </div>
                     </mat-panel-title>
                     <mat-icon>{{ panel7.expanded ? "remove" : "add" }}</mat-icon>

@@ -10,6 +10,9 @@ import { languages } from 'src/config/constant';
 import { MatSort, Sort } from '@angular/material/sort';
 import { PatientRegistrationFieldsModel } from 'src/app/model/model';
 import * as moment from 'moment';
+import { MatDialogRef } from '@angular/material/dialog';
+import { PatientRegValidationsComponent } from 'src/app/modal-components/patient-reg-validations/patient-reg-validations.component';
+import { CoreService } from 'src/app/services/core/core.service';
 
 
 @Component({
@@ -36,10 +39,13 @@ export class PatientRegistrationComponent {
   sectionEnabled: boolean = false;
   allSectionData: any = {};
 
+  dialogRef: MatDialogRef<PatientRegValidationsComponent>;
+
   constructor(
     private pageTitleService: PageTitleService,
     private translateService: TranslateService,
     private configService: ConfigService,
+    private coreServce: CoreService,
     private toastr: ToastrService
   ) { }
 
@@ -185,5 +191,18 @@ export class PatientRegistrationComponent {
     }, err => {
       this.getAllFields();
     });
+  }
+  openValidations(element: PatientRegistrationFieldsModel) {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+      return;
+    }
+    const id = element?.id;
+    const validations = element?.validations
+    this.dialogRef = this.coreServce.openPatientRegValidationsModal({ id,validations });
+    this.dialogRef.afterClosed().subscribe(async result => {
+      this.dialogRef = undefined;
+      if(result) this.getAllFields();
+    })
   }
 }
