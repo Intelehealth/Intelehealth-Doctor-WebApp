@@ -55,6 +55,7 @@ import { PatientVisitSectionsComponent } from './admin-actions/patient-visit-sec
 
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { PatientDetailsComponent } from './admin-actions/patient-details/patient-details.component';
+import { PatientVisitDropdownComponent } from './admin-actions/patient-visit-dropdown/patient-visit-dropdown.component';
 
 
 // AoT requires an exported function for factories
@@ -149,6 +150,10 @@ const routes: Routes = [
             component: PatientVisitSectionsComponent
           },
           {
+            path: 'patient-visit-dropdown',
+            component: PatientVisitDropdownComponent
+          },
+          {
             path: '',
             component: AdminActionsComponent
           }
@@ -184,7 +189,8 @@ const routes: Routes = [
     PatientDiagnosticsComponent,
     MenuConfigComponent,
     PatientVisitSectionsComponent,
-    PatientDetailsComponent
+    PatientDetailsComponent,
+    PatientVisitDropdownComponent
   ],
   imports: [
     CommonModule,

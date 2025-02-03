@@ -118,6 +118,13 @@ export class AdminActionsComponent implements OnInit {
       icon: "assets/svgs/patient-visit-summary.svg",
       path: "admin/actions/patient-visit-section",
       isLocalPath: true
+    },
+    {
+      title:"Patient visit Dropdown",
+      desc: "Patient visit dropdown",
+      icon: "assets/svgs/patient-visit-summary.svg",
+      path: "admin/actions/patient-visit-dropdown",
+      isLocalPath: true
     }
   ];
   constructor(
