@@ -505,6 +505,9 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     if(!value && key === 'bmi') {
      return calculateBMI(this.vitals, this.vitalObs);
     }
+    if (v && key === 'temprature_f') {
+      return (v?.value - 32) * 5 / 9;
+    }
     return value
   }
 
