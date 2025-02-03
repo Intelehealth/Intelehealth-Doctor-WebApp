@@ -584,7 +584,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
             const obj1: PatientHistoryModel = {};
             obj1.title = this.translateService.instant('Patient history');
             obj1.data = [];
-            for (let i = 0; i < medicalHistory.length; i++) {
+            for (let i = 0; i < medicalHistory?.length; i++) {
               if (medicalHistory[i]) {
                 const splitByDash = medicalHistory[i]?.split('-');
                 if(!splitByDash.includes('• Current Vaccinations status ')){

@@ -142,16 +142,23 @@ export class ViewVisitSummaryComponent implements OnInit {
   * @return {string} - Age
   */
   getAge(birthdate: string) {
-    let years = moment().diff(birthdate, 'years');
-    let months = moment().diff(birthdate, 'months');
-    let days = moment().diff(birthdate, 'days');
-    if (years > 1) {
-      return `${years} years`;
-    } else if (months > 1) {
-      return `${months} months`;
-    } else {
-      return `${days} days`;
-    }
+    const years = moment().diff(birthdate, 'years');
+       const months = moment().diff(birthdate, 'months');
+       const days = moment().diff(birthdate, 'days');
+       if (years > 1) {
+         return `${years} ${this.translateService.instant('years')}`;
+       } else if (months > 1) {
+         return `${months} ${this.translateService.instant('months')}`;
+       } else if ( days < 30) {
+         return `${days} ${this.translateService.instant('days')}`;
+       } else if (days > 30) {
+           if (days === 30) {
+             return `1 month`;
+           } else {
+             let diff = days - 30;
+             return `1 month ${diff} ${this.translateService.instant('days')}`;
+           }
+       }
   }
 
   /**
