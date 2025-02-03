@@ -256,7 +256,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
      return calculateBMI(this.vitals, this.vitalObs);
     }
     if (v && key === 'temprature_f') {
-      return (v?.value - 32) * 5 / 9;
+      return ((v?.value - 32) * 5 / 9).toFixed(2);
     }
     return value
   }
