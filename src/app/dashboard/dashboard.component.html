@@ -55,6 +55,14 @@
       </div>
     </div>
   </div>
+
+  <lib-table-grid [pluginConfigObs]="pluginConfigObsAppointment"></lib-table-grid>
+  <lib-table-grid [pluginConfigObs]="pluginConfigObsPriority"></lib-table-grid>
+  <lib-table-grid [pluginConfigObs]="pluginConfigObsAwaiting"></lib-table-grid>
+  <lib-table-grid [pluginConfigObs]="pluginConfigObsInProgress"></lib-table-grid>
+  <lib-table-grid [pluginConfigObs]="pluginConfigObsCompleted"></lib-table-grid>
+  <lib-table-grid [pluginConfigObs]="pluginConfigObsFollowUp"></lib-table-grid>
+
   <div class="row mt-3">
     <div class="col-md-12 p-0">
       <div class="text-right my-2">

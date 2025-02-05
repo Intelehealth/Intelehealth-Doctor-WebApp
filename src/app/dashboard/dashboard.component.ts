@@ -57,7 +57,440 @@ class PickDateAdapter extends NativeDateAdapter {
   ]
 })
 export class DashboardComponent implements OnInit {
+  pluginConfigObsAwaiting: any = {
+    anchorId: "anchor-awaiting",
+    pluginConfigObsFlag: "Awaiting",
+    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
+    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    tableHeader: "Awaiting visits",
+    tooltipLabel: "General uploaded visits",
+    searchPlaceHolder: "Search Awaiting Visits",
+    noRecordFound: "No any awaiting visits.",
+    tableHeaderIcon: "assets/svgs/green-profile.svg",
+    filterObs: {
+      filterFlag: true,
+      filterLabel: "Filter",
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "visit_created",
+      filterDateMax: new Date()
+    },
+    tableColumns: [
+      {
+        label: "Patient",
+        key: "patient_name",
+        formatHtml: (element)=> { 
+          return `
+          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
+          <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
+        },
+      },
+      {
+        label: "Age",
+        key: "age",
+        formatHtml: (element)=> { 
+          return `<span>${element?.person?.age} ${'y'}</span>`
+        },
+      },
+      {
+        label: "Location",
+        key: "location",
+        formatHtml: (element)=> { 
+          return `<span>${element?.location?.name}</span>`
+        },
+      },
+      {
+        label: "Chief Complaint",
+        key: "cheif_complaint",
+      },
+      {
+        label: "Patient Type",
+        key: "patient_type",
+        classList: [
+          "chip",
+          "chip-item-green",
+          "green"
+        ],
+        formatHtml: (element)=> { 
+          return `
+            <span>${element?.patient_type}</span>
+          `
+        },
+      },
+      {
+        label: "Visit Uploaded",
+        key: "visit_created",
+        classList: [
+          "red-pill",
+        ],
+        formatHtml: (element)=> { 
+          return `
+            <img src="assets/svgs/red-pad.svg" alt="Visit Uploaded" style="margin-right: 8px; vertical-align: middle;">
+            <span>${element?.visit_created}</span>
+          `
+        },
+      },
+    ],
+  }; 
 
+  pluginConfigObsPriority: any = {
+    anchorId: "anchor-priority",
+    pluginConfigObsFlag: "Priority",
+    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
+    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    tableHeader: "Priority visits",
+    tooltipLabel: "High priority visit",
+    searchPlaceHolder: "Search Priority Visits",
+    noRecordFound: "No any priority visits.",
+    tableHeaderIcon: "assets/svgs/red-profile.svg",
+    filterObs: {
+      filterFlag: true,
+      filterLabel: "Filter",
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "visit_created",
+      filterDateMax: new Date()
+    },
+    tableColumns: [
+      {
+        label: "Patient",
+        key: "patient_name",
+        formatHtml: (element)=> { 
+          return `
+          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
+          <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
+        },
+      },
+      {
+        label: "Age",
+        key: "age",
+        formatHtml: (element)=> { 
+          return `<span>${element?.person?.age} ${'y'}</span>`
+        },
+      },
+      {
+        label: "Location",
+        key: "location",
+        formatHtml: (element)=> { 
+          return `<span>${element?.location?.name}</span>`
+        },
+      },
+      {
+        label: "Chief Complaint",
+        key: "cheif_complaint",
+      },
+      {
+        label: "Visit Uploaded",
+        key: "visit_created",
+        classList: [
+          "red-pill",
+        ],
+        formatHtml: (element)=> { 
+          return `
+            <img src="assets/svgs/red-pad.svg" alt="Visit Uploaded" style="margin-right: 8px; vertical-align: middle;">
+            <span>${element?.visit_created}</span>
+          `
+        },
+      }
+    ],
+  }; 
+
+  pluginConfigObsCompleted: any = {
+    anchorId: "anchor-completed",
+    pluginConfigObsFlag: "Completed",
+    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
+    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    tableHeader: "Completed visits",
+    tooltipLabel: "Ended visits after prescription",
+    searchPlaceHolder: "Search Completed Visits",
+    noRecordFound: "No any completed visits.",
+    tableHeaderIcon: "assets/svgs/completed.svg",
+    filterObs: {
+      filterFlag: true,
+      filterLabel: "Filter",
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "completed",
+      filterDateMax: new Date()
+    },
+    tableColumns: [
+      {
+        label:"TMH Patient ID",
+        key: "TMH_patient_id",
+        formatHtml: (element)=> {
+          return `<span>${element?.TMH_patient_id?.value ? element?.TMH_patient_id?.value : ''}</span>`
+        },
+      },
+      {
+        label: "Patient",
+        key: "patient_name",
+        formatHtml: (element)=> { 
+          return `
+          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
+          <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
+        },
+      },
+      {
+        label: "Age",
+        key: "age",
+        formatHtml: (element)=> { 
+          return `<span>${element?.person?.age} ${'y'}</span>`
+        },
+      },
+      {
+        label: "Location",
+        key: "location",
+        formatHtml: (element)=> { 
+          return `<span>${element?.location?.name}</span>`
+        },
+      },
+      {
+        label: "Chief Complaint",
+        key: "cheif_complaint",
+      },
+      {
+        label: "Visit Completed",
+        key: "visit_completed",
+        classList: [
+          "red-pill",
+        ],
+        formatHtml: (element)=> { 
+          return `
+            <img src="assets/svgs/red-pad.svg" alt="Visit Completed" style="margin-right: 8px; vertical-align: middle;">
+            <span>${element?.completed}</span>
+          `
+        },
+      }
+    ],
+  }; 
+
+  pluginConfigObsFollowUp: any = {
+    anchorId: "anchor-follow up",
+    pluginConfigObsFlag: "FollowUp",
+    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
+    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    tableHeader: "Follow up visits",
+    tooltipLabel: "Ended visits after prescription",
+    searchPlaceHolder: "Search Follow Up Visits",
+    noRecordFound: "No any follow up visits.",
+    tableHeaderIcon: "assets/svgs/diagnosis.svg",
+    filterObs: {
+      filterFlag: true,
+      filterLabel: "Filter",
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "followUp",
+      filterDateMax: ''
+    },
+    tableColumns: [
+      {
+        label: "Patient",
+        key: "patient_name",
+        formatHtml: (element)=> { 
+          return `
+          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
+          <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
+        },
+      },
+      {
+        label: "Age",
+        key: "age",
+        formatHtml: (element)=> { 
+          return `<span>${element?.person?.age} ${'y'}</span>`
+        },
+      },
+      {
+        label: "Location",
+        key: "location",
+        formatHtml: (element)=> { 
+          return `<span>${element?.location?.name}</span>`
+        },
+      },
+      {
+        label: "FollowUp Date",
+        key: "followup_date",
+        classList: [
+          "red-pill",
+        ],
+        formatHtml: (element)=> { 
+          return `
+            <img src="assets/svgs/red-pad.svg" alt="FollowUp Date" style="margin-right: 8px; vertical-align: middle;">
+            <span>${element?.followUp}</span>
+          `
+        },
+      }
+    ],
+  }; 
+
+  pluginConfigObsAppointment: any = {
+    anchorId: "anchor-appointment",
+    pluginConfigObsFlag: "Appointment",
+    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
+    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    tableHeader: "Appointments",
+    tooltipLabel: "Scheduled appointments",
+    searchPlaceHolder: "Search Appointments",
+    noRecordFound: "No any appointments scheduled.",
+    tableHeaderIcon: "assets/svgs/cam-icon.svg",
+    filterObs: {
+      filterFlag: true,
+      filterLabel: "Filter",
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "slotJsDate",
+      filterDateMax: ''
+    },
+    tableColumns: [
+      {
+        label:"TMH Patient ID",
+        key: "TMH_patient_id",
+        formatHtml: (element)=> {
+          return `<span>${element?.TMH_patient_id?.value ? element?.TMH_patient_id?.value : ''}</span>`
+        },
+      },
+      {
+        label: "Patient",
+        key: "patient_name",
+        formatHtml: (element)=> { 
+          return `
+            <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
+            <span class="font-bold ml-2">${element?.patientName} (${this.translateService.instant(element?.patientGender)})</span>
+          `
+        },
+      },
+      {
+        label: "Age",
+        key: "age",
+        formatHtml: (element)=> { 
+          return `<span>${element?.patientAge} ${'y'}</span>`
+        },
+      },
+      // {
+      //   label: "Starts in",
+      //   key: "starts_in",
+      //   formatHtml: (element) => {
+      //     let  color = '';
+      //     if (element.starts_in.includes('Due'))
+      //       color = "#FF475D"; // red color
+      //     if (element.starts_in.includes('Hour') || element.starts_in.includes('Minute'))
+      //       color = "#0FD197"; // green color
+      //     return `<strong><span style="color: ${color}">${element?.starts_in}</span></strong>`;
+      //   }
+      // },
+      {
+        label: "Starts in",
+        key: "starts_in",
+        formatHtml: (element) => {
+          let  color, bold = '';
+          if (element.starts_in.includes('Due')){
+            color = "#FF475D"; bold = "bold"; // red color & bold
+          }
+          if (element.starts_in.includes('Hour') || element.starts_in.includes('Minute')){
+            color = "#0FD197"; bold = "bold"; // green color & bold
+          }
+          return `<span style="color: ${color}; font-weight: ${bold};">${element?.starts_in}</span>`;
+        }
+      },
+      // {
+      //   label: "Location",
+      //   key: "location",
+      //   formatHtml: (element)=> { 
+      //     return `<span>${element?.visit?.location?.name}</span>`
+      //   },
+      // },
+      // {
+      //   label: "Chief Complaint",
+      //   key: "cheif_complaint",
+      // },
+      // {
+      //   label: "Doctor",
+      //   key: "drName",
+      // },
+      {
+        label: "Contact",
+        key: "telephone",
+        formatHtml: () => {
+          return ""; // Do not return the telephone number
+        }
+      },
+      {
+        label: "Actions",
+        key: "actions",
+        actionButtons: [
+          {
+            label: "Reschedule",
+            callBack: (element: any) => this.reschedule(element),
+            style: {
+              color: "#2e1e91",
+              backgroundColor: "#efe8ff",
+            },
+          },
+          {
+            label: "Cancel",
+            callBack: (element: any) => this.cancel(element),
+            style: {
+              color: "#ff475d",
+              backgroundColor: "#ffe8e8",
+            },
+          },
+        ]
+      }
+    ],
+  };
+
+  pluginConfigObsInProgress: any = {
+    anchorId: "anchor-inprogress",
+    pluginConfigObsFlag: "InProgress",
+    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
+    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    tableHeader: "In-progress visits",
+    tooltipLabel: "Visits going through the consultation",
+    searchPlaceHolder: "Search In-progress Visits",
+    noRecordFound: "No any appointments scheduled.",
+    tableHeaderIcon: "assets/svgs/pen-board.svg",
+    filterObs: {
+      filterFlag: true,
+      filterLabel: "Filter",
+      filterIcon: "assets/svgs/filter.svg",
+      filterDateField: "prescription_started",
+      filterDateMax: new Date()
+    },
+    tableColumns: [
+      {
+        label:"TMH Patient ID",
+        key: "TMH_patient_id",
+        formatHtml: (element)=> {
+          return `<span>${element?.TMH_patient_id?.value ? element?.TMH_patient_id?.value : ''}</span>`
+        },
+      },
+      {
+        label: "Patients",
+        key: "name",
+        formatHtml: (element)=> {
+          return `
+            <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
+            <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>
+          `
+        },
+      },
+      {
+        label: "Age",
+        key: "age",
+        formatHtml: (element)=> {
+          return `<span>${element?.person?.age} ${'y'}</span>`
+        },
+      },
+      {
+        label: "Prescription Started",
+        key: "prescription_started",
+        icon:"assets/svgs/red-pad.svg",
+        classList: [
+          "red-pill",
+        ],
+        formatHtml: (element)=> {
+          return `
+              <img src="assets/svgs/red-pad.svg" alt="Prescription Started" style="margin-right: 8px; vertical-align: middle;">
+              <span>${element.prescription_started}</span>
+            `
+        },
+      }
+    ],
+  };
   showAll: boolean = true;
   displayedColumns1: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'drName', 'telephone','actions'];
   displayedColumns2: string[] = ['name', 'age', 'location', 'cheif_complaint', 'visit_created'];
