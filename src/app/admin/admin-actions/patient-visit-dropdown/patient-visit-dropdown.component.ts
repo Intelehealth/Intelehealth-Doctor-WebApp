@@ -20,7 +20,7 @@ import * as moment from "moment";
 })
 export class PatientVisitDropdownComponent {
    displayedColumns : string[] = ['id', 'name', 'updatedAt','is_enabled'];
-    tabList = ['Personal', 'Address', 'Other'];
+    tabList = ['Advise','Diagnosis', 'Medicines','Refer Specialisation','Referral Facility','Test', ];
     currentTabIndex = 0; 
     dataSource = new MatTableDataSource<any>();
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -28,10 +28,7 @@ export class PatientVisitDropdownComponent {
     patientFieldsData: any;
     sortedData: PatientVisitDropdownFieldsModel[];
     selectedSort: any;
-    sortOptions = [
-                    {colName:"name",label:"Name"},
-                    {colName:"updatedAt",label:"Last Updated"},                  
-                  ];
+    sortOptions = [{colName:"name",label:"Name"},{colName:"updatedAt",label:"Last Updated"}, ];
     sectionEnabled: boolean = false;
     allSectionData: any = {};   
     tableData = [];
@@ -66,11 +63,12 @@ export class PatientVisitDropdownComponent {
      */
     getAllFields(): void {
       this.configService.getPatientRegistrationFields().subscribe(res=>{
-          this.patientFieldsData = res.patient_registration;
-        this.allSectionData['personal'] = { id:0 , is_enabled:true };
-        this.allSectionData['address'] = res.patient_registration_address;
-        this.allSectionData['other'] = res.patient_registration_other;
-          this.sortDataAndUpdate();
+        console.log("registration",res)
+        //   this.patientFieldsData = res.patient_registration;
+        // this.allSectionData['personal'] = { id:0 , is_enabled:true };
+        // this.allSectionData['address'] = res.patient_registration_address;
+        // this.allSectionData['other'] = res.patient_registration_other;
+        //   this.sortDataAndUpdate();
       }, err => {
         
       });
@@ -78,7 +76,18 @@ export class PatientVisitDropdownComponent {
 
     getAllDropdownFeilds():void {
       this.configService.getPatientVisitDropdownFields().subscribe(res=>{
-        console.log("dropdown resposne",res)
+        console.log("dropdown resposne",res.dropdown)
+        this.patientFieldsData = res.dropdown
+        console.log("drops",this.patientFieldsData)
+         this.allSectionData['advice'] = res.dropdown.diagnosis.advice;
+        this.allSectionData['diagnosis'] = res.dropdown.diagnosis;
+        this.allSectionData['medication'] = res.dropdown.medication;
+        this.allSectionData['refer specialisation'] = res.dropdown;
+        this.allSectionData['referral facility'] = res.dropdown;
+        this.allSectionData['test'] = res.dropdown.test;
+          this.sortDataAndUpdate();
+      },err=>{
+
       })
     }
   
@@ -86,40 +95,40 @@ export class PatientVisitDropdownComponent {
      * Update Field status.
      * @return {void}
      */
-    updateStatus(id: number, status: boolean): void {
-      this.configService.updatePatientRegistrationStatus(id, status).subscribe(res => {
-        this.toastr.success("Patient Registration has been successfully updated","Update successful!");
-          this.getAllFields();
-      }, err => {
-          this.getAllFields();
-      });
-    }
+    // updateStatus(id: number, status: boolean): void {
+    //   this.configService.updatePatientRegistrationStatus(id, status).subscribe(res => {
+    //     this.toastr.success("Patient Registration has been successfully updated","Update successful!");
+    //       this.getAllFields();
+    //   }, err => {
+    //       this.getAllFields();
+    //   });
+    // }
   
     /**
      * Update Mandatory Field status.
      * @return {void}
      */
-    updateMandatoryStatus(id: number, status: boolean): void {
-      this.configService.updatePatientRegistrationMandatoryStatus(id, status).subscribe(res => {
-        this.toastr.success("Patient Registration has been successfully updated","Update successful!");
-            this.getAllFields();
-      }, err => {
-            this.getAllFields();
-      });
-    }
+    // updateMandatoryStatus(id: number, status: boolean): void {
+    //   this.configService.updatePatientRegistrationMandatoryStatus(id, status).subscribe(res => {
+    //     this.toastr.success("Patient Registration has been successfully updated","Update successful!");
+    //         this.getAllFields();
+    //   }, err => {
+    //         this.getAllFields();
+    //   });
+    // }
   
     /**
      * Update Editable Field status.
      * @return {void}
      */
-    updateEditStatus(id: number, status: boolean): void {
-      this.configService.updatePatientRegistrationEditableStatus(id, status).subscribe(res => {
-        this.toastr.success("Patient Registration has been successfully updated","Update successful!");
-            this.getAllFields();
-      }, err => {
-            this.getAllFields();
-      });
-    }
+    // updateEditStatus(id: number, status: boolean): void {
+    //   this.configService.updatePatientRegistrationEditableStatus(id, status).subscribe(res => {
+    //     this.toastr.success("Patient Registration has been successfully updated","Update successful!");
+    //         this.getAllFields();
+    //   }, err => {
+    //         this.getAllFields();
+    //   });
+    // }
   
     /**
      * Publish langauge changes.
@@ -181,15 +190,15 @@ export class PatientVisitDropdownComponent {
      * Update Patient registartion status.
      * @return {void}
      */
-    updateFeatureStatus(id: number, status: boolean): void {
-      this.configService.updateFeatureEnabledStatus(id, status).subscribe(res => {
-        this.toastr.success("Patient Registration has been successfully updated", "Update successful!");
-          this.getAllFields();
-      }, err => {
-          this.getAllFields();
-        }
-      );
-    }
+    // updateFeatureStatus(id: number, status: boolean): void {
+    //   this.configService.updateFeatureEnabledStatus(id, status).subscribe(res => {
+    //     this.toastr.success("Patient Registration has been successfully updated", "Update successful!");
+    //       this.getAllFields();
+    //   }, err => {
+    //       this.getAllFields();
+    //     }
+    //   );
+    // }
   
 
   

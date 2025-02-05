@@ -600,7 +600,7 @@ export interface PatientRegistrationFieldsModel {
 export interface PatientVisitDropdownFieldsModel{
   id?:number,
   name?:string,
-  is_editable: boolean,
+  is_enabled: boolean,
   updatedAt: string
 }
 
