@@ -6110,5 +6110,10 @@
   "Apply": "Применять",
   "Range": "Диапазон",
   "Patient Type": "Тип пациента",
-  "FollowUp Date": "Дата продолжения"
+  "FollowUp Date": "Дата продолжения",
+  "Refer Specialisation": "Обратитесь к специализации",
+  "Medicines": "Лекарства",
+  "Referral Facility" : "Справочная служба",
+  "Advise": "Советовать",
+  "Patient Visit Dropdown":"Раскрывающийся список посещений пациентов"
 }

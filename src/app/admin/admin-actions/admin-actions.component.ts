@@ -120,7 +120,7 @@ export class AdminActionsComponent implements OnInit {
       isLocalPath: true
     },
     {
-      title:"Patient visit Dropdown",
+      title:"Patient Visit Dropdown",
       desc: "Patient visit dropdown",
       icon: "assets/svgs/patient-visit-summary.svg",
       path: "admin/actions/patient-visit-dropdown",

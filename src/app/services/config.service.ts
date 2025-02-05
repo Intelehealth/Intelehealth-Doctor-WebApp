@@ -423,4 +423,13 @@ export class ConfigService {
     const url = `${this.baseURL}/roster-questionnaire/getByKey/${key}`;
     return this.http.get(url);
   }
+
+  /**
+   * Get patient visit dropdown fields
+   * @return {Observable<any>}
+   */
+  getPatientVisitDropdownFields(): Observable<any> {
+    const url = `${this.baseURL}/dropdown/all`;
+    return this.http.get(url);
+  }
 }

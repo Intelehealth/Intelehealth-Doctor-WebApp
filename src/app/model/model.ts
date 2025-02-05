@@ -597,6 +597,13 @@ export interface PatientRegistrationFieldsModel {
   is_locked: boolean
 }
 
+export interface PatientVisitDropdownFieldsModel{
+  id?:number,
+  name?:string,
+  is_editable: boolean,
+  updatedAt: string
+}
+
 export interface SpecializationModel {
   name: string,
   key?: string

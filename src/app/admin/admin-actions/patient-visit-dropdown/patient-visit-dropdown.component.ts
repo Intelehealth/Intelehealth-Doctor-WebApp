@@ -9,6 +9,8 @@ import { compare, getCacheData } from "src/app/utils/utility-functions";
 import { languages } from "src/config/constant";
 import { MatSort } from "@angular/material/sort";
 import { PatientRegistrationFieldsModel } from "src/app/model/model";
+import { PatientVisitDropdownFieldsModel } from "src/app/model/model";
+
 import * as moment from "moment";
 
 @Component({
@@ -17,20 +19,18 @@ import * as moment from "moment";
   styleUrls: ['./patient-visit-dropdown.component.scss']
 })
 export class PatientVisitDropdownComponent {
-   displayedColumns : string[] = ['id', 'name', 'updatedAt', 'is_mandatory', 'is_editable','is_enabled'];
+   displayedColumns : string[] = ['id', 'name', 'updatedAt','is_enabled'];
     tabList = ['Personal', 'Address', 'Other'];
     currentTabIndex = 0; 
     dataSource = new MatTableDataSource<any>();
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
     patientFieldsData: any;
-    sortedData: PatientRegistrationFieldsModel[];
+    sortedData: PatientVisitDropdownFieldsModel[];
     selectedSort: any;
     sortOptions = [
-                    {colName:"name",label:"Field Title"},
+                    {colName:"name",label:"Name"},
                     {colName:"updatedAt",label:"Last Updated"},                  
-                    {colName:"is_enabled",label:"Active"},
-                    {colName:"is_mandatory",label:"Mandatory Fields"},
                   ];
     sectionEnabled: boolean = false;
     allSectionData: any = {};   
@@ -50,6 +50,7 @@ export class PatientVisitDropdownComponent {
   
     ngAfterViewInit(){
       this.getAllFields();
+      this.getAllDropdownFeilds();
     }
   
     onTabChange(tabIndex){
@@ -73,6 +74,12 @@ export class PatientVisitDropdownComponent {
       }, err => {
         
       });
+    }
+
+    getAllDropdownFeilds():void {
+      this.configService.getPatientVisitDropdownFields().subscribe(res=>{
+        console.log("dropdown resposne",res)
+      })
     }
   
     /**
@@ -164,10 +171,6 @@ export class PatientVisitDropdownComponent {
             return compare(a.name, b.name, isAsc);
           case 'updatedAt':
             return compare(moment(a.updatedAt).unix(), moment(b.updatedAt).unix(), isAsc);
-          case 'is_mandatory':
-            return compare(+(a.is_mandatory), +(b.is_mandatory), isAsc);
-          case 'is_enabled':
-            return compare(+(a.is_enabled), +(b.is_enabled), isAsc);
           default:
             return 0;
         }
