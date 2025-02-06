@@ -20,7 +20,7 @@ import * as moment from "moment";
 })
 export class PatientVisitDropdownComponent {
    displayedColumns : string[] = ['id', 'name', 'updatedAt','is_enabled'];
-    tabList = ['Advise','Diagnosis', 'Medicines','Refer Specialisation','Referral Facility','Test', ];
+    tabList = ['Advice','Diagnosis', 'Medication','Refer Specialisation','Referral Facility','Test', ];
     currentTabIndex = 0; 
     dataSource = new MatTableDataSource<any>();
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -46,7 +46,6 @@ export class PatientVisitDropdownComponent {
     }
   
     ngAfterViewInit(){
-      this.getAllFields();
       this.getAllDropdownFeilds();
     }
   
@@ -58,36 +57,24 @@ export class PatientVisitDropdownComponent {
     }
   
     /**
-     * Get patient registration fields.
+     * Get patient visit dropdown fields.
      * @return {void}
      */
-    getAllFields(): void {
-      this.configService.getPatientRegistrationFields().subscribe(res=>{
-        console.log("registration",res)
-        //   this.patientFieldsData = res.patient_registration;
-        // this.allSectionData['personal'] = { id:0 , is_enabled:true };
-        // this.allSectionData['address'] = res.patient_registration_address;
-        // this.allSectionData['other'] = res.patient_registration_other;
-        //   this.sortDataAndUpdate();
-      }, err => {
-        
-      });
-    }
 
     getAllDropdownFeilds():void {
       this.configService.getPatientVisitDropdownFields().subscribe(res=>{
-        console.log("dropdown resposne",res.dropdown)
+        // console.log("dropdown resposne",res.dropdown)
         this.patientFieldsData = res.dropdown
-        console.log("drops",this.patientFieldsData)
-         this.allSectionData['advice'] = res.dropdown.diagnosis.advice;
+         this.allSectionData['advice'] = res.dropdown.advice;
+        //  this.allSectionData['advice'] = { id:0 , is_enabled:true };
         this.allSectionData['diagnosis'] = res.dropdown.diagnosis;
         this.allSectionData['medication'] = res.dropdown.medication;
-        this.allSectionData['refer specialisation'] = res.dropdown;
-        this.allSectionData['referral facility'] = res.dropdown;
+        this.allSectionData['refer specialisation'] = res.dropdown['refer specialisation'];
+        this.allSectionData['referral facility'] = res.dropdown['referral facility'];
         this.allSectionData['test'] = res.dropdown.test;
           this.sortDataAndUpdate();
       },err=>{
-
+        console.error("Error fetching dropdown fields", err);
       })
     }
   
@@ -95,14 +82,14 @@ export class PatientVisitDropdownComponent {
      * Update Field status.
      * @return {void}
      */
-    // updateStatus(id: number, status: boolean): void {
-    //   this.configService.updatePatientRegistrationStatus(id, status).subscribe(res => {
-    //     this.toastr.success("Patient Registration has been successfully updated","Update successful!");
-    //       this.getAllFields();
-    //   }, err => {
-    //       this.getAllFields();
-    //   });
-    // }
+    updateStatus(id: number, status: boolean): void {
+      this.configService.updatePatientRegistrationStatus(id, status).subscribe(res => {
+        this.toastr.success("Patient visit dropdown has been successfully updated","Update successful!");
+          this.getAllDropdownFeilds();
+      }, err => {
+          this.getAllDropdownFeilds();
+      });
+    }
   
     /**
      * Update Mandatory Field status.
@@ -110,10 +97,10 @@ export class PatientVisitDropdownComponent {
      */
     // updateMandatoryStatus(id: number, status: boolean): void {
     //   this.configService.updatePatientRegistrationMandatoryStatus(id, status).subscribe(res => {
-    //     this.toastr.success("Patient Registration has been successfully updated","Update successful!");
-    //         this.getAllFields();
+    //     this.toastr.success("Patient visit dropdown has been successfully updated","Update successful!");
+    //         this.getAllDropdownFeilds();
     //   }, err => {
-    //         this.getAllFields();
+    //         this.getAllDropdownFeilds();
     //   });
     // }
   
@@ -123,10 +110,10 @@ export class PatientVisitDropdownComponent {
      */
     // updateEditStatus(id: number, status: boolean): void {
     //   this.configService.updatePatientRegistrationEditableStatus(id, status).subscribe(res => {
-    //     this.toastr.success("Patient Registration has been successfully updated","Update successful!");
-    //         this.getAllFields();
+    //     this.toastr.success("Patient visit dropdown has been successfully updated","Update successful!");
+    //         this.getAllDropdownFeilds();
     //   }, err => {
-    //         this.getAllFields();
+    //         this.getAllDropdownFeilds();
     //   });
     // }
   
@@ -136,7 +123,7 @@ export class PatientVisitDropdownComponent {
      */
     onPublish(): void {
       this.configService.publishConfig().subscribe(res => {
-        this.toastr.success("Patient Registration changes published successfully!", "Changes published!");
+        this.toastr.success("Patient visit dropdown changes published successfully!", "Changes published!");
       });
     }
   
@@ -147,44 +134,89 @@ export class PatientVisitDropdownComponent {
       this.dataSource.sort = this.sort;
     }
   
+    // sortData(sortOption) {
+    //   const currTabName = this.tabList[this.currentTabIndex].toLocaleLowerCase();
+    //   console.log("current tab",currTabName)
+    //   const data = this.patientFieldsData[currTabName]?.slice();
+    //   this.sectionEnabled = this.allSectionData[currTabName].is_enabled;
+    //   console.log("section enable",this.sectionEnabled)
+    //   if (!sortOption) {
+    //     this.sortedData = data;
+    //     this.sortOptions.forEach(e=>e['direction']=null);
+    //     return;
+    //   } else {
+    //     this.sortOptions.forEach(e=>{
+    //       if(sortOption.colName != e.colName) 
+    //         e['direction'] = null;
+    //     });
+    //   }
+    //   switch(sortOption.direction){
+    //     case 'asc':
+    //       sortOption['direction'] = 'desc';
+    //       break;
+    //     case 'desc':
+    //       sortOption['direction'] = null;
+    //       this.sortedData = data;
+    //       return;
+    //     default:
+    //       sortOption['direction'] = 'asc';
+    //       break;
+    //   }
+    //   this.sortedData = data.sort((a, b) => {
+    //     const isAsc = sortOption.direction === 'asc';
+    //     switch (sortOption.colName) {
+    //       case 'name':
+    //         return compare(a.name, b.name, isAsc);
+    //       case 'updatedAt':
+    //         return compare(moment(a.updatedAt).unix(), moment(b.updatedAt).unix(), isAsc);
+    //       default:
+    //         return 0;
+    //     }
+    //   });
+    // }
+
     sortData(sortOption) {
-      const currTabName = this.tabList[this.currentTabIndex].toLocaleLowerCase();
-      const data = this.patientFieldsData[currTabName]?.slice();
-      this.sectionEnabled = this.allSectionData[currTabName].is_enabled;
-      if (!sortOption) {
-        this.sortedData = data;
-        this.sortOptions.forEach(e=>e['direction']=null);
-        return;
-      } else {
-        this.sortOptions.forEach(e=>{
-          if(sortOption.colName != e.colName) 
-            e['direction'] = null;
-        });
-      }
-      switch(sortOption.direction){
-        case 'asc':
-          sortOption['direction'] = 'desc';
-          break;
-        case 'desc':
-          sortOption['direction'] = null;
-          this.sortedData = data;
-          return;
-        default:
-          sortOption['direction'] = 'asc';
-          break;
-      }
-      this.sortedData = data.sort((a, b) => {
-        const isAsc = sortOption.direction === 'asc';
-        switch (sortOption.colName) {
-          case 'name':
-            return compare(a.name, b.name, isAsc);
-          case 'updatedAt':
-            return compare(moment(a.updatedAt).unix(), moment(b.updatedAt).unix(), isAsc);
-          default:
-            return 0;
-        }
-      });
+  const currTabName = this.tabList[this.currentTabIndex].toLocaleLowerCase();
+  console.log("Current tab:", currTabName);
+
+  const data = this.patientFieldsData[currTabName]?.slice() || [];
+
+  if (!sortOption) {
+    this.sortedData = data;
+    this.sortOptions.forEach(e => e['direction'] = null);
+    return;
+  } else {
+    this.sortOptions.forEach(e => {
+      if (sortOption.colName !== e.colName) e['direction'] = null;
+    });
+  }
+
+  switch (sortOption.direction) {
+    case 'asc':
+      sortOption['direction'] = 'desc';
+      break;
+    case 'desc':
+      sortOption['direction'] = null;
+      this.sortedData = data;
+      return;
+    default:
+      sortOption['direction'] = 'asc';
+      break;
+  }
+
+  this.sortedData = data.sort((a, b) => {
+    const isAsc = sortOption.direction === 'asc';
+    switch (sortOption.colName) {
+      case 'name':
+        return compare(a.name, b.name, isAsc);
+      case 'updatedAt':
+        return compare(moment(a.updatedAt).unix(), moment(b.updatedAt).unix(), isAsc);
+      default:
+        return 0;
     }
+  });
+}
+
   
     /**
      * Update Patient registartion status.
@@ -192,10 +224,10 @@ export class PatientVisitDropdownComponent {
      */
     // updateFeatureStatus(id: number, status: boolean): void {
     //   this.configService.updateFeatureEnabledStatus(id, status).subscribe(res => {
-    //     this.toastr.success("Patient Registration has been successfully updated", "Update successful!");
-    //       this.getAllFields();
+    //     this.toastr.success("Patient visit dropdown has been successfully updated", "Update successful!");
+    //       this.getAllDropdownFeilds();
     //   }, err => {
-    //       this.getAllFields();
+    //       this.getAllDropdownFeilds();
     //     }
     //   );
     // }

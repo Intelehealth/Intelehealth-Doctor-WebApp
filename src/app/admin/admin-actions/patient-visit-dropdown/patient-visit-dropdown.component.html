@@ -5,7 +5,7 @@
         <div class="card-header">
           <img
             class="mr-2"
-            src="assets/svgs/patient-reg.svg"
+            src="assets/svgs/patient_visit_dropdown.svg"
             alt=""
             height="44px"
           />
@@ -29,7 +29,7 @@
               mat-align-tabs="start"
               [disableRipple]="true"
             >
-              <mat-tab label="{{ 'Advise' | translate }}"></mat-tab>
+              <mat-tab label="{{ 'Advice' | translate }}"></mat-tab>
               <mat-tab label="{{ 'Diagnosis' | translate }}"></mat-tab>
               <mat-tab label="{{ 'Medicines' | translate }}"></mat-tab>
               <mat-tab label="{{ 'Refer Specialisation' | translate }}"></mat-tab>
@@ -80,34 +80,7 @@
                 </button>
               </mat-menu>
             </div>
-            <!-- <div class="sectionStatus" *ngIf="currentTabIndex !== 0">
-              <span class="mr-3">{{
-                "Enable or disable this section" | translate
-              }}</span>
-              <div class="pretty p-switch p-fill light-green light-red">
-                <input
-                  type="checkbox"
-                  [(ngModel)]="sectionEnabled"
-                  (change)="
-                    updateFeatureStatus(
-                      allSectionData[
-                        tabList[currentTabIndex].toLocaleLowerCase()
-                      ]?.id,
-                      $event.target.checked
-                    )
-                  "
-                />
-                <div class="state">
-                  <label></label>
-                </div>
-              </div>
-            </div> -->
-            <table
-              mat-table
-              [dataSource]="dataSource"
-              matTableResponsive
-              matSort
-            >
+            <table mat-table [dataSource]="dataSource" matTableResponsive matSort>
               <!-- Position Column -->
               <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef>
@@ -156,49 +129,34 @@
                 </td>
               </ng-container>
 
-              <!-- Active Column -->
-              <ng-container matColumnDef="is_enabled">
-                <th mat-header-cell *matHeaderCellDef>
-                  {{ "Active" | translate }}
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  <div *ngIf="!element.is_locked">
-                    <div class="pretty p-switch p-fill">
-                      <input
-                        type="checkbox"
-                        [disabled]="!sectionEnabled || element.is_locked"
-                        [checked]="element.is_enabled"
-                        (change)="
-                          updateStatus(element.id, $event.target.checked)
-                        "
-                        data-test-id="checkboxMindmapToggleStatus"
-                      />
-                      <div class="state">
-                        <label></label>
-                      </div>
-                    </div>
+             <!-- Active Column -->
+            <ng-container matColumnDef="is_enabled">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "Active" | translate }}
+              </th>
+              <td mat-cell *matCellDef="let element">
+                <div class="pretty p-switch p-fill">
+                  <input
+                    type="checkbox"
+                    [checked]="element.is_enabled"
+                    (change)="updateStatus(element.id, $event.target.checked)"
+                    data-test-id="checkboxMindmapToggleStatus"
+                  />
+                  <div class="state">
+                    <label></label>
                   </div>
-                  <span *ngIf="element.is_locked"
-                    ><img src="assets/svgs/blue-tick.svg" alt="" width="18px"
-                  /></span>
-                </td>
-              </ng-container>
+                </div>
+              </td>
+            </ng-container>
 
               <tr class="mat-row" *matNoDataRow>
-                <td
-                  class="mat-cell text-center"
-                  [attr.colspan]="displayedColumns.length"
-                >
+                <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length" >
                   {{ "No data to display." | translate }}
                 </td>
               </tr>
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr
-                mat-row
-                [ngClass]="!sectionEnabled ? 'text-greyout' : ''"
-                *matRowDef="let row; columns: displayedColumns"
-              ></tr>
+              <tr mat-row  *matRowDef="let row; columns: displayedColumns"></tr>
             </table>
           </div>
           <mat-paginator
