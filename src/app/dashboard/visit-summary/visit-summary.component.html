@@ -321,7 +321,7 @@
                       >
                         {{
                           getObsValue("Height (cm)")
-                            ? getObsValue("Height (cm)")
+                            ? toFeet(getObsValue("Height (cm)"))
                             : ('No information'|translate)
                         }}
                       </div>
@@ -364,7 +364,7 @@
                           }}
                         </span>
                       </span>
-                      <span *ngIf="!getObsValue('Height (cm)') && !getObsValue('Weight (kg)')">
+                      <span *ngIf="!getObsValue('Height (cm)') || !getObsValue('Weight (kg)')">
                         {{'No information'|translate}} </span>
                       </div>
                     </div>
@@ -725,13 +725,16 @@
                     </div>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
-                <ul class="items-list">
+                <ul *ngIf="additionalNotes; else noAdditionaNotes" class="items-list">
                   <li>
                     <div class="d-flex justify-content-between">
                       <span>{{ additionalNotes }}</span>
                     </div>
                   </li>
                 </ul>
+                <ng-template #noAdditionaNotes>
+                  <div class="no-docs">{{'No additional notes available!'|translate}}</div>
+                </ng-template>
               </mat-expansion-panel>
 
               <mat-expansion-panel [expanded]="true" data-test-id="matExpAdditionalDoc">

@@ -376,4 +376,18 @@ export class VisitService {
     });
     return recent;
   }
-}
+
+  /**
+  * Get height value in feet and inches
+  * @param {string} n - height
+  * @returns 
+  */
+  heightToInches(n: any) {
+    if(!n) return n;
+    const realFeet = ((n * 0.393700) / 12);
+    const feet = Math.floor(realFeet);
+    const inches = Math.round((realFeet - feet) * 12);
+    return `${feet} ft ${inches} in`;
+  }
+
+  }

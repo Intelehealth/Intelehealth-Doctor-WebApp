@@ -474,6 +474,16 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   }
 
   /**
+  * Get height value in feet and inches
+  * @param {string} height - height
+  * @return {any} - height in feet and inches
+  */
+  toFeet(n: any) {
+    return this.visitService.heightToInches(n);
+  }
+
+
+  /**
   * Get chief complaints and patient visit reason/summary
   * @param {EncounterModel[]} encounters - Array of encounters
   * @return {void}

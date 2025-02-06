@@ -958,6 +958,7 @@ export class ViewVisitSummaryComponent implements OnInit {
         weightValue = this.getObsValue('Weight (kg)') ? this.getObsValue('Weight (kg)') : 'No information';
         bmi = (this.getObsValue('Height (cm)') && this.getObsValue('Weight (kg)')) ? Number(weightValue / ((heightValue / 100) * (heightValue / 100))).toFixed(2)
           : `No information`;
+        heightValue = this.getObsValue('Height (cm)') ? this.toFeet(this.getObsValue('Height (cm)')) : 'No information';
         bp = this.getObsValue('SYSTOLIC BLOOD PRESSURE') ? this.getObsValue('SYSTOLIC BLOOD PRESSURE') + ' / ' + this.getObsValue('DIASTOLIC BLOOD PRESSURE') : 'No information';
         pulse = this.getObsValue('Pulse') ? this.getObsValue('Pulse') : 'No information';
         temperature = this.getObsValue('TEMPERATURE (C)') ?
@@ -1054,6 +1055,15 @@ export class ViewVisitSummaryComponent implements OnInit {
       return code;
     }
 
+  /**
+  * Get height value in feet and inches
+  * @param {string} n - height
+  * @returns 
+  */
+   toFeet(n: any) {
+    return this.visitService.heightToInches(n);
+  }
+
       /**
   * Send notification to health worker for available prescription
   * @returns {void}
@@ -1121,7 +1131,7 @@ export class ViewVisitSummaryComponent implements OnInit {
       other.push({ 
         stack: [
           { text: 'Date of Birth', style: 'subsubheader' },
-          { text: new Date(this.patient?.person.birthdate).toDateString(), style: 'pval' }
+          { text:  moment(this.patient?.person.birthdate).format('DD MMM, yyyy'), style: 'pval' }
         ] 
       });
     }
