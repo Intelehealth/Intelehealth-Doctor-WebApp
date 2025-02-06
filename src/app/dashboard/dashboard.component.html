@@ -619,7 +619,7 @@
               <!-- TMH Patient ID -->
               <ng-container matColumnDef="TMH_patient_id">
                 <th mat-header-cell *matHeaderCellDef> {{'TMH Patient ID' | translate}} </th>
-                <td mat-cell *matCellDef="let element; let j=index;" [attr.data-test-id]="'tmhPatientId'+j" [routerLink]="['/dashboard/visit-summary', element?.visitUuid]">{{ element.TMH_patient_id?.value }}</td>
+                <td mat-cell *matCellDef="let element; let j=index;" [attr.data-test-id]="'tmhPatientId'+j" [routerLink]="['/dashboard/visit-summary', element?.uuid]">{{ element.TMH_patient_id?.value }}</td>
               </ng-container>
 
               <!-- Name Column -->
