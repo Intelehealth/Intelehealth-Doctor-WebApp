@@ -1132,7 +1132,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
         || this.getObsValue("BLOOD TYPING")?.display : 'No information';
         sugarF = this. getObsValue("sugar fasting") ? this. getObsValue("sugar fasting") :'No information'
         sugarR = this. getObsValue("sugar random") ? this. getObsValue("sugar random") :'No information'
-        records.push({ text: [{ text: `Height (cm) : `, bold: true }, `${heightValue}`], margin: [0, 5, 0, 5] });
+        records.push({ text: [{ text: `Height (ft) : `, bold: true }, `${heightValue}`], margin: [0, 5, 0, 5] });
         records.push({ text: [{ text: `Weight (kg) : `, bold: true }, `${weightValue}`], margin: [0, 5, 0, 5] });
         records.push({ text: [{ text: `BMI : `, bold: true }, `${bmi}`], margin: [0, 5, 0, 5] });
         records.push({ text: [{ text: `BP : `, bold: true }, `${bp}`], margin: [0, 5, 0, 5] });
