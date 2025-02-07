@@ -8,9 +8,7 @@ import { ConfigService } from "src/app/services/config.service";
 import { compare, getCacheData } from "src/app/utils/utility-functions";
 import { languages } from "src/config/constant";
 import { MatSort } from "@angular/material/sort";
-import { PatientRegistrationFieldsModel } from "src/app/model/model";
 import { PatientVisitDropdownFieldsModel } from "src/app/model/model";
-
 import * as moment from "moment";
 
 @Component({
@@ -83,39 +81,13 @@ export class PatientVisitDropdownComponent {
      * @return {void}
      */
     updateStatus(id: number, status: boolean): void {
-      this.configService.updatePatientRegistrationStatus(id, status).subscribe(res => {
+      this.configService.updatePatientVisitDropdown(id, status).subscribe(res => {
         this.toastr.success("Patient visit dropdown has been successfully updated","Update successful!");
           this.getAllDropdownFeilds();
       }, err => {
           this.getAllDropdownFeilds();
       });
     }
-  
-    /**
-     * Update Mandatory Field status.
-     * @return {void}
-     */
-    // updateMandatoryStatus(id: number, status: boolean): void {
-    //   this.configService.updatePatientRegistrationMandatoryStatus(id, status).subscribe(res => {
-    //     this.toastr.success("Patient visit dropdown has been successfully updated","Update successful!");
-    //         this.getAllDropdownFeilds();
-    //   }, err => {
-    //         this.getAllDropdownFeilds();
-    //   });
-    // }
-  
-    /**
-     * Update Editable Field status.
-     * @return {void}
-     */
-    // updateEditStatus(id: number, status: boolean): void {
-    //   this.configService.updatePatientRegistrationEditableStatus(id, status).subscribe(res => {
-    //     this.toastr.success("Patient visit dropdown has been successfully updated","Update successful!");
-    //         this.getAllDropdownFeilds();
-    //   }, err => {
-    //         this.getAllDropdownFeilds();
-    //   });
-    // }
   
     /**
      * Publish langauge changes.
@@ -134,48 +106,8 @@ export class PatientVisitDropdownComponent {
       this.dataSource.sort = this.sort;
     }
   
-    // sortData(sortOption) {
-    //   const currTabName = this.tabList[this.currentTabIndex].toLocaleLowerCase();
-    //   console.log("current tab",currTabName)
-    //   const data = this.patientFieldsData[currTabName]?.slice();
-    //   this.sectionEnabled = this.allSectionData[currTabName].is_enabled;
-    //   console.log("section enable",this.sectionEnabled)
-    //   if (!sortOption) {
-    //     this.sortedData = data;
-    //     this.sortOptions.forEach(e=>e['direction']=null);
-    //     return;
-    //   } else {
-    //     this.sortOptions.forEach(e=>{
-    //       if(sortOption.colName != e.colName) 
-    //         e['direction'] = null;
-    //     });
-    //   }
-    //   switch(sortOption.direction){
-    //     case 'asc':
-    //       sortOption['direction'] = 'desc';
-    //       break;
-    //     case 'desc':
-    //       sortOption['direction'] = null;
-    //       this.sortedData = data;
-    //       return;
-    //     default:
-    //       sortOption['direction'] = 'asc';
-    //       break;
-    //   }
-    //   this.sortedData = data.sort((a, b) => {
-    //     const isAsc = sortOption.direction === 'asc';
-    //     switch (sortOption.colName) {
-    //       case 'name':
-    //         return compare(a.name, b.name, isAsc);
-    //       case 'updatedAt':
-    //         return compare(moment(a.updatedAt).unix(), moment(b.updatedAt).unix(), isAsc);
-    //       default:
-    //         return 0;
-    //     }
-    //   });
-    // }
 
-    sortData(sortOption) {
+  sortData(sortOption) {
   const currTabName = this.tabList[this.currentTabIndex].toLocaleLowerCase();
   console.log("Current tab:", currTabName);
 
@@ -216,22 +148,5 @@ export class PatientVisitDropdownComponent {
     }
   });
 }
-
-  
-    /**
-     * Update Patient registartion status.
-     * @return {void}
-     */
-    // updateFeatureStatus(id: number, status: boolean): void {
-    //   this.configService.updateFeatureEnabledStatus(id, status).subscribe(res => {
-    //     this.toastr.success("Patient visit dropdown has been successfully updated", "Update successful!");
-    //       this.getAllDropdownFeilds();
-    //   }, err => {
-    //       this.getAllDropdownFeilds();
-    //     }
-    //   );
-    // }
-  
-
   
 }
