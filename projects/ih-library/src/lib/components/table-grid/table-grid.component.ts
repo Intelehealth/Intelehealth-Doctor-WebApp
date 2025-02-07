@@ -1,17 +1,15 @@
-import { Component, ElementRef, OnInit, ViewChild, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, Input, SimpleChanges } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiResponseModel, AppointmentModel, CustomEncounterModel, CustomObsModel, CustomVisitModel, ProviderAttributeModel, RescheduleAppointmentModalResponseModel } from '../../model/model';
 import { AppointmentService } from '../../services/appointment.service';
 import { VisitService } from '../../services/visit.service';
-// import * as moment from 'moment';
 import moment from 'moment';
 import { CoreService } from '../../services/core.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { getCacheData, checkIfDateOldThanOneDay } from '../../utils/utility-functions';
 import { doctorDetails, languages, visitTypes } from '../../config/constant';
-// import { AppConfigService } from '../services/app-config.service';
 import { MindmapService } from '../../services/mindmap.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -65,11 +63,7 @@ export class TableGridComponent implements OnInit {
     private translateService: TranslateService,
     private mindmapService: MindmapService,
     private sanitizer: DomSanitizer
-    // private appConfigService: AppConfigService
   ) { 
-      // Object.keys(this.appConfigService.patient_registration).forEach(obj=>{
-      //   this.patientRegFields.push(...this.appConfigService.patient_registration[obj].filter(e=>e.is_enabled).map(e=>e.name));
-      // }); 
       this.filteredDateAndRangeForm = this.createFilteredDateRangeForm();
       this.displayedColumns = this.displayedColumns.filter(col=>(col!=='age' || this.checkPatientRegField('Age')));
   }
@@ -111,7 +105,7 @@ export class TableGridComponent implements OnInit {
         this.getFollowUpVisit();
       }
     }
-    this.maxDate = this.pluginConfigObs.filterObs.filterDateMax
+    this.maxDate = this.pluginConfigObs.filterObs.filterDateMax;
   }
 
   /**
@@ -320,7 +314,6 @@ export class TableGridComponent implements OnInit {
   getWhatsAppLink(telephoneNumber: string): string {
     return this.visitService.getWhatsappLink(telephoneNumber);
   }
-  
   
   /**
    * Retrieves the telephone number from the person's attributes
@@ -785,19 +778,16 @@ export class TableGridComponent implements OnInit {
    * @param {any} column - Column definition
    * @return {string} - Space-separated class names
    */
-  // getClasses(column: any): string {
-  //   return column.classList ? column.classList.join(" ") : "";
-  // }
   getClasses(column: any, element: any): string {
-  let classList = [];
+    let classList = [];
 
-  // If column has a static classList (array or string), add it
-  if (column.classList) {
-    classList = typeof column.classList === "function" ? column.classList(element) : column.classList;
+    // If column has a static classList (array or string), add it
+    if (column.classList) {
+      classList = typeof column.classList === "function" ? column.classList(element) : column.classList;
+    }
+
+    return classList.join(" ");
   }
-
-  return classList.join(" ");
-}
 
 
 

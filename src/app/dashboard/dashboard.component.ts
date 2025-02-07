@@ -170,7 +170,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
           <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
         },
       },
@@ -258,7 +257,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
           <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
         },
       },
@@ -326,7 +324,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
           <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
         },
       },
@@ -387,7 +384,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
           <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
         },
       },
@@ -451,7 +447,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-            <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
             <span class="font-bold ml-2">${element?.patientName} (${this.translateService.instant(element?.patientGender)})</span>
           `
         },
@@ -549,10 +544,9 @@ export class DashboardComponent implements OnInit {
       },
       {
         label: "Patients",
-        key: "name",
+        key: "patient_name",
         formatHtml: (element)=> {
           return `
-            <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
             <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>
           `
         },

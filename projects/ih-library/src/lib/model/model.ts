@@ -236,14 +236,14 @@ export interface AppointmentModel {
   visitStatus: string,
   cheif_complaint?: string[],
   starts_in?: string,
-  appointmentId?: number
-  telephone?: string
-  patient_type?: string
-  visit_type?:any
-  completed_visit_type?:any
-  pending_visit_type?:any
-  inProgress_visit_type?:any
-  priority_visit_type?:any
+  appointmentId?: number,
+  telephone?: string,
+  patient_type?: string,
+  visit_type?: any,
+  completed_visit_type?: any,
+  pending_visit_type?: any,
+  inProgress_visit_type?: any,
+  priority_visit_type?: any,
   uuid: string,
   TMH_patient_id?: any
 }
@@ -517,6 +517,7 @@ export interface MedicineModel {
   days?: string,
   timing?: string,
   remark?: string,
+  frequency?: string,
   uuid?: string
 }
 
@@ -534,7 +535,8 @@ export interface DiagnosisModel {
   diagnosisName?: string,
   diagnosisType?: string,
   diagnosisStatus?: string,
-  uuid?: string
+  uuid?: string,
+  diagnosisTNMStaging?: string
 }
 
 export interface DocImagesModel {
@@ -561,7 +563,8 @@ export interface FollowUpDataModel {
   wantFollowUp?: string,
   followUpDate?: string,
   followUpTime?: string,
-  followUpReason?: string
+  followUpReason?: string,
+  followUpType?: string
 }
 
 export interface HwModel {
@@ -642,7 +645,16 @@ export interface VitalModel {
   name: string,
   key: string,
   uuid: string,
-  is_mandatory: boolean
+  is_mandatory: boolean,
+  lang: object
+}
+
+export interface DiagnosticModel {
+  name: string,
+  key: string,
+  uuid: string,
+  is_mandatory: boolean,
+  lang: object
 }
 
 export interface FeatureModel extends BaseModel {}
@@ -666,16 +678,19 @@ export interface PatientVisitSummaryModel {
 }
 
 export interface PatientVisitSummaryConfigModel {
-  appointment_button: boolean
-  attachment_section: boolean
-  doctor_specialty_section: boolean
-  facility_to_visit_section: boolean
-  notes_section: boolean
-  priority_visit_section: boolean
-  severity_of_case_section: boolean
-  completed_visit_section: boolean
-  follow_up_visit_section: boolean
-  hw_interaction: boolean
+  appointment_button: boolean,
+  attachment_section: boolean,
+  doctor_specialty_section: boolean,
+  facility_to_visit_section: boolean,
+  notes_section: boolean,
+  priority_visit_section: boolean,
+  severity_of_case_section: boolean,
+  completed_visit_section: boolean,
+  follow_up_visit_section: boolean,
+  hw_interaction: boolean,
+  awaiting_visits_patient_type_demarcation: boolean,
+  awaiting_visit_section: boolean,
+  diagnosis_at_secondary_level: boolean
 }
 
 export interface PagerdutyList {
@@ -709,4 +724,34 @@ export interface MenuConfig {
   key: string,
   updatedAt?: string
   is_locked: boolean
+}
+
+export interface PatientVisitSection {
+  id: number,
+  is_enabled: boolean,
+  is_locked: boolean,
+  is_editable: boolean,
+  name: string,
+  lang: string,
+  key: string,
+  order: number,
+  sub_sections?: any,
+  updatedAt?: string,
+  createdAt?: string
+}
+
+export interface DiagnosticUnit {
+  name: string,
+  unit: string,
+  min: number,
+  max?: number,
+  percentageMin?: number,
+  percentageMax?: number,
+  percentageUnit?: string,
+  gender?: string
+}
+
+export interface DiagnosticName {
+  name: string,
+  testName: string
 }

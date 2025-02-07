@@ -56,12 +56,6 @@
     </div>
   </div>
 
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsAppointment"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsPriority"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsAwaiting"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsInProgress"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsCompleted"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsFollowUp"></lib-table-grid>
 
 
   <div class="row mt-3">
@@ -72,6 +66,13 @@
       </div>
       <mat-accordion class="intel-accordion-con" multi data-test-id="matAccDashboard">
 
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsAppointment"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsPriority"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsAwaiting"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsInProgress"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsCompleted"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsFollowUp"></lib-table-grid>
+      
         <mat-expansion-panel [expanded]="true" data-test-id="matExpAppointment" *ngIf="pvs.appointment_button">
           <mat-expansion-panel-header data-test-id="matExpHeaderAppointment">
             <mat-panel-title>

@@ -10,6 +10,7 @@ import localeEn from '@angular/common/locales/en';
 import { ToastrModule } from "ngx-toastr";
 import { NgxPermissionsModule } from "ngx-permissions";
 import { ModalComponentsModule } from "./modal-components/modal-components.module";
+import { DefaultImageDirective } from './core/directives/default-image.directive';
 
 // Material Design Imports
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -42,6 +43,7 @@ registerLocaleData(localeEn);
   declarations: [
     IhLibraryComponent,
     TableGridComponent,
+    DefaultImageDirective
   ],
   imports: [
     ModalComponentsModule,
@@ -85,6 +87,7 @@ registerLocaleData(localeEn);
     ReactiveFormsModule,
   ],
   exports: [
+    DefaultImageDirective,
     IhLibraryComponent,
     TableGridComponent,
     MatPaginatorModule,
