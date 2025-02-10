@@ -785,10 +785,10 @@ body.font-lato td {
 .intel-accordion-con {
   .mat-expansion-panel {
     background: #FFFFFF;
-    box-shadow: 0px 4px 24px rgba(31, 28, 58, 0.08);
-    border-radius: 20px !important;
-    padding: 24px;
-    margin-bottom: 24px;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    padding: 14px 24px;
+    margin-bottom: 0px;
 
     .mat-expansion-panel-header {
       padding: 0px;
@@ -832,7 +832,7 @@ body.font-lato td {
     .mat-expansion-panel-content {
       .mat-expansion-panel-body {
         padding: 0px;
-        margin-top: 24px;
+        margin-top: 14px;
         position: relative;
       }
 
@@ -891,7 +891,7 @@ body.font-lato td {
   }
 
   .card-body {
-    padding: 24px;
+    padding: 5px 24px;
   }
 }
 

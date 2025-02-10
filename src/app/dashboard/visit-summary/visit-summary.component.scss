@@ -39,6 +39,7 @@
 
 .patient-info-wrapper {
   font-family: DM Sans;
+  align-items: center;
 
   .patient-info-section {
     // border-right: 1px solid rgba(178, 175, 190, 0.2);
@@ -108,17 +109,9 @@
   font-family: DM Sans;
 
   .mat-tab-header {
-    padding: 24px 24px 0px;
-    border-bottom: 2px solid rgba(178, 175, 190, 0.2);
+    padding: 5px 24px;
+    border-bottom: 0px solid rgba(178, 175, 190, 0.2);
     box-shadow: 0px 4px 16px rgba(31, 28, 58, 0.04);
-  }
-
-  .mat-tab-body-wrapper {
-    .mat-tab-body {
-      .mat-tab-body-content {
-        padding: 24px;
-      }
-    }
   }
 
   .mat-tab-header {
@@ -249,8 +242,6 @@
 }
 
 .cheif-complaint-wrapper {
-  padding: 24px 0px 0px;
-
   h6 {
     font-size: 18px;
     line-height: 150%;
@@ -734,10 +725,19 @@ th.mat-header-cell:last-child {
   }
 }
 
+::ng-deep .visit-summary-tab-group.mat-tab-group {
+  .mat-tab-body-wrapper {
+    .mat-tab-body {
+      .mat-tab-body-content {
+        padding: 5px 24px;
+      }
+    }
+  }
+}
+
 @media (max-width: 768px) {
 
   ::ng-deep .visit-summary-tab-group.mat-tab-group {
-
     .mat-tab-body-wrapper {
       .mat-tab-body {
         .mat-tab-body-content {
@@ -831,6 +831,11 @@ th.mat-header-cell:last-child {
   .contact-info{
     display: unset !important;
   }
+
+  .collapse-btn{
+    width: 100%;
+    margin: 10px;
+  }
 }
 
 .webrtc-controls {
@@ -857,10 +862,7 @@ th.mat-header-cell:last-child {
   max-width: 100%;
 }
 
-.btn{
-  position: absolute;
-  right: 50px;
-  top: 60px;
+.collapse-btn{
   border: none;
   background: none;
   outline: none;
@@ -899,4 +901,22 @@ th.mat-header-cell:last-child {
 
 .video-ctrl-btn.red {
   background: var(--color-red);
+}
+
+.visitDetails{
+  mat-expansion-panel:nth-child(even){
+    background: var(--color-offWhite);
+
+    .input-group {
+      background: var(--color-white);
+    }
+
+    .form-control {
+      background: var(--color-white);
+    }
+
+    textarea.form-control {
+      background: var(--color-white);
+    }
+  }
 }

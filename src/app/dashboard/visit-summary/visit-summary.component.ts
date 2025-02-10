@@ -151,7 +151,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   hasPatientAddressEnabled: boolean = false;
   hasPatientOtherEnabled: boolean = false;
 
-  collapsed: boolean = true;
+  collapsed: boolean = false;
   isMCCUser: boolean = false;
   brandName = environment.brandName === 'KCDO';
   diagnosticList;
@@ -312,7 +312,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     this.hasPatientAddressEnabled = this.appConfigService?.patient_reg_address;
     this.hasPatientOtherEnabled = this.appConfigService?.patient_reg_other;
 
-    this.pvsConfigs = this.appConfigService.patient_visit_sections;
+    this.pvsConfigs = this.appConfigService.patient_visit_sections.filter(o=>o.is_enabled);
     this.patientInteraction = this.appConfigService.patient_visit_sections;
     this.isMCCUser = !!this.rolesService.getRole('ORGANIZATIONAL:MCC');
   }

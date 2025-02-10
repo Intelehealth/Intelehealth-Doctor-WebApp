@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-12 p-0 mb-5" *ngIf="visitAppointment && checkIfDateOldThanOneDay(visitAppointment).includes('Due')">
+    <div class="col-md-12 p-0 mb-2" *ngIf="visitAppointment && checkIfDateOldThanOneDay(visitAppointment).includes('Due')">
       <div class="appointment-banner">
         <div>
           <h6>{{'Appointment starts in'|translate}}</h6>
@@ -22,11 +22,11 @@
       </div>
     </div>
 
-    <div class="col-md-12 p-0 mb-5">
+    <div class="col-md-12 p-0 mb-2">
       <div class="intel-card">
-        <div class="card-body">
+        <div class="card-body pt-2 pb-2 pl-3 pr-3">
           <div class="row patient-info-wrapper" *ngIf="patient">
-            <div class="col-md-3 patient-info-section p-3">
+            <div class="col-md-4 patient-info-section pl-3 pr-3">
               <div class="patient-img-item mb-2">
                 <div class="patient-img">
                   <img
@@ -42,7 +42,7 @@
                     <span>{{ patient?.person?.preferredName?.givenName }}</span>
                     <span *ngIf="checkPatientRegField('Middle Name') && patient?.person?.preferredName?.middleName">{{ ' ' + patient?.person?.preferredName?.middleName }}</span>
                     <span>{{ ' ' + patient?.person?.preferredName?.familyName }}</span>
-                    <!-- <span *ngIf="checkPatientRegField('Gender')">{{ " (" + (patient?.person.gender | translate) + ") "}}</span> -->
+                    <span *ngIf="checkPatientRegField('Gender')">{{ " (" + (patient?.person.gender | translate) + ") "}}</span>
                   </h6>
                   <p data-test-id="etPatienOpenMRSId" *ngIf="isFeatureAvailable('tnmStaging')">{{ getPersonAttributeValue('TMH Case Number') }}</p>
                   <p data-test-id="etPatienOpenMRSId" *ngIf="!isFeatureAvailable('tnmStaging')">{{ getPatientIdentifier('OpenMRS ID') }}</p>
@@ -50,28 +50,28 @@
               </div>
             </div>
 
-            <div class="col-md-2 patient-info-section p-3" *ngIf="checkPatientRegField('Gender') && patient?.person.gender">
+            <!-- <div class="col-md-2 patient-info-section p-3" *ngIf="checkPatientRegField('Gender') && patient?.person.gender">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatientGender">{{'Gender'|translate}}</h6>
                 <p data-test-id="etPatientGender">{{ patient?.person.gender | translate }}</p>
               </div>
-            </div>
+            </div> -->
 
-            <div class="col-md-2 patient-info-section p-3" *ngIf="checkPatientRegField('Age') && patient?.person.age">
+            <div class="col-md-2 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Age') && patient?.person.age">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatientAge">{{'Age'|translate}}</h6>
                 <p data-test-id="etPatient">{{ patient?.person.birthdate ? getAge(patient?.person.birthdate) : patient?.person.age + ' years'  }}</p>
               </div>
             </div>
 
-            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Date of Birth') && patient?.person.birthdate !== 'NA'">
+            <div class="col-md-2 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Date of Birth') && patient?.person.birthdate !== 'NA'">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatientAge">{{'Date of birth'|translate}}</h6>
                 <p data-test-id="etPatient">{{ patient?.person.birthdate | date : "dd MMM, yyyy" }}</p>
               </div>
             </div>
 
-            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Phone Number') && getPersonAttributeValue('Telephone Number') !== 'NA'">
+            <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Phone Number') && getPersonAttributeValue('Telephone Number') !== 'NA'">
               <div class="patient-info-item">
                 <h6 data-test-id="etPatient">{{'Phone Number'| translate}}</h6>
                 <div class="contact-info">
@@ -98,60 +98,62 @@
                 </div>
               </div>
             </div>
-
-            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Guardian Type') && getPersonAttributeValue('Guardian Type') !== 'NA'">
+            <div class="col-md-1 text-center">
+              <button (click)="collapsedButton()" class="collapse-btn">
+                <img [src]="getUrl()" alt="">
+              </button>
+            </div>
+          </div>
+          
+          <div class="row patient-info-wrapper" *ngIf="patient && collapsed">
+            <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Guardian Type') && getPersonAttributeValue('Guardian Type') !== 'NA'">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatient">{{'Guardian Type' | translate}}</h6>
                 <p data-test-id="etPatient">{{ getPersonAttributeValue('Guardian Type') }}</p>
               </div>
             </div>
 
-            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Guardian Name') && getPersonAttributeValue('Guardian Name') !== 'NA'">
+            <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Guardian Name') && getPersonAttributeValue('Guardian Name') !== 'NA'">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatient">{{'Guardian Name' | translate}}</h6>
                 <p data-test-id="etPatient">{{ getPersonAttributeValue('Guardian Name') }}</p>
               </div>
             </div>
 
-            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Emergency Contact Name') && getPersonAttributeValue('Emergency Contact Name') !== 'NA'">
+            <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Emergency Contact Name') && getPersonAttributeValue('Emergency Contact Name') !== 'NA'">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatient">{{'Emergency Contact Name' | translate}}</h6>
                 <p data-test-id="etPatient">{{ getPersonAttributeValue('Emergency Contact Name') }}</p>
               </div>
             </div>
 
-            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Emergency Contact Number') && getPersonAttributeValue('Emergency Contact Number') !== 'NA'">
+            <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Emergency Contact Number') && getPersonAttributeValue('Emergency Contact Number') !== 'NA'">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatient">{{'Emergency Contact Number' | translate}}</h6>
                 <p data-test-id="etPatient">{{ getPersonAttributeValue('Emergency Contact Number') }}</p>
               </div>
             </div>
 
-            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Contact Type') && getPersonAttributeValue('Contact Type') !== 'NA'">
+            <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Contact Type') && getPersonAttributeValue('Contact Type') !== 'NA'">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatient">{{'Contact Type' | translate}}</h6>
                 <p data-test-id="etPatient">{{ getPersonAttributeValue('Emergency Contact Type') }}</p>
               </div>
             </div>
 
-            <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Email') && getPersonAttributeValue('Email') !== 'NA'">
+            <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Email') && getPersonAttributeValue('Email') !== 'NA'">
               <div class="patient-info-item mb-3">
                 <h6 data-test-id="etPatient">{{'Email' | translate}}</h6>
                 <p data-test-id="etPatient">{{ getPersonAttributeValue('Email') }}</p>
               </div>
             </div>
           </div>
-
-          <button (click)="collapsedButton()" class="btn">
-            <img [src]="getUrl()" alt="">
-          </button>
-
           <mat-tab-group class="patient-tab-group" mat-align-tabs="start" *ngIf="collapsed">
             <mat-tab label="{{'Address'| translate}}" *ngIf="hasPatientAddressEnabled">
               <div class="rows patient-info-wrapper">
 
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Household Number') && patient?.person?.preferredAddress?.address6">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Household Number') && patient?.person?.preferredAddress?.address6">
                   <div class="patient-info-item">
                     <h6 data-test-id="etPatient">{{'Household number' | translate}}</h6>
                     <p data-test-id="etPatient">
@@ -160,7 +162,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Corresponding Address 1') && patient?.person?.preferredAddress?.address1">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Corresponding Address 1') && patient?.person?.preferredAddress?.address1">
                   <div class="patient-info-item">
                     <h6 data-test-id="etPatient">{{'Corresponding address 1' | translate}}</h6>
                     <p data-test-id="etPatient">
@@ -169,7 +171,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Corresponding Address 2') && patient?.person?.preferredAddress?.address2">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Corresponding Address 2') && patient?.person?.preferredAddress?.address2">
                   <div class="patient-info-item">
                     <h6 data-test-id="etPatient">{{'Corresponding address 2' | translate}}</h6>
                     <p data-test-id="etPatient">
@@ -178,7 +180,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Block') && patient?.person?.preferredAddress?.address3">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Block') && patient?.person?.preferredAddress?.address3">
                   <div class="patient-info-item">
                     <h6 data-test-id="etPatient">{{'Block' | translate}}</h6>
                     <p data-test-id="etPatient">
@@ -187,35 +189,35 @@
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Village/Town/City') && patient?.person?.preferredAddress?.cityVillage">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Village/Town/City') && patient?.person?.preferredAddress?.cityVillage">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Village/Town/City' | translate}}</h6>
                     <p data-test-id="etPatient">{{ patient?.person.preferredAddress.cityVillage }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('District') && patient?.person?.preferredAddress?.countyDistrict">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('District') && patient?.person?.preferredAddress?.countyDistrict">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'District' | translate}}</h6>
                     <p data-test-id="etPatient">{{ patient?.person.preferredAddress.countyDistrict }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('State') && patient?.person?.preferredAddress?.stateProvince">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('State') && patient?.person?.preferredAddress?.stateProvince">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'State' | translate}}</h6>
                     <p data-test-id="etPatient">{{ patient?.person.preferredAddress.stateProvince }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Country') && patient?.person?.preferredAddress?.country">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Country') && patient?.person?.preferredAddress?.country">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Country' | translate}}</h6>
                     <p data-test-id="etPatient">{{ patient?.person?.preferredAddress?.country }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Postal Code') && patient?.person?.preferredAddress?.postalCode">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Postal Code') && patient?.person?.preferredAddress?.postalCode">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Postal Code' | translate}}</h6>
                     <p data-test-id="etPatient">{{ patient?.person?.preferredAddress?.postalCode }}</p>
@@ -226,70 +228,70 @@
 
             <mat-tab label="{{'Other' | translate}}" *ngIf="hasPatientOtherEnabled">
               <div class="rows patient-info-wrapper">
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Occupation') && getPersonAttributeValue('occupation') !== 'NA'">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Occupation') && getPersonAttributeValue('occupation') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Occupation' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('occupation') }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Education') && getPersonAttributeValue('Education Level') !== 'NA'">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Education') && getPersonAttributeValue('Education Level') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Education' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('Education Level') }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('National ID') && getPersonAttributeValue('NationalID') !== 'NA'">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('National ID') && getPersonAttributeValue('NationalID') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'National ID' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('NationalID') }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Economic Category') && getPersonAttributeValue('Economic Status') !== 'NA'">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Economic Category') && getPersonAttributeValue('Economic Status') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Economic Category' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('Economic Status') }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Social Category') && getPersonAttributeValue('Caste') !== 'NA'">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Social Category') && getPersonAttributeValue('Caste') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Social Category' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('Caste') }}</p>
                   </div>
                 </div>
 
-                <!-- <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('TMH Case Number') && getPersonAttributeValue('TMH Case Number') !== 'NA'">
+                <!-- <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('TMH Case Number') && getPersonAttributeValue('TMH Case Number') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'TMH Case Number' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('TMH Case Number') }}</p>
                   </div>
                 </div> -->
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Request ID') && getPersonAttributeValue('Request ID') !== 'NA'">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Request ID') && getPersonAttributeValue('Request ID') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Request ID' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('Request ID') }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Discipline') && getPersonAttributeValue('Discipline') !== 'NA'">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Discipline') && getPersonAttributeValue('Discipline') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Discipline' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('Discipline') }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Department') && getPersonAttributeValue('Department') !== 'NA'">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Department') && getPersonAttributeValue('Department') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Department' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('Department') }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Relative Phone Number') && getPersonAttributeValue('Relative Phone Number') !== 'NA'">
+                <div class="col-md-3 patient-info-section pl-3 pr-3" *ngIf="checkPatientRegField('Relative Phone Number') && getPersonAttributeValue('Relative Phone Number') !== 'NA'">
                   <div class="patient-info-item mb-3">
                     <h6 data-test-id="etPatient">{{'Relative Phone Number' | translate}}</h6>
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('Relative Phone Number') }}</p>
@@ -302,7 +304,7 @@
       </div>
     </div>
 
-    <div class="col-md-12 p-0 mb-5">
+    <div class="col-md-12 p-0 mb-2">
       <div class="intel-card">
         <mat-tab-group
           class="visit-summary-tab-group"
@@ -332,14 +334,13 @@
                 <mat-icon>expand_less</mat-icon>
               </button>
             </div>
-            <mat-accordion class="intel-accordion-con" multi>
+            <mat-accordion class="intel-accordion-con visitDetails" multi>
               <ng-container *ngFor="let pvsConfig of pvsConfigs; let pvsI = index;">
                 <ng-container *ngIf="checkIsVisibleSection(pvsConfig) as checkVisibleSectionConfig">
                   <mat-expansion-panel 
                     *ngIf="checkVisibleSectionConfig.is_enabled"
                     [expanded]="checkVisibleSectionConfig.expanded"  
                     data-test-id="matExpConDets" 
-                    [ngClass]="{'bg-gray': pvsI % 2 === 1}"
                   >
                     <mat-expansion-panel-header data-test-id="matExpHeaderConDets">
                       <mat-panel-title>
@@ -878,7 +879,7 @@
       </div>
     </div>
 
-    <div class="col-md-12 p-0 mb-5" *ngIf="selectedTabIndex == 0">
+    <div class="col-md-12 p-0 mb-2" *ngIf="selectedTabIndex == 0">
       <div class="intel-card">
         <div class="card-body">
           <p class="note-con">
@@ -893,16 +894,16 @@
       </div>
     </div>
 
-    <div class="col-md-12 p-0 py-2 mb-5 text-center" *ngIf="!visitNotePresent && !visitCompleted && !visitEnded && selectedTabIndex == 0">
+    <div class="col-md-12 p-0 py-2 mb-2 text-center" *ngIf="!visitNotePresent && !visitCompleted && !visitEnded && selectedTabIndex == 0">
       <button type="button" class="blue-btn" (click)="startVisitNote()" data-test-id="btnStartVisitNote" *ngxPermissionsExcept="['ORGANIZATIONAL:MCC']" >
         {{'Start visit note'|translate}}
       </button>
     </div>
 
-    <div class="col-md-12 p-0 mb-5" *ngIf="visitNotePresent && selectedTabIndex == 0">
+    <div class="col-md-12 p-0 mb-2" *ngIf="visitNotePresent && selectedTabIndex == 0">
       <div class="intel-card">
         <div class="card-body">
-          <mat-accordion class="intel-accordion-con" multi>
+          <mat-accordion class="intel-accordion-con visitDetails" multi>
 
             <app-notes *ngIf="appConfigService?.patient_visit_summary?.family_history_notes" [title]="'Family History Notes'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded"
             [visit]="visit" [visitNotePresent]="visitNotePresent"></app-notes>
@@ -1104,7 +1105,7 @@
               [expanded]="true"
               #panel2
               hideToggle
-              class="bg-gray"
+              class=""
             >
               <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -1402,7 +1403,7 @@
               [expanded]="true"
               #panelDoctorRcom
               hideToggle
-              class="bg-gray overflow-show"
+              class=" overflow-show"
               *ngIf="isFeatureAvailable('doctor-recommendation')"
             >
               <mat-expansion-panel-header>
@@ -1429,7 +1430,7 @@
                 [expanded]="true"
                 #panel4
                 hideToggle
-                class="bg-gray overflow-show"
+                class=" overflow-show"
               >
                 <mat-expansion-panel-header>
                   <mat-panel-title>
@@ -1741,6 +1742,7 @@
                           formControlName="test"
                           placeholder="{{'Type here'|translate}}"
                           [ngbTypeahead]="search2"
+                          (selectItem)="addTest()"
                           data-test-id="etTest"
                         />
                       </div>
@@ -2162,7 +2164,7 @@
               </div>
             </mat-expansion-panel>
 
-            <mat-expansion-panel [expanded]="true" #panel9 hideToggle *ngIf="isSubSectionEnabled('patient_interaction','Patient')" class="bg-gray">
+            <mat-expansion-panel [expanded]="true" #panel9 hideToggle class="">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <div class="intel-accordion-title">
@@ -2394,7 +2396,7 @@
       </div>
     </div>
 
-    <div class="col-md-12 p-0 py-2 mb-5 text-center" *ngIf="selectedTabIndex == 0">
+    <div class="col-md-12 p-0 py-2 mb-2 text-center" *ngIf="selectedTabIndex == 0">
       <button
         type="button"
         class="blue-btn mr-2 mb-2"
