@@ -18,7 +18,7 @@ import * as moment from "moment";
 })
 export class PatientVisitDropdownComponent {
    displayedColumns : string[] = ['id', 'name', 'updatedAt','is_enabled'];
-    tabList = ['Advice','Diagnosis', 'Medication','Refer Specialisation','Referral Facility','Test', ];
+    tabList = ['Advice','Diagnosis', 'Medication','Refer Specialisation','Referral Facility','Test'];
     currentTabIndex = 0; 
     dataSource = new MatTableDataSource<any>();
     @ViewChild(MatPaginator) paginator: MatPaginator;
