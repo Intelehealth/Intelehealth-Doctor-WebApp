@@ -6,6 +6,11 @@
     "sourceMap": false,
     "declaration": false,
     "module": "esnext",
+    "paths": {
+      "lib-presciption": [
+        "dist/lib-presciption"
+      ]
+    },
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "importHelpers": true,

@@ -189,7 +189,8 @@ registerLocaleData(localeEn);
       deps: [PwaService],
       multi: true
     },
-    DecimalPipe
+    DecimalPipe,
+    {provide: 'environment', useValue: environment}
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
   bootstrap: [AppComponent],
