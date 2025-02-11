@@ -751,3 +751,10 @@ export interface DiagnosticName {
   name: string;
   testName: string;
 }
+
+export interface PatientVisitDropdownFieldsModel{
+  id?:number,
+  name?:string,
+  is_enabled: boolean,
+  updatedAt: string
+}

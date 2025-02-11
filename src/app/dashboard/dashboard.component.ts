@@ -80,7 +80,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
           <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
         },
       },
@@ -105,16 +104,14 @@ export class DashboardComponent implements OnInit {
       {
         label: "Patient Type",
         key: "patient_type",
-        classList: [
-          "chip",
-          "chip-item-green",
-          "green"
-        ],
-        formatHtml: (element)=> { 
-          return `
-            <span>${element?.patient_type}</span>
-          `
+        classList: (element) => {
+          if (element?.patient_type?.toLowerCase() === "new") return ["chip", "chip-item-green", "green"];
+          if (element?.patient_type?.toLowerCase() === "followup") return ["chip", "chip-item-blue", "blue"];
+          return ["chip"]; // Default fallback class
         },
+        formatHtml: (element) => {
+          return element?.patient_type || "N/A"; // Only return text
+        }
       },
       {
         label: "Visit Uploaded",
@@ -155,7 +152,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
           <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
         },
       },
@@ -223,7 +219,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
           <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
         },
       },
@@ -284,7 +279,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-          <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
           <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>`
         },
       },
@@ -348,7 +342,6 @@ export class DashboardComponent implements OnInit {
         key: "patient_name",
         formatHtml: (element)=> { 
           return `
-            <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
             <span class="font-bold ml-2">${element?.patientName} (${this.translateService.instant(element?.patientGender)})</span>
           `
         },
@@ -360,18 +353,6 @@ export class DashboardComponent implements OnInit {
           return `<span>${element?.patientAge} ${'y'}</span>`
         },
       },
-      // {
-      //   label: "Starts in",
-      //   key: "starts_in",
-      //   formatHtml: (element) => {
-      //     let  color = '';
-      //     if (element.starts_in.includes('Due'))
-      //       color = "#FF475D"; // red color
-      //     if (element.starts_in.includes('Hour') || element.starts_in.includes('Minute'))
-      //       color = "#0FD197"; // green color
-      //     return `<strong><span style="color: ${color}">${element?.starts_in}</span></strong>`;
-      //   }
-      // },
       {
         label: "Starts in",
         key: "starts_in",
@@ -386,21 +367,6 @@ export class DashboardComponent implements OnInit {
           return `<span style="color: ${color}; font-weight: ${bold};">${element?.starts_in}</span>`;
         }
       },
-      // {
-      //   label: "Location",
-      //   key: "location",
-      //   formatHtml: (element)=> { 
-      //     return `<span>${element?.visit?.location?.name}</span>`
-      //   },
-      // },
-      // {
-      //   label: "Chief Complaint",
-      //   key: "cheif_complaint",
-      // },
-      // {
-      //   label: "Doctor",
-      //   key: "drName",
-      // },
       {
         label: "Contact",
         key: "telephone",
@@ -460,10 +426,9 @@ export class DashboardComponent implements OnInit {
       },
       {
         label: "Patients",
-        key: "name",
+        key: "patient_name",
         formatHtml: (element)=> {
           return `
-            <img src="assets/svgs/user.svg" alt="" width="32px" height="32px" style="border-radius: 50%;">
             <span class="font-bold ml-2">${element?.patient_name?.given_name} ${element?.patient_name?.middle_name ? element?.patient_name?.middle_name + " " : ""} ${element?.patient_name?.family_name} (${element?.person?.gender})</span>
           `
         },
@@ -491,6 +456,7 @@ export class DashboardComponent implements OnInit {
       }
     ],
   };
+
   showAll: boolean = true;
   displayedColumns1: string[] = ['name', 'age', 'starts_in', 'location', 'cheif_complaint', 'drName', 'telephone','actions'];
   displayedColumns2: string[] = ['name', 'age', 'location', 'cheif_complaint', 'visit_created'];

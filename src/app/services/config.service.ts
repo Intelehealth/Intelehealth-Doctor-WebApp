@@ -437,4 +437,24 @@ export class ConfigService {
     const url = `${this.baseURL}/pr/updateValidations/${id}`;
     return this.http.put(url, { validations });
   }
+
+  /**
+   * Get patient visit dropdown fields
+   * @return {Observable<any>}
+   */
+  getPatientVisitDropdownFields(): Observable<any> {
+    const url = `${this.baseURL}/dropdown/all`;
+    return this.http.get(url);
+  }
+
+  /**
+   * Update Patient visit dropdown enabled status
+   * @param {boolean} id - id of speciality
+   * @param {boolean} is_enabled - enabled status true/false
+   * @return {Observable<any>}
+   */
+  updatePatientVisitDropdown(id: number, is_enabled: boolean): Observable<any> {
+    const url = `${this.baseURL}/dropdown/updateIsEnabled/${id}`;
+    return this.http.put(url, { is_enabled });
+  }
 }

@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import { DiagnosisService } from 'src/app/services/diagnosis.service';
 import { CoreService } from 'src/app/services/core/core.service';
-import { doctorDetails, visitTypes } from 'src/config/constant';
+import { conceptIds, doctorDetails, visitTypes } from 'src/config/constant';
 import { DocImagesModel, EncounterModel, ObsModel, PatientHistoryModel, PatientIdentifierModel, PatientModel, PatientVisitSection, PersonAttributeModel, VisitModel, VitalModel } from 'src/app/model/model';
 import { TranslateService } from '@ngx-translate/core';
 import * as pdfMake from 'pdfmake/build/pdfmake';
@@ -42,8 +42,6 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
   eyeImages: DocImagesModel[] = [];
   additionalDocs: DocImagesModel[] = [];
   baseURL = environment.baseURL;
-  conceptAdditionlDocument = "07a816ce-ffc0-49b9-ad92-a1bf9bf5e2ba";
-  conceptPhysicalExamination = '200b7a45-77bc-4986-b879-cc727f5f7d5b';
   patientRegFields: string[] = [];
   vitals: VitalModel[] = [];
   hasVitalsEnabled: boolean = false;
@@ -417,7 +415,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
   */
   getEyeImages(visit: VisitModel) {
     this.eyeImages = [];
-    this.diagnosisService.getObs(visit.patient.uuid, this.conceptPhysicalExamination).subscribe((response) => {
+    this.diagnosisService.getObs(visit.patient.uuid, conceptIds.conceptPhysicalExamination).subscribe((response) => {
       response.results.forEach(async (obs: ObsModel) => {
         if (obs.encounter !== null && obs.encounter.visit.uuid === visit.uuid) {
           const imageBase64 = await this.toObjectUrl(`${this.baseURL}/obs/${obs.uuid}/value`);
@@ -445,7 +443,7 @@ export class ViewVisitSummaryComponent implements OnInit, OnDestroy {
   */
   getVisitAdditionalDocs(visit: VisitModel) {
     this.additionalDocs = [];
-    this.diagnosisService.getObs(visit.patient.uuid, this.conceptAdditionlDocument).subscribe((response) => {
+    this.diagnosisService.getObs(visit.patient.uuid, conceptIds.conceptAdditionlDocument).subscribe((response) => {
       response.results.forEach(async (obs: ObsModel) => {
         if (obs.encounter !== null && obs.encounter.visit.uuid === visit.uuid) {
           const src = `${this.baseURL}/obs/${obs.uuid}/value`;

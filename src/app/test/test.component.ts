@@ -5,6 +5,7 @@ import { debounceTime, distinctUntilChanged, map } from "rxjs/operators";
 import { DiagnosisService } from "../services/diagnosis.service";
 import { EncounterService } from "../services/encounter.service";
 import { getEncounterUUID } from "../utils/utility-functions";
+import { conceptIds } from 'src/config/constant';
 
 @Component({
   selector: "app-test",
@@ -19,7 +20,6 @@ export class TestComponent implements OnInit {
   showAddMore = false;
   isCollapsed = false;
   test = [];
-  conceptTest = '23601d71-50e6-483f-968d-aeef3031346d';
   patientId: string;
   visitUuid: string;
   testData = [];
@@ -48,7 +48,7 @@ export class TestComponent implements OnInit {
       });
     this.visitUuid = this.route.snapshot.paramMap.get('visit_id');
     this.patientId = this.route.snapshot.params['patient_id'];
-    this.diagnosisService.getObs(this.patientId, this.conceptTest)
+    this.diagnosisService.getObs(this.patientId, conceptIds.conceptTest)
       .subscribe(response => {
         response.results.forEach(obs => {
           if (obs.encounter.visit.uuid === this.visitUuid || this.readOnly === true) {
@@ -63,7 +63,7 @@ export class TestComponent implements OnInit {
     if (this.diagnosisService.isSameDoctor() && this.newTest?.trim()) {
       let encounterUuid = getEncounterUUID();
       const json = {
-        concept: this.conceptTest,
+        concept: conceptIds.conceptTest,
         person: this.patientId,
         obsDatetime: date,
         value: this.newTest,

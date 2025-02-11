@@ -56,13 +56,6 @@
     </div>
   </div>
 
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsAppointment"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsPriority"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsAwaiting"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsInProgress"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsCompleted"></lib-table-grid>
-  <lib-table-grid [pluginConfigObs]="pluginConfigObsFollowUp"></lib-table-grid>
-
   <div class="row mt-3">
     <div class="col-md-12 p-0">
       <div class="text-right my-2">
@@ -70,6 +63,13 @@
         <button *ngIf="showAll" mat-button (click)="accordion.closeAll(); showAll=!showAll" data-test-id="btnHideAllDashboard"><span class="text-muted">{{'Hide all' | translate}}</span> <mat-icon>expand_less</mat-icon></button>
       </div>
       <mat-accordion class="intel-accordion-con" multi data-test-id="matAccDashboard">
+
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsAppointment"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsPriority"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsAwaiting"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsInProgress"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsCompleted"></lib-table-grid>
+        <lib-table-grid [pluginConfigObs]="pluginConfigObsFollowUp"></lib-table-grid>
 
         <mat-expansion-panel [expanded]="true" data-test-id="matExpAppointment" *ngIf="pvs.appointment_button">
           <mat-expansion-panel-header data-test-id="matExpHeaderAppointment">

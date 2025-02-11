@@ -45,7 +45,7 @@
     "core-js": "^2.5.4",
     "date-fns": "^2.29.3",
     "html2pdf.js": "^0.10.1",
-    "ih-library": "github:Intelehealth/intelehealth-doctor-webapp-config-table-grid",
+    "ih-library": "github:Intelehealth/intelehealth-doctor-webapp-config-table-grid#main",
     "intl-tel-input": "^17.0.19",
     "jquery": "^3.5.1",
     "libphonenumber-js": "^1.10.18",

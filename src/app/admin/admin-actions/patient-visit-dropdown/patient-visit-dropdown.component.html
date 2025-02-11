@@ -1,0 +1,182 @@
+<div class="container-fluid">
+  <div class="row mt-3">
+    <div class="col-md-12 p-0">
+      <div class="card intel-card">
+        <div class="card-header">
+          <img
+            class="mr-2"
+            src="assets/svgs/patient_visit_dropdown.svg"
+            alt=""
+            height="44px"
+          />
+          <h6 class="mb-0">{{ "Patient Visit Dropdown" | translate }}</h6>
+          <div class="card-header-actions">
+            <button
+              type="button"
+              class="btn"
+              (click)="onPublish()"
+              data-test-id="btnAddMindmap"
+            >
+              {{ "Publish" | translate }}
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="mat-elevation-z8">
+            <mat-tab-group
+              class="patient-reg-tab-group"
+              (selectedIndexChange)="onTabChange($event)"
+              mat-align-tabs="start"
+              [disableRipple]="true"
+            >
+              <mat-tab label="{{ 'Advice' | translate }}"></mat-tab>
+              <!-- <mat-tab label="{{ 'Diagnosis' | translate }}"></mat-tab> -->
+              <mat-tab label="{{ 'Medicines' | translate }}"></mat-tab>
+              <mat-tab label="{{ 'Refer Specialisation' | translate }}"></mat-tab>
+              <mat-tab label="{{ 'Referral Facility' | translate }}"></mat-tab>
+              <mat-tab label="{{ 'Test' | translate }}"></mat-tab>
+             
+            </mat-tab-group>
+            <div class="d-flex flex-row-reverse">
+              <button
+                mat-button
+                class="sort-btn"
+                [matMenuTriggerFor]="sortMenu"
+              >
+                <img src="assets/svgs/sort.svg" alt="" height="24px" /><span
+                  >Sort</span
+                >
+              </button>
+              <mat-menu #sortMenu="matMenu">
+                <button
+                  class="sort-option"
+                  *ngFor="let sortOpt of sortOptions"
+                  mat-menu-item
+                  (click)="sortDataAndUpdate(sortOpt)"
+                >
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <span>{{ sortOpt.label }}</span
+                    ><span
+                      ><mat-icon
+                        *ngIf="sortOpt?.direction === 'asc'"
+                        class="sort-icon"
+                        >north</mat-icon
+                      ><mat-icon
+                        *ngIf="sortOpt?.direction === 'desc'"
+                        class="sort-icon"
+                        >south</mat-icon
+                      ></span
+                    >
+                  </div>
+                </button>
+                <button
+                  class="sort-option"
+                  mat-menu-item
+                  (click)="sortDataAndUpdate()"
+                >
+                  {{ "Reset" }}
+                </button>
+              </mat-menu>
+            </div>
+            <table mat-table [dataSource]="dataSource" matTableResponsive matSort>
+              <!-- Position Column -->
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>
+                  {{ "Sr. No." | translate }}
+                </th>
+                <td mat-cell *matCellDef="let element; let i = index">
+                  {{
+                    this.paginator?.pageIndex == 0
+                      ? i + 1
+                      : 1 +
+                        i +
+                        this.paginator?.pageIndex * this.paginator?.pageSize
+                  }}
+                </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  width="50%"
+                >
+                  {{ "Name" | translate }}
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  <div>
+                    {{ element.name }}
+                    <img
+                      *ngIf="element.is_locked"
+                      src="assets/svgs/icon-lock.svg"
+                      alt=""
+                    />
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Last Updated Column -->
+              <ng-container matColumnDef="updatedAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{ "Last Updated" | translate }}
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.updatedAt | date : "dd MMM, yyyy" }}
+                </td>
+              </ng-container>
+
+             <!-- Active Column -->
+            <ng-container matColumnDef="is_enabled">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "Active" | translate }}
+              </th>
+              <td mat-cell *matCellDef="let element">
+                <div class="pretty p-switch p-fill">
+                  <input
+                    type="checkbox"
+                    [checked]="element.is_enabled"
+                    (change)="updateStatus(element.id, $event.target.checked)"
+                    data-test-id="checkboxMindmapToggleStatus"
+                  />
+                  <div class="state">
+                    <label></label>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length" >
+                  {{ "No data to display." | translate }}
+                </td>
+              </tr>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row  *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+          <mat-paginator
+            hidePageSize
+            [pageSizeOptions]="[5, 10, 20]"
+            showFirstLastButtons
+            aria-label="Select page of periodic elements"
+          ></mat-paginator>
+          <button
+            type="button"
+            class="btn-block mt-3"
+            (click)="onPublish()"
+            data-test-id="btnAddMindmap"
+          >
+            {{ "Publish" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
