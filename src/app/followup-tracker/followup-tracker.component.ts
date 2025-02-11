@@ -75,25 +75,28 @@ export class FollowupTrackerComponent {
               visit.person.age = this.visitService.calculateAge(visit.person.birthdate);
               visit.followup_date = followUp_date;
               const visits = res.results;
-              let recentVisit = visits.filter(v => v.uuid !== visit.uuid);
-              if(recentVisit.length > 0) {
-                   if(recentVisit.length > 1) { 
-                    let fvisits = recentVisit.filter(v => (this.visitService.getCheifComplaint1(v)).includes("Follow up visit") ||
-                     (this.visitService.getCheifComplaint1(v)).includes("Follow Up") || (this.visitService.getCheifComplaint1(v)).includes("Follow-Up"));
-                   // let sortedVisits = fvisits.sort((a, b) => new Date(b.created_on) < new Date(a.created_on) ? -1 : 1);
-                   fvisits.length > 0 ? visit.patient_verdict =  this.visitService.getPatientVerdict(fvisits[0])
-                   :  visit.patient_verdict = null;
-                   } else {
-                     if(this.visitService.getCheifComplaint1(recentVisit[0]).includes("Follow up visit")
-                       || (this.visitService.getCheifComplaint1(recentVisit[0])).includes("Follow Up")
-                     || (this.visitService.getCheifComplaint1(recentVisit[0])).includes("Follow-Up")) {
-                        visit.patient_verdict =  this.visitService.getPatientVerdict(recentVisit[0]);
-                     } else {
-                        visit.patient_verdict = null;
+              let recentVisit = visits.filter(v => v.uuid !== visit.uuid &&
+                v.attributes.filter(a => a.attributeType.display === 'Visit Speciality')[0].value === 'General Physician'
+              );
+              if (recentVisit.length > 0) {
+                 let fvisits = recentVisit.filter(v => ((this.visitService.getCheifComplaint1(v)).includes("Follow up visit") ||
+                   (this.visitService.getCheifComplaint1(v)).includes("Follow Up") ||
+                    (this.visitService.getCheifComplaint1(v)).includes("Follow-Up")));
+                  if(fvisits.length > 0) {
+                    let nearestVisit = fvisits[0];
+                   let minDiff = Math.abs(new Date(visit.date_stopped).getTime() - new Date(nearestVisit.startDatetime).getTime());
+               
+                   for (const v of fvisits) {
+                     const diff = Math.abs(new Date(visit.date_stopped).getTime() - new Date(v.startDatetime).getTime());
+                     if (diff < minDiff) {
+                       minDiff = diff;
+                       nearestVisit = v;
                      }
-                
-                       }
-                } else {
+                   }
+                   visit.patient_verdict =  new Date(visit.date_stopped).getTime() < new Date(nearestVisit.startDatetime).getTime() ?
+                    this.visitService.getPatientVerdict(nearestVisit) : null;
+                  }
+              } else {
                 visit.patient_verdict = null;
               }
               this.doctorFollowUpVisits.push(visit);
