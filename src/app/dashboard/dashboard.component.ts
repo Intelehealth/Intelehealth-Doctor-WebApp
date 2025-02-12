@@ -156,6 +156,8 @@ export class DashboardComponent implements OnInit {
           if (visit.cheif_complaint.filter(f => f.includes('Follow')).length > 0) {
             if(!this.visitService.getPatientVerdict(visit).includes('Patient is feeling better')) {
               newfollowupVisits.push(visit);
+            } else {
+              this.closeFollowUpVisit(visit);
             }
           } else {
             this.awaitingVisits.push(visit);
@@ -221,6 +223,8 @@ export class DashboardComponent implements OnInit {
           if (visit.cheif_complaint.filter(f => f.includes('Follow')).length > 0) {
             if(!this.visitService.getPatientVerdict(visit).includes('Patient is feeling better')) {
               newfollowupVisits.push(visit);
+            } else {
+              this.closeFollowUpVisit(visit);
             }
           } else {
             this.priorityVisits.push(visit);
@@ -701,4 +705,12 @@ export class DashboardComponent implements OnInit {
     return this.fromDate && this.toDate ? new Date(this.fromDate).getTime() > new Date(this.toDate).getTime() : false;
   }
 
+  closeFollowUpVisit(visit) {
+    const myDate = new Date(Date.now() - 30000);
+    const json = {
+      stopDatetime: myDate,
+    };
+    this.visitService.closeVisit(visit.uuid, json).subscribe(() => {
+    });
+  }
 }

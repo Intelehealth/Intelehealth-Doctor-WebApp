@@ -1496,6 +1496,10 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
             followUpTime = (obs.value.includes('Time:')) ? obs.value.split(', Time: ')[1].split(', Remark: ')[0] : null;
             followUpReason = (obs.value.split(', Remark: ')[1]) ? obs.value.split(', Remark: ')[1] : null;
             wantFollowUp = 'Yes';
+          } else if(!obs?.value.includes('No')) {
+            followUpDate = moment(obs.value,'DD-MM-YYYY').format('YYYY-MM-DD');
+            followUpTime = '-'
+            wantFollowUp = 'Yes';
           } else {
             wantFollowUp = 'No';
           }

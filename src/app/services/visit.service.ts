@@ -252,6 +252,14 @@ export class VisitService {
     return this.http.get(`${this.baseURLMindmap}/openmrs/getLocations`);
   }
 
+  /**
+  * close Visit
+  * @return {Observable<any>}
+  */
+   closeVisit(visitId: string, json): Observable<any> {
+     let url = `${this.baseURL}/visit/${visitId}`;
+     return this.http.post(url, json)
+  }
 
   /**
    * Get followup date for a given encounter type
@@ -267,12 +275,15 @@ export class VisitService {
         if (display?.match(encounterName) !== null) {
           encounter.obs.forEach((obs) => {
             if (obs?.concept_id === 163345 && !obs?.value_text.includes('No')) {
-              followup_date = ((obs.value_text.includes('Time:')) ? moment(obs.value_text.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.value_text.split(', Remark: ')[0]).format('YYYY-MM-DD'))
-              .concat(', ',(obs.value_text.includes('Time:')) ? obs.value_text.split(', Time: ')[1].split(', Remark: ')[0] : null);
-            
+              if(obs.value_text.includes('Time:')) {
+                followup_date = ((obs.value_text.includes('Time:')) ? moment(obs.value_text.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.value_text.split(', Remark: ')[0]).format('YYYY-MM-DD'))
+                .concat(', ',(obs.value_text.includes('Time:')) ? obs.value_text.split(', Time: ')[1].split(', Remark: ')[0] : '-');
+              } else if(!obs?.value_text.includes('No')) {
+                followup_date = moment(obs.value_text,'DD-MM-YYYY').format('YYYY-MM-DD');
+              }
             } else if( obs?.display && obs?.display?.match("Follow up visit") !== null  && !obs?.display.includes('No')) {
               followup_date = ((obs.display.includes('Time:')) ? moment(obs.display.split(', Time: ')[0]).format('YYYY-MM-DD') : moment(obs.display.split(', Remark: ')[0]).format('YYYY-MM-DD'))
-              .concat(', ',(obs.display.includes('Time:')) ? obs.display.split(', Time: ')[1].split(', Remark: ')[0] : null);
+              .concat(', ',(obs.display.includes('Time:')) ? obs.display.split(', Time: ')[1].split(', Remark: ')[0] : '-');
             }
           });
         }
