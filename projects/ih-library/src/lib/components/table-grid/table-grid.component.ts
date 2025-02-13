@@ -634,6 +634,40 @@ export class TableGridComponent implements OnInit {
           visit.TMH_patient_id = this.getAttributeData(visit, "TMH Case Number");
           this.inProgressVisits.push(visit);
         }
+        this.inProgressVisits.sort((a, b) => {
+            const parseTime = (value: string) => {
+                if (value.includes("minutes ago")) {
+                    return { type: "minutes", time: parseInt(value) }; // Store only numeric minutes
+                }
+                if (value.includes("Hours ago")) {
+                    return { type: "hours", time: parseInt(value) * 60 }; // Convert hours to minutes for correct comparison
+                }
+                return { type: "date", time: moment(value, "DD MMM, YYYY").valueOf() };
+            };
+
+            const visitA = parseTime(a.prescription_started);
+            const visitB = parseTime(b.prescription_started);
+            // Sort minutes first (ascending)
+            if (visitA.type === "minutes" && visitB.type === "minutes") {
+                return visitA.time - visitB.time;
+            }
+            // Sort hours first (ascending)
+            if (visitA.type === "hours" && visitB.type === "hours") {
+                return visitA.time - visitB.time;
+            }
+            // Sort dates (descending)
+            if (visitA.type === "date" && visitB.type === "date") {
+                return visitB.time - visitA.time;
+            }
+            // Prioritize minutes over hours, and hours over dates
+            if (visitA.type === "minutes") return -1;
+            if (visitB.type === "minutes") return 1;
+            if (visitA.type === "hours") return -1;
+            if (visitB.type === "hours") return 1;
+
+            return 0;
+        });
+
         this.dataSource.data = [...this.inProgressVisits];
         if (page == 1) {
           this.dataSource.paginator = this.tempPaginator;
