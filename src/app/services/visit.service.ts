@@ -401,4 +401,38 @@ export class VisitService {
     return `${feet} ft ${inches} in`;
   }
 
+  /**
+  * Get age of patient from birthdate
+  * @param {string} birthdate - Birthdate
+  * @return {string} - Age
+  */
+  getAge(birthdate1: string): string {
+    const birthDate = new Date(birthdate1);
+    const today = new Date();
+  
+    let years = today.getFullYear() - birthDate.getFullYear();
+    let months = today.getMonth() - birthDate.getMonth();
+    let days = today.getDate() - birthDate.getDate();
+  
+    if (days < 0) {
+      months -= 1;
+      const lastMonthDays = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+      days += lastMonthDays;
+    }
+  
+    if (months < 0) {
+      years -= 1;
+      months += 12;
+    }
+  
+    if (years >= 1 && months >= 1) {
+      return `${years} years ${months} months`;
+    } else if (years >= 1) {
+      return `${years} years`;
+    } else if (months >= 1 || days > 0) {
+      return `${months} months ${days} days`;
+    } else {
+      return `0 months 0 days`;
+    }
+  }
   }
