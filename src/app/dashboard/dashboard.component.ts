@@ -60,8 +60,8 @@ export class DashboardComponent implements OnInit {
   pluginConfigObsAwaiting: any = {
     anchorId: "anchor-awaiting",
     pluginConfigObsFlag: "Awaiting",
-    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
-    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    baseURL: environment.baseURL  ,
+    mindmapURL: environment.mindmapURL,
     tableHeader: "Awaiting visits",
     tooltipLabel: "General uploaded visits",
     searchPlaceHolder: "Search Awaiting Visits",
@@ -132,8 +132,8 @@ export class DashboardComponent implements OnInit {
   pluginConfigObsPriority: any = {
     anchorId: "anchor-priority",
     pluginConfigObsFlag: "Priority",
-    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
-    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    baseURL: environment.baseURL,
+    mindmapURL: environment.mindmapURL,
     tableHeader: "Priority visits",
     tooltipLabel: "High priority visit",
     searchPlaceHolder: "Search Priority Visits",
@@ -192,8 +192,8 @@ export class DashboardComponent implements OnInit {
   pluginConfigObsCompleted: any = {
     anchorId: "anchor-completed",
     pluginConfigObsFlag: "Completed",
-    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
-    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    baseURL: environment.baseURL,
+    mindmapURL: environment.mindmapURL,
     tableHeader: "Completed visits",
     tooltipLabel: "Ended visits after prescription",
     searchPlaceHolder: "Search Completed Visits",
@@ -259,8 +259,8 @@ export class DashboardComponent implements OnInit {
   pluginConfigObsFollowUp: any = {
     anchorId: "anchor-follow up",
     pluginConfigObsFlag: "FollowUp",
-    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
-    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    baseURL: environment.baseURL,
+    mindmapURL: environment.mindmapURL,
     tableHeader: "Follow up visits",
     tooltipLabel: "Ended visits after prescription",
     searchPlaceHolder: "Search Follow Up Visits",
@@ -315,8 +315,8 @@ export class DashboardComponent implements OnInit {
   pluginConfigObsAppointment: any = {
     anchorId: "anchor-appointment",
     pluginConfigObsFlag: "Appointment",
-    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
-    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    baseURL: environment.baseURL,
+    mindmapURL: environment.mindmapURL,
     tableHeader: "Appointments",
     tooltipLabel: "Scheduled appointments",
     searchPlaceHolder: "Search Appointments",
@@ -402,8 +402,8 @@ export class DashboardComponent implements OnInit {
   pluginConfigObsInProgress: any = {
     anchorId: "anchor-inprogress",
     pluginConfigObsFlag: "InProgress",
-    baseURL: "https://dev.intelehealth.org/openmrs/ws/rest/v1",
-    mindmapURL: "https://dev.intelehealth.org:3004/api",
+    baseURL: environment.baseURL,
+    mindmapURL: environment.mindmapURL,
     tableHeader: "In-progress visits",
     tooltipLabel: "Visits going through the consultation",
     searchPlaceHolder: "Search In-progress Visits",
@@ -874,6 +874,43 @@ export class DashboardComponent implements OnInit {
           visit.TMH_patient_id = this.getAttributeData(visit, "TMH Case Number");
           this.inProgressVisits.push(visit);
         }
+         // **Sort by prescription_started in descending order**
+            
+         this.inProgressVisits.sort((a, b) => {
+          const parseTime = (value: string) => {
+              if (value.includes("minutes ago")) {
+                  return { type: "minutes", time: moment().subtract(parseInt(value), "minutes").valueOf() };
+              }
+              if (value.includes("Hours ago")) {
+                  return { type: "hours", time: moment().subtract(parseInt(value), "hours").valueOf() };
+              }
+              return { type: "date", time: moment(value, "DD MMM, YYYY").valueOf() };
+          };
+      
+          const visitA = parseTime(a.prescription_started);
+          const visitB = parseTime(b.prescription_started);
+      
+          // Sort minutes first (ascending), then hours (ascending), then dates (descending)
+          if (visitA.type === "minutes" && visitB.type === "minutes") {
+              return visitA.time - visitB.time; // Ascending order for minutes
+          }
+          if (visitA.type === "hours" && visitB.type === "hours") {
+              return visitA.time - visitB.time; // Ascending order for hours
+          }
+          if (visitA.type === "date" && visitB.type === "date") {
+              return visitB.time - visitA.time; // Descending order for dates
+          }
+      
+          // Ensure minutes appear before hours, and hours before dates
+          if (visitA.type === "minutes") return -1;
+          if (visitB.type === "minutes") return 1;
+          if (visitA.type === "hours") return -1;
+          if (visitB.type === "hours") return 1;
+          
+          return 0;
+      });      
+
+    
         this.dataSource4.data = [...this.inProgressVisits];
         if (page == 1) {
           this.dataSource4.paginator = this.tempPaginator3;

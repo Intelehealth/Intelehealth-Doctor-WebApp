@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import { AppointmentService } from 'src/app/services/appointment.service';
 import { DiagnosisService } from 'src/app/services/diagnosis.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CoreService } from 'src/app/services/core/core.service';
 import { EncounterService } from 'src/app/services/encounter.service';
@@ -151,15 +151,15 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   hasPatientAddressEnabled: boolean = false;
   hasPatientOtherEnabled: boolean = false;
 
-  collapsed: boolean = true;
+  collapsed: boolean = false;
   isMCCUser: boolean = false;
   brandName = environment.brandName === 'KCDO';
   diagnosticList;
   sanitizedValue: SafeHtml;
 
   isCallInProgress: boolean = false;
-  callTimerInterval: Subscription; 
-  callDuration: number = 0; 
+  callTimerInterval: Subscription;
+  callDuration: number = 0;
   arrCallDurations: any[] = [];
   callDurationTimeStamp: number;
   callDurationsUuid: string;
@@ -592,23 +592,23 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
- /**
- * Validates the format of a unit string.
- * @param {string} unit - The unit string.
- * @return {boolean} - True if valid, false otherwise.
- */
+  /**
+  * Validates the format of a unit string.
+  * @param {string} unit - The unit string.
+  * @return {boolean} - True if valid, false otherwise.
+  */
   isValidUnitFormat(unit: string): boolean {
     const unitRegex = /(?:^|\s)\d+(\.\d+)?\s*(g\/dL|%|million\/µL|mg\/dL|U\/L|seconds?|cells\/µL|\/µL|fL|pg\/cell|mL\/min\/1.73\s*m²|mEq\/L|ng\/mL)(?:\s|$)/i;
     return unitRegex.test(unit);
   }
 
- /**
- * Checks if the value and unit are valid for a diagnostic unit.
- * @param {DiagnosticUnit[]} diagnosticsUnit - List of diagnostic units.
- * @param {string} value - The value and unit to check.
- * @param {string[]} valueArray - Additional values (last item is the test name).
- * @return {boolean} - True if valid, false otherwise.
- */
+  /**
+  * Checks if the value and unit are valid for a diagnostic unit.
+  * @param {DiagnosticUnit[]} diagnosticsUnit - List of diagnostic units.
+  * @param {string} value - The value and unit to check.
+  * @param {string[]} valueArray - Additional values (last item is the test name).
+  * @return {boolean} - True if valid, false otherwise.
+  */
   checkTestUnitValues(diagnosticsUnit: DiagnosticUnit[], value: string, valueArray: string[]): boolean {
     const popValue = valueArray.slice(-1)[0];
     let [unitCount, unitType] = value.split(" ");
@@ -625,14 +625,14 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       }
     }
     return false;
-  }  
+  }
 
- /**
- * Checks if a test name exists in the list of diagnostic names.
- * @param {DiagnosticName[]} diagnosticsName - List of diagnostic names.
- * @param {string} value - The test name to check.
- * @return {boolean} - True if found, false otherwise.
- */
+  /**
+  * Checks if a test name exists in the list of diagnostic names.
+  * @param {DiagnosticName[]} diagnosticsName - List of diagnostic names.
+  * @param {string} value - The test name to check.
+  * @return {boolean} - True if found, false otherwise.
+  */
   checkTestNameValues(diagnosticsName: DiagnosticName[], value: string): boolean {
     for (let name = 0; name < diagnosticsName.length; name++) {
       if (diagnosticsName[name]?.testName?.toLowerCase() === value?.toLowerCase()){
@@ -1176,20 +1176,39 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   */
   searchDiagnosis(val: string): void {
     if (val && val.length >= 3) {
-      this.diagnosisService.getDiagnosisList(val).subscribe(response => {
-        if (response.results && response.results.length) {
-          const data = [];
-          response.results.forEach((element: { display: any; }) => {
-            if (element) {
-              data.push({ name: element.display });
+      this.diagnosisService.getDiagnosisList(val, isFeaturePresent("snomedCtDiagnosis") ? 'SNOMED' : 'ICD10').subscribe({
+        next: (response) => {
+          if (response.results && response.results.length) {
+            const data = [];
+            response.results.forEach((element: { name: any, mappings: any }) => {
+              if (element) {
+                data.push({ name: element?.name?.display, snomedId: element?.mappings?.[0] });
+              }
+            });
+            this.diagnosisSubject.next(data);
+          } else {
+            if (isFeaturePresent("snomedCtDiagnosis")) {
+              this.diagnosisService.getSnomedDiagnosisList(val).subscribe({
+                next: (res) => {
+                  if (res && res.result) {
+                    const data = res?.result.map((element: { term: string, conceptId: string }) => ({ name: element.term, conceptId: element?.conceptId }));
+                    this.diagnosisSubject.next(data);
+                  } else {
+                    this.diagnosisSubject.next([]);
+                  }
+                },
+                error: () => {
+                  this.diagnosisSubject.next([]);
+                }
+              });
+            } else {
+              this.diagnosisSubject.next([]);
             }
-          });
-          this.diagnosisSubject.next(data);
-        } else {
+          }
+        },
+        error: () => {
           this.diagnosisSubject.next([]);
         }
-      }, (error) => {
-        this.diagnosisSubject.next([]);
       });
     }
   }
@@ -1200,7 +1219,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   */
   saveDiagnosis(): void {
     if (this.diagnosisForm.invalid || !this.isVisitNoteProvider) {
-      return;
+      return; 
     }
     if (this.existingDiagnosis.find(o => o.diagnosisName.toLocaleLowerCase() === this.diagnosisForm.value.diagnosisName.toLocaleLowerCase())) {
       this.toastr.warning(this.translateService.instant('Diagnosis Already Exist'), this.translateService.instant('Duplicate Diagnosis'));
@@ -1211,7 +1230,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       concept: conceptIds.conceptDiagnosis,
       person: this.visit.patient.uuid,
       obsDatetime: new Date(),
-      value: `${diagnosisName}:${this.diagnosisForm.value.diagnosisType} & ${this.diagnosisForm.value.diagnosisStatus} & ${this.diagnosisForm.value.diagnosisTNMStaging}`,
+      value: `${this.diagnosisCode?.value ? this.diagnosisCode?.value : 'NA'}::${diagnosisName}:${this.diagnosisForm.value.diagnosisType} & ${this.diagnosisForm.value.diagnosisStatus} & ${this.diagnosisForm.value.diagnosisTNMStaging}`,
       encounter: this.visitNotePresent.uuid
     }).subscribe((res: ObsModel) => {
       if (res) {
@@ -1219,6 +1238,36 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
         this.diagnosisForm.reset();
       }
     });
+
+    if (this.diagnosisForm?.value?.isSnomed && isFeaturePresent("snomedCtDiagnosis")) {
+      this.diagnosisService.addSnomedDiagnosis(this.diagnosisForm.value.diagnosisName, this.diagnosisForm.value.diagnosisCode)
+        .subscribe({
+          next: (res) => {
+            if (res) {
+              this.diagnosisForm.reset();
+            }
+          }
+        });
+    }
+  }
+
+  get diagnosisCode(): AbstractControl | null {
+    return this.diagnosisForm.get('diagnosisCode');
+  }
+
+  onDiagnosisChange(event: any): void {
+    if (isFeaturePresent("snomedCtDiagnosis")) {
+      if (event.conceptId) {
+        this.diagnosisForm.addControl('diagnosisCode', new FormControl(null));
+        this.diagnosisForm.addControl('isSnomed', new FormControl(null));
+        this.diagnosisForm.patchValue({ diagnosisCode: event.conceptId });
+        this.diagnosisForm.patchValue({ isSnomed: true });
+      }
+      else if (event.snomedId) {
+        this.diagnosisForm.addControl('diagnosisCode', new FormControl(null));
+        this.diagnosisForm.patchValue({ diagnosisCode: event.snomedId?.display.split(': ')[1] });
+      }
+    }
   }
 
   /**
@@ -1585,7 +1634,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
             followUpReason = remark ? remark : null;
             followUpType = type && type !== 'null' ? type : null;
             wantFollowUp = 'Yes';
-          } 
+          }
           this.followUpDatetime = obs.value;
           this.followUpForm.patchValue({
             present: true,
@@ -1652,7 +1701,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       this.toastr.warning(this.translateService.instant('Diagnosis not added'), this.translateService.instant('Diagnosis Required'));
       return false;
     }
-    if (!this.followUpForm.value.present) {
+    if (this.isFeatureAvailable('visitFollowUp') && !this.followUpForm.value.present) {
       this.toastr.warning(this.translateService.instant('Follow-up not added'), this.translateService.instant('Follow-up Required'));
       return false;
     }
@@ -2012,10 +2061,10 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     if(this.isFeatureAvailable('callDuration') && this.isVisitNoteProvider){
       if(isScroll) document.getElementById('patientInteractionFormTemplate').scrollIntoView({behavior: 'smooth'})
       if(!this.isCallInProgress){
-          this.isCallInProgress = true;
-          this.callDurationTimeStamp = Date.now()
+        this.isCallInProgress = true;
+        this.callDurationTimeStamp = Date.now()
           this.callTimerInterval = interval(1000).subscribe(val=>{
-            this.callDuration = val;
+          this.callDuration = val;
         })
       }
     }
@@ -2031,8 +2080,8 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     attributes.forEach((attr: VisitAttributeModel) => {
       if (attr.attributeType.uuid === visitAttributeTypes.patientCallDuration && attr.value) {
         this.arrCallDurations = JSON.parse(attr.value);
-        this.callDuration = this.arrCallDurations?.slice(-1).pop()?.callDuration   
-        this.callDurationsUuid = attr.uuid    
+        this.callDuration = this.arrCallDurations?.slice(-1).pop()?.callDuration
+        this.callDurationsUuid = attr.uuid
       }
     });
   }

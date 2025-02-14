@@ -260,6 +260,7 @@ export interface CustomVisitModel {
     uuid?: string
     person_attribute?: any[]
   }
+  prescription_started?:any
 }
 
 export interface CustomEncounterModel {

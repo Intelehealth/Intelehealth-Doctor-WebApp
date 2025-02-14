@@ -558,7 +558,7 @@
           <div class="data-section">
             <div class="data-section-title">
               <img src="assets/svgs/test.svg" alt="" />
-              <h6>{{'Doctor\'s Recommendation'|translate}}</h6>
+              <h6>{{'Recommendation'|translate}}</h6>
             </div>
             <div class="data-section-content pt-3">
               <ng-template *ngTemplateOutlet="tplDrRcom"></ng-template>
@@ -575,7 +575,7 @@
             <div class="data-section">
               <div class="data-section-title">
                 <img src="assets/svgs/medication.svg" alt="" />
-                <h6>{{'Medications Advised'|translate}}</h6>
+                <h6>{{'Medications'|translate}}</h6>
               </div>
               <div class="data-section-content">
                 <div class="table-responsive">
@@ -634,7 +634,7 @@
             <div class="data-section">
               <div class="data-section-title">
                 <img src="assets/svgs/test.svg" alt="" />
-                <h6>{{'Investigations Advised'|translate}}</h6>
+                <h6>{{'Investigations'|translate}}</h6>
               </div>
               <div class="data-section-content">
                 <ul *ngIf="tests?.length; else noTests" class="items-list">
@@ -656,78 +656,76 @@
               </div>
             </div>
           </div>
-  
-          <div class="col-md-12 px-3 mb-3">
+          <div class="col-md-12 px-3 mb-3" *ngIf="isFeatureAvailable('follow-up-instruction')">
             <div class="data-section">
               <div class="data-section-title">
-                <img src="assets/svgs/referral.svg" alt="" />
-                <h6>{{'Referral Advise'|translate}}</h6>
+                <img src="assets/svgs/test.svg" alt="" />
+                <h6>{{'Follow Up'|translate}}</h6>
               </div>
               <div class="data-section-content">
-                <div class="table-responsive">
-  
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th scope="col">{{'Referral to'|translate}}</th>
-                        <th scope="col" *ngIf="isFeatureAvailable('referralFacility', true)">{{'Referral facility'|translate}}</th>
-                        <th scope="col" *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{'Priority of Referral'|translate}}</th>
-                        <th scope="col">{{'Referral for (Reason)'|translate}}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <ng-container *ngIf="referrals.length; else noReferrals">
-                        <tr *ngFor="let r of referrals; let i = index">
-                          <td>{{ r.speciality }}</td>
-                          <td *ngIf="isFeatureAvailable('referralFacility', true)">{{ r.facility }}</td>
-                          <td *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{ r.priority }}</td>
-                          <td>{{ r.reason }}</td>
-                        </tr>
-                      </ng-container>
-                      <ng-template #noReferrals>
-                        <tr>
-                          <td colspan="4" class="text-center">
-                            {{'No referrals added'|translate}}
-                          </td>
-                        </tr>
-                      </ng-template>
-                    </tbody>
-                  </table>
-                </div>
+                <ul *ngIf="followUpInstructions?.length; else noTests" class="items-list">
+                  <li *ngFor="let t of followUpInstructions">
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      <span>{{ t.value }}</span>
+                    </div>
+                  </li>
+                </ul>
+                <ng-template #noTests>
+                  <tr>
+                    <td colspan="5" class="text-center">
+                    {{'No Follow Up Instructions added' | translate}}
+                    </td>
+                  </tr>
+                </ng-template>
               </div>
             </div>
           </div>
         </ng-template>
 
-        
-
-        <div class="col-md-12 px-3 mb-3" *ngIf="isFeatureAvailable('follow-up-instruction')">
+        <div class="col-md-12 px-3 mb-3">
           <div class="data-section">
             <div class="data-section-title">
-              <img src="assets/svgs/test.svg" alt="" />
-              <h6>{{'Follow Up Instructions'|translate}}</h6>
+              <img src="assets/svgs/referral.svg" alt="" />
+              <h6>{{'Referral Advise'|translate}}</h6>
             </div>
             <div class="data-section-content">
-              <ul *ngIf="followUpInstructions?.length; else noTests" class="items-list">
-                <li *ngFor="let t of followUpInstructions">
-                  <div
-                    class="d-flex justify-content-between align-items-center"
-                  >
-                    <span>{{ t.value }}</span>
-                  </div>
-                </li>
-              </ul>
-              <ng-template #noTests>
-                <tr>
-                  <td colspan="5" class="text-center">
-                   {{'No Follow Up Instructions added' | translate}}
-                  </td>
-                </tr>
-              </ng-template>
+              <div class="table-responsive">
+
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">{{'Referral to'|translate}}</th>
+                      <th scope="col" *ngIf="isFeatureAvailable('referralFacility', true)">{{'Referral facility'|translate}}</th>
+                      <th scope="col" *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{'Priority of Referral'|translate}}</th>
+                      <th scope="col">{{'Referral for (Reason)'|translate}}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngIf="referrals.length; else noReferrals">
+                      <tr *ngFor="let r of referrals; let i = index">
+                        <td>{{ r.speciality }}</td>
+                        <td *ngIf="isFeatureAvailable('referralFacility', true)">{{ r.facility }}</td>
+                        <td *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{ r.priority }}</td>
+                        <td>{{ r.reason }}</td>
+                      </tr>
+                    </ng-container>
+                    <ng-template #noReferrals>
+                      <tr>
+                        <td colspan="4" class="text-center">
+                          {{'No referrals added'|translate}}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-md-12 px-3 mb-3">
+
+        <div class="col-md-12 px-3 mb-3" *ngIf="isFeatureAvailable('visitFollowUp')">
           <div class="data-section">
             <div class="data-section-title">
               <img src="assets/svgs/follow-up.svg" alt="" />

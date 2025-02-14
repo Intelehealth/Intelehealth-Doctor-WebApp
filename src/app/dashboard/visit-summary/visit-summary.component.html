@@ -71,6 +71,13 @@
               </div>
             </div>
 
+            <div class="col-md-2 patient-info-section p-3" *ngIf="checkPatientRegField('Request ID') && getPersonAttributeValue('Request ID') !== 'NA'">
+              <div class="patient-info-item mb-3">
+                <h6 data-test-id="etPatient">{{'Request ID' | translate}}</h6>
+                <p data-test-id="etPatient">{{ getPersonAttributeValue('Request ID') }}</p>
+              </div>
+            </div>
+
             <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Phone Number') && getPersonAttributeValue('Telephone Number') !== 'NA'">
               <div class="patient-info-item">
                 <h6 data-test-id="etPatient">{{'Phone Number'| translate}}</h6>
@@ -142,7 +149,7 @@
             </div>
           </div>
 
-          <button (click)="collapsedButton()" class="btn">
+          <button (click)="collapsedButton()" class="btn" *ngIf="hasPatientAddressEnabled || hasPatientOtherEnabled">
             <img [src]="getUrl()" alt="">
           </button>
 
@@ -267,13 +274,6 @@
                     <p data-test-id="etPatient">{{ getPersonAttributeValue('TMH Case Number') }}</p>
                   </div>
                 </div> -->
-
-                <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Request ID') && getPersonAttributeValue('Request ID') !== 'NA'">
-                  <div class="patient-info-item mb-3">
-                    <h6 data-test-id="etPatient">{{'Request ID' | translate}}</h6>
-                    <p data-test-id="etPatient">{{ getPersonAttributeValue('Request ID') }}</p>
-                  </div>
-                </div>
 
                 <div class="col-md-3 patient-info-section p-3" *ngIf="checkPatientRegField('Discipline') && getPersonAttributeValue('Discipline') !== 'NA'">
                   <div class="patient-info-item mb-3">
@@ -878,7 +878,7 @@
       </div>
     </div>
 
-    <div class="col-md-12 p-0 mb-5" *ngIf="selectedTabIndex == 0">
+    <div class="col-md-12 p-0 mb-5" *ngIf="selectedTabIndex == 0 && isFeatureAvailable('visitHistoryNote')" >
       <div class="intel-card">
         <div class="card-body">
           <p class="note-con">
@@ -1001,8 +1001,7 @@
                   </li>
                   <li *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction">
                     <div class="row">
-                      <label class="col-sm-3 col-form-label" *ngIf="!brandName">{{'Have you spoken with the healthcare worker directly?'|translate}}*</label>
-                      <label class="col-sm-3 col-form-label" *ngIf="brandName">{{'Have you spoken with the patient directly?'|translate}}*</label>
+                      <label class="col-sm-3 col-form-label">{{'Have you spoken with the healthcare worker directly?'|translate}}*</label>
                       <div class="col-sm-9 d-flex align-items-center">
                         <div class="pretty p-default p-round">
                           <input
@@ -1030,7 +1029,7 @@
                     </div>
                   </li>
                 </ul>
-                <div *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction && !isMCCUser" class="form-group">
+                <div *ngIf="!patientInteractionForm.value.hwPresent && appConfigService?.patient_visit_summary?.hw_interaction && !isMCCUser" class="form-group" style="display: none;">
                   <label for="note"
                     ><b>{{'Comment'|translate}}&nbsp;</b>
                     </label
@@ -1081,7 +1080,7 @@
                           <button
                             type="button"
                             mat-icon-button
-                            class="float-right"
+                            class="float-right"     
                             *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
                             (click)="deleteHWInteraction()"
                             data-test-id="btnDeleteHWtInteraction"
@@ -1098,7 +1097,7 @@
                   {{ "Patient Interaction not present" | translate }}
                 </div>
               </form>
-            </mat-expansion-panel>
+            </mat-expansion-panel>  
 
             <mat-expansion-panel
               [expanded]="true"
@@ -1188,6 +1187,7 @@
                             class="visit-select custom"
                             formControlName="diagnosisName"
                             (search)="onKeyUp($event)"
+                            (change)="onDiagnosisChange($event)"
                             [items]="diagnosis$ | async"
                             bindLabel="name"
                             bindValue="name"
@@ -1308,7 +1308,7 @@
             </mat-expansion-panel>  
 
             <app-notes [title]="'Note'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded" [visit]="visit"
-              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser"></app-notes>
+              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser" *ngIf="isFeatureAvailable('visitNotes')"></app-notes>
 
             <mat-expansion-panel
               [expanded]="true"
@@ -1409,7 +1409,7 @@
                 <mat-panel-title>
                   <div class="intel-accordion-title">
                     <img src="assets/svgs/advice.svg" alt="" width="44px" />
-                    <h6 class="mb-0 ml-2">{{'Doctor\'s Recommendation'| translate}}</h6>
+                    <h6 class="mb-0 ml-2">{{'Recommendation'| translate}}</h6>
                   </div>
                 </mat-panel-title>
                 <mat-icon>{{ panelDoctorRcom.expanded ? "remove" : "add" }}</mat-icon>
@@ -1435,7 +1435,7 @@
                   <mat-panel-title>
                     <div class="intel-accordion-title">
                       <img src="assets/svgs/medication.svg" alt="" width="44px" />
-                      <h6 class="mb-0 ml-2">{{'Medications Advised'|translate}}</h6>
+                      <h6 class="mb-0 ml-2">{{'Medications'|translate}}</h6>
                     </div>
                   </mat-panel-title>
                   <mat-icon>{{ panel4.expanded ? "remove" : "add" }}</mat-icon>
@@ -1689,7 +1689,7 @@
                     <mat-panel-title>
                       <div class="intel-accordion-title">
                         <img src="assets/svgs/test.svg" alt="" width="44px" />
-                        <h6 class="mb-0 ml-2">{{'Investigations Advised'|translate}}</h6>
+                        <h6 class="mb-0 ml-2">{{'Investigations'|translate}}</h6>
                       </div>
                     </mat-panel-title>
                     <mat-icon>{{ panel6.expanded ? "remove" : "add" }}</mat-icon>
@@ -1766,190 +1766,193 @@
                   </ng-container>
                 </mat-expansion-panel>
 
-                <mat-expansion-panel
-                  [expanded]="true"
-                  #panel7
-                  hideToggle
-                  class="overflow-show"
-                >
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <div class="intel-accordion-title">
-                        <img src="assets/svgs/referral.svg" alt="" width="44px" />
-                        <h6 class="mb-0 ml-2">{{'Referral Advise'|translate}}</h6>
-                        <mat-icon aria-hidden="false" class="info-icon" aria-label="help icon" matTooltip="{{'Use this if you wish to seek a second opinion from an external facility.' | translate}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
-                      </div>
-                    </mat-panel-title>
-                    <mat-icon>{{ panel7.expanded ? "remove" : "add" }}</mat-icon>
-                  </mat-expansion-panel-header>
-
-                  <form [formGroup]="addReferralForm" (ngSubmit)="addReferral()">
-                    <div class="table-responsive medication-con">
-                      <table class="table" aria-describedby="">
-                        <thead>
-                          <tr>
-                            <th scope="col">{{'Referral to' | translate}}</th>
-                            <th scope="col" *ngIf="isFeatureAvailable('referralFacility', true)">{{'Referral facility'|translate}}</th>
-                            <th scope="col" *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{'Priority of Referral'|translate}}</th>
-                            <th scope="col">{{'Remarks'|translate}}</th>
-                            <th scope="col"></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <ng-container *ngIf="referrals.length else noReferrals">
-                            <tr *ngFor="let r of referrals; let i = index">
-                              <td>{{ (r.speciality) | translate }}</td>
-                              <td *ngIf="isFeatureAvailable('referralFacility', true)">{{ (r.facility) | translate }}</td>
-                              <td *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{ (r.priority) | translate }}</td>
-                              <td>{{ r.reason }}</td>
-                              <td class="pr-0">
-                                <button
-                                  type="button"
-                                  class="float-right"
-                                  mat-icon-button
-                                  (click)="deleteReferral(i, r.uuid)"
-                                  data-test-id="{{'btnDeleteReferralVisitSummary'+i}}"
-                                  *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
-                                >
-                                  <img src="assets/svgs/delete-icon.svg" alt="" />
-                                </button>
-                              </td>
-                            </tr>
-                          </ng-container>
-                          <ng-template #noReferrals>
-                            <tr *ngIf="isMCCUser">
-                              <td colspan="6" class="text-center font-weight-bold">
-                                {{'No referrals added!'|translate}}
-                              </td>
-                            </tr>
-                          </ng-template>
-                          <ng-container *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded">
-                            <tr *ngIf="addMoreReferral">
-                              <td colspan="6" class="px-0">
-                                <div class="form-group mb-0">
-                                  <button
-                                    type="button"
-                                    class="add-more-btn"
-                                    (click)="toggleReferral()"
-                                    data-test-id="btnAddMoreReferralVisitSummary"
-                                  >
-                                    <img src="assets/svgs/plus-circle.svg" alt="" />
-                                    <span class="ml-2">{{'Add more Referral'|translate}}</span>
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr *ngIf="!addMoreReferral && !isMCCUser">
-                              <td>
-                                <div class="form-group mb-0">
-                                  <ng-select
-                                    appendTo=".visit-summary-tab-group"
-                                    class="visit-select"
-                                    formControlName="speciality"
-                                    bindLabel="label"
-                                    bindValue="label"
-                                    [clearable]="false"
-                                    [searchable]="true"
-                                    [addTag]="true"
-                                    placeholder="{{'Select specialization'|translate}}*"
-                                    data-test-id="selectReferralSpecialityVisitSummary"
-                                  >
-                                  <ng-option *ngFor="let specialization of refer_specializations" [value]="specialization.name">
-                                    {{ (specialization.name) |translate }}
-                                  </ng-option>
-                                  </ng-select>
-                                </div>
-                              </td>
-                              <td *ngIf="isFeatureAvailable('referralFacility', true)"> 
-                                <div class="form-group mb-0">
-                                  <ng-select
-                                    class="visit-select"
-                                    appendTo=".visit-summary-tab-group"
-                                    formControlName="facility"
-                                    bindLabel="label"
-                                    bindValue="label"
-                                    [clearable]="false"
-                                    [searchable]="true"
-                                    [addTag]="true"
-                                    placeholder="{{'Select facility'|translate}}*"
-                                    data-test-id="selectReferralFacilityVisitSummary"
-                                  >
-                                  <ng-option *ngFor="let facility of facilities" [value]="facility.name">
-                                    {{ (facility.name) |translate }}
-                                  </ng-option>
-                                  </ng-select>
-                                </div>
-                              </td>
-                              <td *ngIf="isFeatureAvailable('priorityOfReferral', true)">
-                                <div class="form-group mb-0">
-                                  <ng-select
-                                    class="visit-select"
-                                    appendTo=".visit-summary-tab-group"
-                                    formControlName="priority_refer"
-                                    [clearable]="false"
-                                    bindLabel="name"
-                                    bindValue="name"
-                                    [searchable]="false"
-                                    [addTag]="false"
-                                    placeholder="{{'Select Priority'|translate}}*"
-                                    data-test-id="selectReferralFacilityVisitSummary"
-                                  >
-                                  <ng-option *ngFor="let ref_priority of refer_priorities" [value]="ref_priority.name">
-                                    {{ (ref_priority.name) | translate }}
-                                  </ng-option>
-                                  </ng-select>
-                                </div>
-                              </td>
-                              <td colspan="2">
-                                <div class="form-group mb-0">
-                                  <input
-                                    formControlName="reason"
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="{{'Enter remarks'|translate}}"
-                                    data-test-id="etReferralPriorityVisitSummary"
-                                  />
-                                </div>
-                              </td>
-                            </tr>
-                            <tr *ngIf="!addMoreReferral && !isMCCUser">
-                              <td colspan="6" class="border-top-0">
-                                <div class="form-group mb-0 float-right">
-                                  <button
-                                    type="button"
-                                    class="white-btn mr-2"
-                                    (click)="toggleReferral()"
-                                    data-test-id="btnCancelReferralVisitSummary"
-                                  >
-                                    {{'Cancel'|translate}}
-                                  </button>
-                                  <button
-                                    type="submit"
-                                    class="gray-btn"
-                                    [disabled]="addReferralForm.invalid"
-                                    data-test-id="btnSubmitReferralVisitSummary"
-                                  >
-                                    {{'Add'|translate}}
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          </ng-container>
-                        </tbody>
-                      </table>
-                    </div>
-                  </form>
-                </mat-expansion-panel>            
+                <app-follow-up-instruction [title]="'Follow up'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded" [visit]="visit"
+              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser" *ngIf="isFeatureAvailable('follow-up-instruction')">
+                </app-follow-up-instruction>    
             </ng-template>
 
-            <app-follow-up-instruction [title]="'Follow up Instructions'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded" [visit]="visit"
-              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser" *ngIf="isFeatureAvailable('follow-up-instruction')"></app-follow-up-instruction>
+            
+            <mat-expansion-panel
+              [expanded]="true"
+              #panel7
+              hideToggle
+              class="overflow-show"
+            >
+            
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <div class="intel-accordion-title">
+                    <img src="assets/svgs/referral.svg" alt="" width="44px" />
+                    <h6 class="mb-0 ml-2">{{'Referral Advise'|translate}}</h6>
+                    <mat-icon aria-hidden="false" class="info-icon" aria-label="help icon" matTooltip="{{'Use this if you wish to seek a second opinion from an external facility.' | translate}}" matTooltipPosition="right" data-test-id="matIcoHelpAppointment">help_outline</mat-icon>
+                  </div>
+                </mat-panel-title>
+                <mat-icon>{{ panel7.expanded ? "remove" : "add" }}</mat-icon>
+              </mat-expansion-panel-header>
+
+              <form [formGroup]="addReferralForm" (ngSubmit)="addReferral()">
+                <div class="table-responsive medication-con">
+                  <table class="table" aria-describedby="">
+                    <thead>
+                      <tr>
+                        <th scope="col">{{'Referral to' | translate}}</th>
+                        <th scope="col" *ngIf="isFeatureAvailable('referralFacility', true)">{{'Referral facility'|translate}}</th>
+                        <th scope="col" *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{'Priority of Referral'|translate}}</th>
+                        <th scope="col">{{'Remarks'|translate}}</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container *ngIf="referrals.length else noReferrals">
+                        <tr *ngFor="let r of referrals; let i = index">
+                          <td>{{ (r.speciality) | translate }}</td>
+                          <td *ngIf="isFeatureAvailable('referralFacility', true)">{{ (r.facility) | translate }}</td>
+                          <td *ngIf="isFeatureAvailable('priorityOfReferral', true)">{{ (r.priority) | translate }}</td>
+                          <td>{{ r.reason }}</td>
+                          <td class="pr-0">
+                            <button
+                              type="button"
+                              class="float-right"
+                              mat-icon-button
+                              (click)="deleteReferral(i, r.uuid)"
+                              data-test-id="{{'btnDeleteReferralVisitSummary'+i}}"
+                              *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded"
+                            >
+                              <img src="assets/svgs/delete-icon.svg" alt="" />
+                            </button>
+                          </td>
+                        </tr>
+                      </ng-container>
+                      <ng-template #noReferrals>
+                        <tr *ngIf="isMCCUser">
+                          <td colspan="6" class="text-center font-weight-bold">
+                            {{'No referrals added!'|translate}}
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-container *ngIf="!isMCCUser && isVisitNoteProvider && !visitEnded">
+                        <tr *ngIf="addMoreReferral">
+                          <td colspan="6" class="px-0">
+                            <div class="form-group mb-0">
+                              <button
+                                type="button"
+                                class="add-more-btn"
+                                (click)="toggleReferral()"
+                                data-test-id="btnAddMoreReferralVisitSummary"
+                              >
+                                <img src="assets/svgs/plus-circle.svg" alt="" />
+                                <span class="ml-2">{{'Add more Referral'|translate}}</span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr *ngIf="!addMoreReferral && !isMCCUser">
+                          <td>
+                            <div class="form-group mb-0">
+                              <ng-select
+                                appendTo=".visit-summary-tab-group"
+                                class="visit-select"
+                                formControlName="speciality"
+                                bindLabel="label"
+                                bindValue="label"
+                                [clearable]="false"
+                                [searchable]="true"
+                                [addTag]="true"
+                                placeholder="{{'Select specialization'|translate}}*"
+                                data-test-id="selectReferralSpecialityVisitSummary"
+                              >
+                              <ng-option *ngFor="let specialization of refer_specializations" [value]="specialization.name">
+                                {{ (specialization.name) |translate }}
+                              </ng-option>
+                              </ng-select>
+                            </div>
+                          </td>
+                          <td *ngIf="isFeatureAvailable('referralFacility', true)"> 
+                            <div class="form-group mb-0">
+                              <ng-select
+                                class="visit-select"
+                                appendTo=".visit-summary-tab-group"
+                                formControlName="facility"
+                                bindLabel="label"
+                                bindValue="label"
+                                [clearable]="false"
+                                [searchable]="true"
+                                [addTag]="true"
+                                placeholder="{{'Select facility'|translate}}*"
+                                data-test-id="selectReferralFacilityVisitSummary"
+                              >
+                              <ng-option *ngFor="let facility of facilities" [value]="facility.name">
+                                {{ (facility.name) |translate }}
+                              </ng-option>
+                              </ng-select>
+                            </div>
+                          </td>
+                          <td *ngIf="isFeatureAvailable('priorityOfReferral', true)">
+                            <div class="form-group mb-0">
+                              <ng-select
+                                class="visit-select"
+                                appendTo=".visit-summary-tab-group"
+                                formControlName="priority_refer"
+                                [clearable]="false"
+                                bindLabel="name"
+                                bindValue="name"
+                                [searchable]="false"
+                                [addTag]="false"
+                                placeholder="{{'Select Priority'|translate}}*"
+                                data-test-id="selectReferralFacilityVisitSummary"
+                              >
+                              <ng-option *ngFor="let ref_priority of refer_priorities" [value]="ref_priority.name">
+                                {{ (ref_priority.name) | translate }}
+                              </ng-option>
+                              </ng-select>
+                            </div>
+                          </td>
+                          <td colspan="2">
+                            <div class="form-group mb-0">
+                              <input
+                                formControlName="reason"
+                                type="text"
+                                class="form-control"
+                                placeholder="{{'Enter remarks'|translate}}"
+                                data-test-id="etReferralPriorityVisitSummary"
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                        <tr *ngIf="!addMoreReferral && !isMCCUser">
+                          <td colspan="6" class="border-top-0">
+                            <div class="form-group mb-0 float-right">
+                              <button
+                                type="button"
+                                class="white-btn mr-2"
+                                (click)="toggleReferral()"
+                                data-test-id="btnCancelReferralVisitSummary"
+                              >
+                                {{'Cancel'|translate}}
+                              </button>
+                              <button
+                                type="submit"
+                                class="gray-btn"
+                                [disabled]="addReferralForm.invalid"
+                                data-test-id="btnSubmitReferralVisitSummary"
+                              >
+                                {{'Add'|translate}}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+              </form>
+            </mat-expansion-panel>  
 
             <mat-expansion-panel
               [expanded]="true"
               #panel8
               hideToggle
-              
+              *ngIf="isFeatureAvailable('visitFollowUp')"
             >
               <mat-expansion-panel-header>
                 <mat-panel-title>

@@ -848,20 +848,19 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
                 ''
               ],
               ...this.getDoctorRecommandation(),
-              [{
+              [
+                {
                   colSpan: 4,
-                  sectionName:'followUpInstructions',
                   table: {
                     widths: [30, '*'],
                     headerRows: 1,
-                    body: [
-                      [ {image: 'test', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Follow up Instructions', style: 'sectionheader', border: [false, false, false, true] }],
+                    body:  [
+                      [ {image: 'referral', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Referral Advise', style: 'sectionheader', border: [false, false, false, true] }],
                       [
                         {
                           colSpan: 2,
-                          ul: [
-                            ...this.getRecords('followUpInstructions')
-                          ]
+                          table: this.renderReferralSectionPDF(),
+                          layout: 'lightHorizontalLines'
                         }
                       ]
                     ]
@@ -877,6 +876,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               [
                 {
                   colSpan: 4,
+                  sectionName:'visitFollowUp',
                   table: {
                     widths: [30, '*'],
                     headerRows: 1,
@@ -970,6 +970,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       if(section[0].sectionName === 'vitals' && (!this.hasVitalsEnabled || !vitalsConfig?.is_enabled )) return false;
       if(section[0].sectionName === 'cheifComplaint' && !checkUpReasonConfig?.is_enabled) return false;
       if(section[0].sectionName === 'followUpInstructions' && !this.isFeatureAvailable('follow-up-instruction')) return false;
+      if(section[0].sectionName === 'visitFollowUp' && !this.isFeatureAvailable('visitFollowUp')) return false;
       if(section[0].sectionName === 'advice' && !this.isFeatureAvailable('advice')) return false;
       return true;
     });
@@ -1461,7 +1462,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
           widths: [30, '*'],
           headerRows: 1,
           body: [
-            [ {image: 'medication', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Medications Advised', style: 'sectionheader', border: [false, false, false, true] }],
+            [ {image: 'medication', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Medications', style: 'sectionheader', border: [false, false, false, true] }],
             [
               {
                 colSpan: 2,
@@ -1502,7 +1503,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
           widths: [30, '*'],
           headerRows: 1,
           body: [
-            [ {image: 'test', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Investigations Advised', style: 'sectionheader', border: [false, false, false, true] }],
+            [ {image: 'test', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Investigations', style: 'sectionheader', border: [false, false, false, true] }],
             [
               {
                 colSpan: 2,
@@ -1524,16 +1525,18 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     [
       {
         colSpan: 4,
+        sectionName:'followUpInstructions',
         table: {
           widths: [30, '*'],
           headerRows: 1,
-          body:  [
-            [ {image: 'referral', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Referral Advise', style: 'sectionheader', border: [false, false, false, true] }],
+          body: [
+            [ {image: 'test', width: 25, height: 25, border: [false, false, false, true]  }, {text: 'Follow up', style: 'sectionheader', border: [false, false, false, true] }],
             [
               {
                 colSpan: 2,
-                table: this.renderReferralSectionPDF(),
-                layout: 'lightHorizontalLines'
+                ul: [
+                  ...this.getRecords('followUpInstructions')
+                ]
               }
             ]
           ]
@@ -1545,7 +1548,8 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       '',
       '',
       ''
-    ]];
+    ]
+    ];
 
     if(this.isFeatureAvailable('doctor-recommendation')){
       return [
@@ -1556,7 +1560,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
               widths: [30, '*','auto','auto'],
               headerRows: 1,
               body: [
-                [ {image: 'advice', width: 25, height: 25, border: [false, false, false, true]  }, {colSpan: 3, text: 'Doctor\'s Recommendation', style: 'sectionheader', border: [false, false, false, true] },'',''],
+                [ {image: 'advice', width: 25, height: 25, border: [false, false, false, true]  }, {colSpan: 3, text: 'Recommendation', style: 'sectionheader', border: [false, false, false, true] },'',''],
                 ...subFields
               ]
             },
