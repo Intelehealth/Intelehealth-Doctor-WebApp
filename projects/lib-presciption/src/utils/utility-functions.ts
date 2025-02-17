@@ -2,7 +2,7 @@ import { languages, visitTypes } from "../config/constant";
 import * as moment from 'moment';
 import { ProviderAttributeModel } from "../model/model";
 import { DecimalPipe } from "@angular/common";
-import { environment } from "../../../../src/environments/environment";
+// import { environment } from "../../../../src/environments/environment";
 
 export function getCacheData(parse: boolean, key: string) {
   if (parse) {
@@ -146,10 +146,11 @@ export function calculateBMI(vitals: any, vitalObs: any, _locale: string = 'en')
 }
 
 export function isFeaturePresent(featureName: string, notInclude = false): boolean {
-  const featureList = environment.featureList ?? []; // Extract from ENV file
+  const featureList = ['followUpType','tnmStaging','referralFacility','priorityOfReferral','follow-up-instruction','doctor-recommendation']
   if(notInclude) return !featureList.includes(featureName);
   return featureList.includes(featureName);
 }
+
 
 export function getCallDuration(given_seconds: number){
   let dateObj = new Date(given_seconds * 1000);

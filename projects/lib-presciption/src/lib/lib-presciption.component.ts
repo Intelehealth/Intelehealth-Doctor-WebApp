@@ -1,7 +1,7 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { LibPresciptionService } from './lib-presciption.service';
-import { environment } from 'src/environments/environment';
+// import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -18,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
-import { AppConfigService } from 'src/app/services/app-config.service';
+import { AppConfigService } from '../lib/services/app-config.service';
 
 @Component({
   selector: 'lib-presciption',
@@ -41,14 +41,16 @@ export class LibPresciptionComponent implements OnInit, OnDestroy {
   @Input() download: Observable<any>;
 
   visit: VisitModel;
+  envProduction: boolean = true;
   patient: PatientModel;
-  baseUrl: string = environment.baseURL;
+  // baseUrl: string = environment.baseURL;
+  baseUrl: string = "https://dev.intelehealth.org/openmrs/ws/rest/v1";
   visitStatus: string;
   providerName: string;
   hwPhoneNo: string;
   clinicName: string;
-  baseURL = environment.baseURL;
-  configPublicURL = environment.configPublicURL;
+  baseURL ="https://dev.intelehealth.org/openmrs/ws/rest/v1";
+  configPublicURL = "https://dev.intelehealth.org:4004/";
   visitNotePresent: EncounterModel;
   spokenWithPatient: string = 'No';
   notes: ObsModel[] = [];
@@ -114,10 +116,10 @@ export class LibPresciptionComponent implements OnInit, OnDestroy {
     this.getVisit(this.isDownloadPrescription ? this.visitId : this.data.uuid);
     pdfMake.fonts = {
       DmSans: {
-        normal: `${window.location.origin}${environment.production ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-Regular.ttf`,
-        bold: `${window.location.origin}${environment.production ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-Bold.ttf`,
-        italics: `${window.location.origin}${environment.production ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-Italic.ttf`,
-        bolditalics: `${window.location.origin}${environment.production ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-BoldItalic.ttf`,
+        normal: `${window.location.origin}${this.envProduction ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-Regular.ttf`,
+        bold: `${window.location.origin}${this.envProduction ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-Bold.ttf`,
+        italics: `${window.location.origin}${this.envProduction ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-Italic.ttf`,
+        bolditalics: `${window.location.origin}${this.envProduction ? '/intelehealth' : ''}/assets/fonts/DM_Sans/DMSans-BoldItalic.ttf`,
       }
     };
     this.eventsSubscription = this.download?.subscribe((val) => { if (val) { this.downloadPrescription(); } });
