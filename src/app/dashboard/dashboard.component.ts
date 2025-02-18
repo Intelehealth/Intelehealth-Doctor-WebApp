@@ -603,22 +603,22 @@ export class DashboardComponent implements OnInit {
       } else {
         this.router.navigate(['/dashboard/get-started']);
       }
-      // if (this.pvs.appointment_button) {
-      //   this.getAppointments();
-      // }
-      // if(this.pvs.awaiting_visit_section){
-      //   this.getAwaitingVisits(1);
-      // }
-      // if (this.pvs.priority_visit_section) {
-      //   this.getPriorityVisits(1);
-      // }
-      // this.getInProgressVisits(1);
+      if (this.pvs.appointment_button) {
+        this.getAppointments();
+      }
+      if(this.pvs.awaiting_visit_section){
+        this.getAwaitingVisits(1);
+      }
+      if (this.pvs.priority_visit_section) {
+        this.getPriorityVisits(1);
+      }
+      this.getInProgressVisits(1);
 
-      // if (this.pvs?.completed_visit_section)
-      //   this.getCompletedVisits();
+      if (this.pvs?.completed_visit_section)
+        this.getCompletedVisits();
 
-      // if (this.pvs?.follow_up_visit_section)
-      //   this.getFollowUpVisit();
+      if (this.pvs?.follow_up_visit_section)
+        this.getFollowUpVisit();
     }
 
     this.socket.initSocket(true);
