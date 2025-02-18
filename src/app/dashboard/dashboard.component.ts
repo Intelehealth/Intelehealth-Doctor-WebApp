@@ -163,14 +163,14 @@ export class DashboardComponent implements OnInit {
             this.awaitingVisits.push(visit);
           }
         }
-        this.awaitingVisitsCount = this.awaitingVisits.length;
+        this.awaitingVisitsCount = av.totalCount;
         this.getFollowUpVisits(newfollowupVisits);
         this.dataSource3.data = [...this.awaitingVisits];
         if (page == 1) {
           this.dataSource3.paginator = this.tempPaginator2;
           this.dataSource3.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
-          this.tempPaginator2.length = this.awaitingVisits.length;
+          this.tempPaginator2.length = av.totalCount;
           this.tempPaginator2.nextPage();
         }
       }
@@ -230,14 +230,14 @@ export class DashboardComponent implements OnInit {
             this.priorityVisits.push(visit);
           }
         }
-        this.priorityVisitsCount = this.priorityVisits.length;
+        this.priorityVisitsCount = pv.totalCount;
         this.getFollowUpVisits(newfollowupVisits);
         this.dataSource2.data = [...this.priorityVisits];
         if (page == 1) {
           this.dataSource2.paginator = this.tempPaginator1;
           this.dataSource2.filterPredicate = (data, filter: string) => data?.patient.identifier.toLowerCase().indexOf(filter) != -1 || data?.patient_name.given_name.concat((data?.patient_name.middle_name ? ' ' + data?.patient_name.middle_name : '') + ' ' + data?.patient_name.family_name).toLowerCase().indexOf(filter) != -1;
         } else {
-          this.tempPaginator1.length = this.priorityVisits.length;
+          this.tempPaginator1.length = pv.totalCount;
           this.tempPaginator1.nextPage();
         }
       }
