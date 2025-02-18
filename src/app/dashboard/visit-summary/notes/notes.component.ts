@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -24,6 +24,7 @@ export class NotesComponent implements OnInit {
   @Input() visitNotePresent: EncounterModel;
   @Input() title: string = 'notes';
   @Input() isMCCUser: boolean = false;
+  @Output() onNoteAdd = new EventEmitter()
  
   _visit: VisitModel;
   addNoteForm: FormGroup = new FormGroup({
@@ -68,6 +69,19 @@ export class NotesComponent implements OnInit {
     }
   }
 
+  get getNoteType(): string {
+    switch (this.title) {
+      case 'Family History Notes':
+        return 'familyHistory';
+
+      case 'Past Medical History Notes':
+        return 'medicalHistory'
+
+      default:
+        return 'notes'
+    }
+  }
+
 
     /**
     * Save note
@@ -82,16 +96,24 @@ export class NotesComponent implements OnInit {
       this.toastr.warning(this.translateSvc.instant('Note already added, please add another note.'), this.translateSvc.instant('Already Added'));
       return;
     }
-    this.encounterSvc.postObs({
-      concept: this.conceptId,
-      person: this._visit.patient.uuid,
-      obsDatetime: new Date(),
+    this.notes.push({ 
       value: this.addNoteForm.value.note,
-      encounter: this.visitNotePresent.uuid
-    }).subscribe((res: ObsModel) => {
-      this.notes.push({ uuid: res.uuid, value: this.addNoteForm.value.note });
-      this.addNoteForm.reset();
+      concept: {
+        uuid: this.conceptId
+      },
+      type: this.getNoteType
     });
+
+    // this.encounterSvc.postObs({
+    //   concept: this.conceptId,
+    //   person: this._visit.patient.uuid,
+    //   obsDatetime: new Date(),
+    //   value: this.addNoteForm.value.note,
+    //   encounter: this.visitNotePresent.uuid
+    // }).subscribe((res: ObsModel) => {
+    //   this.notes.push({ uuid: res.uuid, value: this.addNoteForm.value.note });
+    //   this.addNoteForm.reset();
+    // });
   }
 
   /**

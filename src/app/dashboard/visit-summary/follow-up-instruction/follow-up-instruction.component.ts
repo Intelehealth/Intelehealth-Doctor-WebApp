@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -24,6 +24,7 @@ export class FollowUpInstructionComponent {
   @Input() visitNotePresent: EncounterModel;
   @Input() title: string = 'notes';
   @Input() isMCCUser: boolean = false;
+  @Output() onDataAdd = new EventEmitter()
  
   _visit: VisitModel;
   addInstructionForm: FormGroup = new FormGroup({
@@ -70,16 +71,26 @@ export class FollowUpInstructionComponent {
       this.toastr.warning(this.translateSvc.instant('Instructions already added, please add another Instructions.'), this.translateSvc.instant('Already Added'));
       return;
     }
-    this.encounterSvc.postObs({
-      concept: this.conceptId,
-      person: this._visit.patient.uuid,
-      obsDatetime: new Date(),
+    const payload = { 
       value: this.addInstructionForm.value.instructions,
-      encounter: this.visitNotePresent.uuid
-    }).subscribe((res: ObsModel) => {
-      this.followUpInstructions.push({ uuid: res.uuid, value: this.addInstructionForm.value.instructions });
-      this.addInstructionForm.reset();
-    });
+      concept: {
+        uuid: this.conceptId
+      },
+      type: 'followUpInstructions'
+    }
+    this.followUpInstructions.push(payload);
+    this.onDataAdd.emit(payload)
+    this.addInstructionForm.reset();
+    // this.encounterSvc.postObs({
+    //   concept: this.conceptId,
+    //   person: this._visit.patient.uuid,
+    //   obsDatetime: new Date(),
+    //   value: this.addInstructionForm.value.instructions,
+    //   encounter: this.visitNotePresent.uuid
+    // }).subscribe((res: ObsModel) => {
+    //   this.followUpInstructions.push({ uuid: res.uuid, value: this.addInstructionForm.value.instructions });
+    //   this.addInstructionForm.reset();
+    // });
   }
 
   /**

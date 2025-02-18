@@ -424,6 +424,7 @@ export interface ObsModel {
     }
   }
   comment?: string
+  type?: string
 }
 
 export interface ScheduleModel {
@@ -495,11 +496,12 @@ export interface VisitAttributeModel {
 }
 
 export interface ReferralModel {
-  uuid?: string,
-  speciality?: string,
-  facility?: string,
-  priority?: string,
+  uuid?: string
+  speciality?: string
+  facility?: string
+  priority?: string
   reason?: string
+  priority_refer?: string
 }
 
 export interface TestModel {
@@ -528,11 +530,14 @@ export interface KeyValueModel {
 }
 
 export interface DiagnosisModel {
-  diagnosisName?: string,
-  diagnosisType?: string,
-  diagnosisStatus?: string,
-  uuid?: string,
+  diagnosisName?: string
+  diagnosisType?: string
+  diagnosisStatus?: string
+  uuid?: string
   diagnosisTNMStaging?: string
+  diagnosisCode?:string
+  originaldiagnosisName?:string
+  isSnomed?: boolean
 }
 
 export interface DocImagesModel {

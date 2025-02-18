@@ -905,9 +905,9 @@
           <mat-accordion class="intel-accordion-con" multi>
 
             <app-notes *ngIf="appConfigService?.patient_visit_summary?.family_history_notes" [title]="'Family History Notes'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded"
-            [visit]="visit" [visitNotePresent]="visitNotePresent"></app-notes>
+            [visit]="visit" [visitNotePresent]="visitNotePresent" (onDataAdd)="notes.push($event)"></app-notes>
             <app-notes *ngIf="appConfigService?.patient_visit_summary?.past_medical_history_notes" [title]="'Past Medical History Notes'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded"
-            [visit]="visit" [visitNotePresent]="visitNotePresent"></app-notes>
+            [visit]="visit" [visitNotePresent]="visitNotePresent" (onDataAdd)="notes.push($event)"></app-notes>
 
             <mat-expansion-panel [expanded]="true" #panel1 hideToggle *ngIf="isSubSectionEnabled('patient_interaction','HW')" id="patientInteractionFormTemplate">
               <mat-expansion-panel-header>
@@ -1308,7 +1308,8 @@
             </mat-expansion-panel>  
 
             <app-notes [title]="'Note'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded" [visit]="visit"
-              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser" *ngIf="isFeatureAvailable('visitNotes')"></app-notes>
+              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser" *ngIf="isFeatureAvailable('visitNotes')"
+              (onDataAdd)="notes.push($event)"></app-notes>
 
             <mat-expansion-panel
               [expanded]="true"
@@ -1767,7 +1768,7 @@
                 </mat-expansion-panel>
 
                 <app-follow-up-instruction [title]="'Follow up'" [isVisitNoteProvider]="isVisitNoteProvider" [visitEnded]="visitEnded" [visit]="visit"
-              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser" *ngIf="isFeatureAvailable('follow-up-instruction')">
+              [visitNotePresent]="visitNotePresent" [isMCCUser]="isMCCUser" *ngIf="isFeatureAvailable('follow-up-instruction')" (onDataAdd)="notes.push($event)">
                 </app-follow-up-instruction>    
             </ng-template>
 
@@ -2401,12 +2402,21 @@
       <button
         type="button"
         class="blue-btn mr-2 mb-2"
-        (click)="sharePrescription()"
+        (click)="saveAsDraft()"
         *ngIf="!isMCCUser && visitNotePresent && !visitEnded && isVisitNoteProvider"
         data-test-id="btnSharePrescription"
       >
         {{ visitCompleted ? ('Update'|translate): ('Share'|translate) }} {{'Prescription'|translate}}
       </button>
+      <!-- <button
+        type="button"
+        class="blue-btn mr-2 mb-2"
+        (click)="sharePrescription()"
+        *ngIf="!isMCCUser && visitNotePresent && !visitEnded && isVisitNoteProvider"
+        data-test-id="btnSharePrescription"
+      >
+        {{ visitCompleted ? ('Update'|translate): ('Share'|translate) }} {{'Prescription'|translate}}
+      </button> -->
       <button
         type="button"
         class="blue-btn mb-2"
