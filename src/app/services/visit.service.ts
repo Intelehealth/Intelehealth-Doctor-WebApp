@@ -109,7 +109,7 @@ export class VisitService {
     const url = `${this.baseURL}/visit/${visitId}/attribute`;
     return this.http.get(url);
   }
-
+  
   /**
   * Post visit attribute
   * @param {string} visitId - Visit uuid
@@ -164,7 +164,7 @@ export class VisitService {
   */
   getWhatsappLink(whatsapp: string, msg: string) {
     let text = encodeURI(msg);
-    let whatsappLink = `https://wa.me/${whatsapp}?text=${text}`;
+    let whatsappLink = `https://wa.me/91${whatsapp}?text=${text}`;
     return whatsappLink;
   }
 

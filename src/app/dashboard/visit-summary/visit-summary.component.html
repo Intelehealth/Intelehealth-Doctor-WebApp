@@ -67,13 +67,13 @@
             <div class="col-md-3 patient-info-section p-3">
               <div class="patient-info-item">
                 <h6 data-test-id="etPatient">{{'Contact no.'| translate}}</h6>
-                <p data-test-id="etWhatsApp" *ngIf="getPersonAttributeValue('Telephone Number') === 'NA'">
+                <p data-test-id="etWhatsApp" *ngIf="getSevikasPhoneNo('phoneNumber') === 'NA'">
                    {{ getPersonAttributeValue("Telephone Number") }}
                 </p>
-                <p data-test-id="etPhoneNumber" *ngIf="getPersonAttributeValue('Telephone Number') !== 'NA'">
+                <p data-test-id="etPhoneNumber" *ngIf="getSevikasPhoneNo('phoneNumber') !== 'NA'">
                   {{ getPersonAttributeValue("Telephone Number") }}
                   <a
-                    href="tel:{{ getPersonAttributeValue('Telephone Number') }}"
+                    href="tel:{{ getSevikasPhoneNo('phoneNumber') }}"
                     target="_blank"
                     class="icon-btn"
                     data-test-id="linkPhoneNumber"
@@ -81,7 +81,7 @@
                     <img src="assets/svgs/phone-circle.svg" alt="" />
                   </a>
                   <a
-                    href="{{ getWhatsAppLink() }}"
+                    href="{{ getSevikasLink() }}"
                     target="_blank"
                     class="icon-btn"
                     data-test-id="linkWhatsApp"
@@ -1034,14 +1034,14 @@
                       <div
                         class="col-sm-9 d-flex align-items-center"
                         *ngIf="
-                          getPersonAttributeValue('Telephone Number') != 'NA';
+                        getSevikasPhoneNo('phoneNumber') != 'NA';
                           else noContactDetails
                         "
                       >
                         <div class="d-flex">
                           <a
                             href="tel:{{
-                              getPersonAttributeValue('Telephone Number')
+                              getSevikasPhoneNo('phoneNumber')
                             }}"
                             target="_blank"
                             class="icon-btn m-0 mr-2"
@@ -1050,7 +1050,7 @@
                             <img src="assets/svgs/phone-green.svg" alt="" />
                           </a>
                           <a
-                            href="{{ getWhatsAppLink() }}"
+                            href="{{ getSevikasLink() }}"
                             target="_blank"
                             class="icon-btn m-0 mr-2"
                             data-test-id="linkPatientWhatsApp"
