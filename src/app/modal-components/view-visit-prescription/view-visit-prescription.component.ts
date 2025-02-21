@@ -1,10 +1,10 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DiagnosisService } from 'src/app/services/diagnosis.service';
-import { VisitService } from 'src/app/services/visit.service';
+import { VisitService } from '../../services/visit.service';
 import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
-import { ProfileService } from 'src/app/services/profile.service';
+import { ProfileService } from '../../services/profile.service';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Observable, Subscription } from 'rxjs';
@@ -98,6 +98,7 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit(): void {
+    console.log("inside the visit")
     this.logoImageURL = this.appConfigService.theme_config.find(obj=>obj.key==='logo')?.value;
     this.getVisit(this.isDownloadPrescription ? this.visitId : this.data.uuid);
     pdfMake.fonts = {
