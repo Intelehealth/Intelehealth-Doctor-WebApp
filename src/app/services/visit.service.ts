@@ -4,6 +4,8 @@ import { Observable, Subject } from "rxjs";
 import { environment } from "../../environments/environment";
 import * as moment from "moment";
 import { visitTypes } from "src/config/constant";
+import { getCacheData } from 'src/app/utils/utility-functions';
+import { PatientModel, PersonAttributeModel } from "../model/model";
 
 @Injectable({
   providedIn: "root",
@@ -435,4 +437,32 @@ export class VisitService {
       return `0 months 0 days`;
     }
   }
+
+   /**
+    * Get Sevikas attribute value for a given attribute type
+    * @param {string} attrType - Sevikas attribute type
+    * @return {any} - Value for a given attribute type
+    */
+    getSevikasPhoneNo(attrType: string) {
+      let val ='NA';
+      let sevika = getCacheData(true, visitTypes.PATIENT_VISIT_PROVIDER);
+      if (sevika.provider.attributes.length > 0) {
+        sevika.provider.attributes.forEach((attr: PersonAttributeModel) => {
+          if (attrType === attr.attributeType.display) {
+            val = attr.value;
+          }
+        });
+      }
+      return val;
+    }
+  
+    /**
+    * Get whatsapp link
+    * @param {PatientModel} patient - patient details
+    * @return {string} - Whatsapp link
+    */
+    getSevikasLink(patient:PatientModel) {
+      return this.getWhatsappLink(this.getSevikasPhoneNo('phoneNumber'), `Hello I'm calling for patient
+       ${patient.person.display} OpenMRS ID ${patient.identifiers[0].identifier}`);
+    }
   }

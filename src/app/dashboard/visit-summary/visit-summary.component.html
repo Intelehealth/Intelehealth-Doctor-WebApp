@@ -12,7 +12,7 @@
         <div>
           <a
             class="start-call-btn"
-            href="tel:{{ getPersonAttributeValue('Telephone Number') }}"
+            href="tel:{{ getSevikasPhoneNo('phoneNumber') }}"
             target="_blank"
             data-test-id="linkStartCall"
           >
@@ -1065,7 +1065,7 @@
                       <ng-template #noContactDetails>
                         <div class="col-sm-9 d-flex align-items-center">
                           <span class="text-muted"
-                            >{{'Patient Mobile number is not available'|translate}}</span
+                            >Sevika's mobile number is not available</span
                           >
                         </div>
                       </ng-template>

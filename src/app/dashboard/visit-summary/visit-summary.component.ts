@@ -720,30 +720,13 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
     return val;
   }
 
-  /**
-  * Get whatsapp link
-  * @return {string} - Whatsapp link
-  */
-  getWhatsAppLink() {
-    return this.visitService.getWhatsappLink(this.getPersonAttributeValue(doctorDetails.TELEPHONE_NUMBER), `Hello I'm calling for consultation`);
-  }
-
  /**
   * Get Sevikas attribute value for a given attribute type
-  * @param {str'} attrType - Sevikas attribute type
+  * @param {string} attrType - Sevikas attribute type
   * @return {any} - Value for a given attribute type
   */
   getSevikasPhoneNo(attrType: string) {
-    let val = this.translateService.instant('NA');
-    let sevika = getCacheData(true, visitTypes.PATIENT_VISIT_PROVIDER);
-    if (sevika.provider.attributes.length > 0) {
-      sevika.provider.attributes.forEach((attr: PersonAttributeModel) => {
-        if (attrType === attr.attributeType.display) {
-          val = attr.value;
-        }
-      });
-    }
-    return val;
+   return this.visitService.getSevikasPhoneNo(attrType);
   }
 
   /**
@@ -751,7 +734,7 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   * @return {string} - Whatsapp link
   */
   getSevikasLink() {
-    return this.visitService.getWhatsappLink(this.getSevikasPhoneNo('phoneNumber'), `Hello I'm calling for consultation`);
+    return this.visitService.getSevikasLink(this.patient);
   }
 
   /**

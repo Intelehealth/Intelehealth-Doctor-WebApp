@@ -401,6 +401,23 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
   }
 
   /**
+  * Get Sevikas attribute value for a given attribute type
+  * @param {string} attrType - Sevikas attribute type
+  * @return {any} - Value for a given attribute type
+  */
+  getSevikasPhoneNo(attrType: string) {
+    return this.visitService.getSevikasPhoneNo(attrType);
+   }
+ 
+   /**
+   * Get whatsapp link
+   * @return {string} - Whatsapp link
+   */
+   getSevikasLink() {
+     return this.visitService.getSevikasLink(this.patient);
+   }
+
+  /**
   * Replcae the string charaters with *
   * @param {string} str - Original string
   * @return {string} - Modified string
@@ -1170,14 +1187,6 @@ export class ViewVisitPrescriptionComponent implements OnInit, OnDestroy {
       }
     });
     return val;
-  }
-
-  /**
-  * Get whatsapp link
-  * @return {string} - Whatsapp link
-  */
-  getWhatsAppLink() {
-    return this.visitService.getWhatsappLink(this.getPersonAttributeValue(doctorDetails.TELEPHONE_NUMBER), `Hello I'm calling for consultation`);
   }
 
   /**
