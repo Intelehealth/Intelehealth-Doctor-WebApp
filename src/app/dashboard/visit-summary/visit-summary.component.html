@@ -2413,6 +2413,8 @@
         >
         {{'View Prescription'|translate}}
       </button>
+      <button  type="button" class="blue-btn mb-2" *ngIf="visitNotePresent && visitCompleted"  (click)="openVisitPrescriptionModal(visit?.uuid)"
+        >Open Library</button>
     </div>
   </div>
 </div>
