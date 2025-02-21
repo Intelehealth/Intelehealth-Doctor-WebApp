@@ -54,6 +54,7 @@ import { SubSectionsComponent } from './sub-sections/sub-sections.component';
 import { MatTableModule } from '@angular/material/table';
 import { CallHistoryComponent } from './call-history/call-history.component';
 import { PatientRegValidationsComponent } from './patient-reg-validations/patient-reg-validations.component';
+import {LibPresciptionModule} from 'lib-presciption'
 
 @NgModule({
     declarations: [
@@ -115,7 +116,8 @@ import { PatientRegValidationsComponent } from './patient-reg-validations/patien
         SharedModule,
         MatProgressBarModule,
         MatTabsModule,
-        MatTableModule
+        MatTableModule,
+        LibPresciptionModule
     ],
     exports: [ViewVisitPrescriptionComponent, ViewVisitSummaryComponent],
     schemas: [NO_ERRORS_SCHEMA]

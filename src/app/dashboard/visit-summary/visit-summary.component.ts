@@ -2046,4 +2046,14 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
   getCallDuration(val:number){
     return getCallDuration(val)
   }
+
+  /**
+   * Open the library
+   * @param uuid 
+   */
+  openLibrary(uuid: string): void {
+    // this.coreService.openVisitPrescriptionModal({ uuid });
+    console.log("inside open library",uuid)
+  }
+
 }
