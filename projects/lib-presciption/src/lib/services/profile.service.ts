@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
+// import { environment } from 'src/environments/environment';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
-  base = environment.base;
-  baseURL = environment.baseURL;
+  // base = "https://dev.intelehealth.org"
+  // baseURL = "https://dev.intelehealth.org/openmrs/ws/rest/v1"
+
   mimeTypes = {
     JVBERi0: 'application/pdf',
     R0lGODdh: 'image/gif',
@@ -30,9 +31,9 @@ export class ProfileService {
   * @param {boolean} existingUuid - Existing provider attribute record uuid
   * @return {Observable<any>}
   */
-  updateProviderAttribute(uuid: string, attributeTypeUuid: string, attributeValue: string, isExistingPresent: boolean, existingUuid: string): Observable<any> {
-    const URL = isExistingPresent ? `${this.baseURL}/provider/${uuid}/attribute/${existingUuid}`
-      : `${this.baseURL}/provider/${uuid}/attribute`;
+  updateProviderAttribute(baseURL: string,uuid: string, attributeTypeUuid: string, attributeValue: string, isExistingPresent: boolean, existingUuid: string): Observable<any> {
+    const URL = isExistingPresent ? `${baseURL}/provider/${uuid}/attribute/${existingUuid}`
+      : `${baseURL}/provider/${uuid}/attribute`;
     const json = {
       attributeType: attributeTypeUuid,
       value: attributeValue,
@@ -46,8 +47,8 @@ export class ProfileService {
   * @param {Object} json - Payload to upload person image
   * @return {Observable<any>}
   */
-  updateProfileImage(json: object): Observable<any> {
-    const URL = `${this.baseURL}/personimage`;
+  updateProfileImage(baseURL:string,json: object): Observable<any> {
+    const URL = `${baseURL}/personimage`;
     const header = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -63,8 +64,8 @@ export class ProfileService {
   * @param {string} fontName - Font name to be used
   * @return {Observable<any>}
   */
-  creatSignature(providerId: string, textOfSign: string, fontName: string): Observable<any> {
-    const URL = `${this.base}/createsign`;
+  creatSignature(base:string,providerId: string, textOfSign: string, fontName: string): Observable<any> {
+    const URL = `${base}/createsign`;
     const json = {
       textOfSign: textOfSign,
       fontName: fontName,
@@ -79,8 +80,8 @@ export class ProfileService {
   * @param {string} providerId - Provider uuid
   * @return {Observable<any>}
   */
-  updateSignature(file, providerId: string): Observable<any> {
-    const URL = `${this.base}/uploadsign`;
+  updateSignature(base:string,file, providerId: string): Observable<any> {
+    const URL = `${base}/uploadsign`;
     const json = {
       file: file,
       providerid: providerId
@@ -94,8 +95,8 @@ export class ProfileService {
   * @param {string} existingUuid - Provider attribute uuid
   * @return {Observable<any>}
   */
-  deleteProviderAttribute(uuid: string, existingUuid: string): Observable<any> {
-    const URL = `${this.baseURL}/provider/${uuid}/attribute/${existingUuid}`;
+  deleteProviderAttribute(baseURL:string,uuid: string, existingUuid: string): Observable<any> {
+    const URL = `${baseURL}/provider/${uuid}/attribute/${existingUuid}`;
     return this.http.delete(URL);
   }
 

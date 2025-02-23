@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+// import { environment } from '../../environments/environment';
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { getCacheData, getEncounterProviderUUID } from '../utils/utility-functions';
-import { doctorDetails, conceptIds } from 'src/config/constant';
+import { doctorDetails, conceptIds } from '../config/constant';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ import { doctorDetails, conceptIds } from 'src/config/constant';
 export class DiagnosisService {
   diagnosisArray = [];
   public isVisitSummaryChanged = false
-  private baseURL = environment.baseURL;
+  // private baseURL = "https://dev.intelehealth.org/openmrs/ws/rest/v1"
 
   constructor(private http: HttpClient, private snackbar: MatSnackBar) { }
 
@@ -22,8 +22,8 @@ export class DiagnosisService {
   * @param {string} uuid - Concept uuid
   * @return {Observable<any>}
   */
-  concept(uuid): Observable<any> {
-    const url = `${this.baseURL}/concept/${uuid}`;
+  concept(baseURL: string,uuid): Observable<any> {
+    const url = `${baseURL}/concept/${uuid}`;
     return this.http.get(url);
   }
 
@@ -32,8 +32,8 @@ export class DiagnosisService {
   * @param {string} uuid - Observation uuid
   * @return {Observable<any>}
   */
-  deleteObs(uuid): Observable<any> {
-    const url = `${this.baseURL}/obs/${uuid}`;
+  deleteObs(baseURL: string,uuid): Observable<any> {
+    const url = `${baseURL}/obs/${uuid}`;
     return this.http.delete(url);
   }
 
@@ -43,9 +43,9 @@ export class DiagnosisService {
   * @param {string} conceptId - Concept uuid
   * @return {Observable<any>}
   */
-  getObs(patientId, conceptId): Observable<any> {
+  getObs(baseURL: string,patientId, conceptId): Observable<any> {
     // tslint:disable-next-line: max-line-length
-    const url = `${this.baseURL}/obs?patient=${patientId}&v=custom:(uuid,comment,value,encounter:(visit:(uuid)))&concept=${conceptId}`;
+    const url = `${baseURL}/obs?patient=${patientId}&v=custom:(uuid,comment,value,encounter:(visit:(uuid)))&concept=${conceptId}`;
     return this.http.get(url);
   }
 
@@ -54,8 +54,8 @@ export class DiagnosisService {
   * @param {string} term - Search term
   * @return {Observable<any>}
   */
-  getDiagnosisList(term: string): Observable<any> {
-    const url = `${environment.baseURL}/concept?class=${conceptIds.conceptDiagnosisClass}&source=ICD10&q=${term}`;
+  getDiagnosisList(baseURL: string,term: string): Observable<any> {
+    const url = `${baseURL}/concept?class=${conceptIds.conceptDiagnosisClass}&source=ICD10&q=${term}`;
     return this.http.get(url);
   }
 

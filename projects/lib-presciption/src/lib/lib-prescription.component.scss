@@ -10,6 +10,16 @@
   padding: 10px;
 }
 
+::ng-deep .cdk-overlay-container {
+  overflow-y: auto !important;
+}
+
+::ng-deep .mat-dialog-container {
+  max-height: 80vh;  // Adjust based on your requirement
+  overflow-y: auto !important;
+}
+
+
 .title-con {
   padding: 24px 24px 16px;
   background: #E6FFF3;
