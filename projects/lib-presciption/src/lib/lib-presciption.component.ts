@@ -1191,38 +1191,20 @@ ngOnInit(): void {
 // }
 
 
-async toObjectUrl(imageUrl: string): Promise<string> {
-    try {
-      console.log("Fetching image from URL:", imageUrl);
-
-        const response = await fetch(imageUrl);
-
-        if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
-
-        const blob = await response.blob();
-       return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-        const base64String = reader.result as string;
-        const correctedBase64 = base64String.replace(
-            "data:application/octet-stream",
-            "data:image/png"
-        ); 
-        resolve(correctedBase64);
-    };
-    reader.readAsDataURL(blob);
-});
-
-    } catch (error) {
-        console.error("Error fetching image:", error);
-        return '';
-    }
-}
-
-
-
-
-   
+  toObjectUrl(url: string) {
+    return fetch(url)
+        .then((response) => {
+          return response.blob();
+        })
+        .then(blob => {
+          return new Promise((resolve, _) => {
+              if (!blob) { resolve(''); }
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+          });
+        });
+  }
  
    ngOnDestroy() {
      this.eventsSubscription?.unsubscribe();
