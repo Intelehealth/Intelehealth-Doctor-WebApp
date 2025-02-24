@@ -998,9 +998,9 @@ export class VisitSummaryComponent implements OnInit, OnDestroy {
       response.results.forEach((obs: ObsModel) => {
         if (obs.encounter.visit.uuid === this.visit.uuid) {
           this.existingDiagnosis.push({
-            diagnosisName: obs.value.split(':')[0].trim(),
-            diagnosisType: obs.value.split(':')[1].split('&')[0].trim(),
-            diagnosisStatus: obs.value.split(':')[1].split('&')[1].trim(),
+            diagnosisName: obs.value.split(/:(?=[^:]*$)/)[0].trim(),
+            diagnosisType: obs.value.split(/:(?=[^:]*$)/)[1].split('&')[0].trim(),
+            diagnosisStatus: obs.value.split(/:(?=[^:]*$)/)[1].split('&')[1].trim(),
             uuid: obs.uuid
           });
         }
