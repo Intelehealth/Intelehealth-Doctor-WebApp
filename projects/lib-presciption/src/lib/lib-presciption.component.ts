@@ -19,6 +19,8 @@ import { precription } from "./utils/base64"
 import { Observable, Subscription } from 'rxjs';
 (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
 import { EnvConfigService } from './services/env.service';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'lib-presciption',
@@ -27,7 +29,9 @@ import { EnvConfigService } from './services/env.service';
     CommonModule,
     MatIconModule,
     MatButtonModule, 
-    TranslateModule  
+    TranslateModule,
+    MatTabsModule ,
+    MatTableModule 
    ],
   templateUrl: './lib-prescription.component.html',
   styleUrls: ['./lib-prescription.component.scss'],
@@ -39,11 +43,11 @@ export class LibPresciptionComponent implements OnInit,OnDestroy {
   @Input() isDownloadPrescription: boolean = false;
   @Input() visitId: string;
   @Input() download: Observable<any>;
-  envProduction: boolean = false;
-  // configPublicURL: string 
-  configPublicURL: string = "https://dev.intelehealth.org:4004/";
-  baseUrl: string = "https://dev.intelehealth.org/openmrs/ws/rest/v1"
-  //  baseUrl: string 
+  envProduction: boolean;
+  configPublicURL: string 
+  // configPublicURL: string = "https://dev.intelehealth.org:4004/";
+  // baseUrl: string = "https://dev.intelehealth.org/openmrs/ws/rest/v1"
+   baseUrl: string 
   logoImageURL: string;
   hwPhoneNo: string;
   visit: VisitModel;
@@ -88,6 +92,7 @@ export class LibPresciptionComponent implements OnInit,OnDestroy {
   providerName: string;
 
   eventsSubscription: any;
+  prodBoolean: boolean
  
   constructor(
      @Inject(MAT_DIALOG_DATA) public data:any,
@@ -97,18 +102,20 @@ export class LibPresciptionComponent implements OnInit,OnDestroy {
       private visitService: VisitService,
       private diagnosisService: DiagnosisService,
       private profileService: ProfileService,
-      // private envService: EnvConfigService
+      private envService: EnvConfigService
     ) {
-      // this.baseUrl = this.envService.getConfig('BASE_URL');
-      // this.configPublicURL = this.envService.getConfig('CONFIG_PUBLIC_URL');
+      this.baseUrl = this.envService.getConfig('baseURL');
+      this.configPublicURL = this.envService.getConfig('configPublicURL');
+      this.envProduction = this.envService.getConfig('production')
+
+      console.log("this.pprodBoolean",this.envProduction)
+
     }
 
 ngOnInit(): void {
-  console.log("Inside ngOnInit in LibPresciptionComponent");
 
   this.appConfigService.load().then(() => {
-    console.log("AppConfigService Loaded Successfully:", this.appConfigService);
-
+  
     if (!this.appConfigService.patient_registration) {
       console.warn("AppConfigService is still undefined.");
       return;
@@ -608,8 +615,6 @@ ngOnInit(): void {
      * @return {Promise<void>}
      */
    async downloadPrescription(): Promise<void> {
-    console.log("download the prescription")
-
    
      const userImageUrl = `${this.baseUrl}/personimage/${this.patient?.person?.uuid}`;
      const logoUrl = `${this.configPublicURL}${this.logoImageURL}`;
@@ -703,10 +708,15 @@ ngOnInit(): void {
                  {
                    colSpan: 4,
                    table: {
-                     widths: ['*'],
+                     widths: ['auto','*'],
                      body: [
                        [
-                         
+                        {
+                          image: (userImg && !userImg?.includes('application/json')) && this.checkPatientRegField('Profile Photo') ? userImg : 'user',
+                          width: 30,
+                          height: 30,
+                          margin: [0, (userImg && !userImg?.includes('application/json')) ? 15 : 5, 0, 5]
+                        },
                          [
                            {
                              text: `${this.patient?.person?.preferredName?.givenName?.toUpperCase()}` + (this.checkPatientRegField('Middle Name') && this.patient?.person?.preferredName?.middleName ? ' ' + this.patient?.person?.preferredName?.middleName?.toUpperCase() : '' ) + ` ${this.patient?.person?.preferredName?.familyName?.toUpperCase()}`,

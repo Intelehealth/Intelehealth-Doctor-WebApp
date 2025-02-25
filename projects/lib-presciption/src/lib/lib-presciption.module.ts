@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { LibPresciptionComponent } from './lib-presciption.component';
-
+import { ModuleWithProviders } from '@angular/core';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
@@ -28,6 +28,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
+import { EnvConfigService } from './services/env.service';
+import { ENV_CONFIG } from './config/config.token';  
 // import { PrescriptionModelComponent } from "./components/prescription-model/prescription-model.component";
 
 
@@ -118,4 +120,14 @@ registerLocaleData(localeEn);
     NO_ERRORS_SCHEMA
   ]
 })
-export class LibPresciptionModule { }
+export class LibPresciptionModule {
+  static forRoot(env: any): ModuleWithProviders<LibPresciptionModule> {
+    return {
+      ngModule: LibPresciptionModule,
+      providers: [
+        EnvConfigService,
+        { provide: ENV_CONFIG, useValue: env }
+      ]
+    };
+  }
+ }

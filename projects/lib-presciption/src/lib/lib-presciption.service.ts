@@ -25,7 +25,8 @@ export class LibPresciptionService {
     private dialog: MatDialog,
     @Inject('environment') environment
   ) { 
-    this.baseURL = "https://dev.intelehealth.org/openmrs/ws/rest/v1"
+    // this.baseURL = "https://dev.intelehealth.org/openmrs/ws/rest/v1"
+    this.baseURL = environment.BASE_URL
   }
   fetchVisitDetails(
     uuid:string,

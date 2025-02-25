@@ -65,6 +65,7 @@ import { getCacheData } from "./utils/utility-functions";
 import { languages } from "src/config/constant";
 import { AppConfigService } from "./services/app-config.service";
 import { SidebarMenuListComponent } from "./main-container/sidebar-menu-list/sidebar-menu-list.component";
+import {LibPresciptionModule} from 'lib-presciption'
 import { ENV_CONFIG } from 'lib-presciption';
 import { EnvConfigService } from 'lib-presciption';
 
@@ -112,6 +113,7 @@ registerLocaleData(localeEn);
       closeButton: true,
       tapToDismiss: false
     }),
+    LibPresciptionModule.forRoot(environment),
     ModalComponentsModule,
     CdkAccordionModule,
     MatTabsModule,
@@ -165,6 +167,7 @@ registerLocaleData(localeEn);
       deps: [AppConfigService]
     },
     { provide: ENV_CONFIG, useValue: environment }, 
+    EnvConfigService,
     CookieService,
     SocketService,
     { provide: APP_BASE_HREF, useValue: "/" },

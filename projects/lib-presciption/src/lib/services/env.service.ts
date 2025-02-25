@@ -1,13 +1,27 @@
-import { Inject, Injectable, Optional } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { ENV_CONFIG } from '../config/config.token';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class EnvConfigService {
-  constructor(@Optional() @Inject(ENV_CONFIG) private config: any) {}
+  
+  private config: any;
 
-  getConfig(key: string): string {
-    return this.config?.[key] || '';
+  constructor(@Inject(ENV_CONFIG) private envConfig: any) {
+    this.config = envConfig;
+    console.log("this.config",this.config)
+    console.log("this.config",this.config.production)
+  }
+
+  // getConfig(key: string): any {
+  //   return this.config?.[key] || null; // ✅ Retrieve the environment variable
+  // }
+
+  getConfig(key: string): any {
+    if (this.config?.hasOwnProperty(key)) {
+      return this.config[key];  // ✅ Directly return the value, even if it's `false`
+    }
+    return null;
   }
 }

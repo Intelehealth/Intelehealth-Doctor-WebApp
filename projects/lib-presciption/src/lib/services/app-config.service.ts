@@ -9,8 +9,8 @@ import { EnvConfigService } from './env.service'
 })
 export class AppConfigService {
 
-  private baseURL ="https://dev.intelehealth.org:4004/api"
-  // private baseURL :string;
+  // private baseURL ="https://dev.intelehealth.org:4004/api"
+  private baseURL :string;
   public version: string;
   public apiEndpoint: string;
   public specialization: SpecializationModel[];
@@ -30,7 +30,7 @@ export class AppConfigService {
   public patient_visit_sections: PatientVisitSection[]
 
   constructor(private http: HttpClient,private envService: EnvConfigService) {
-    // this.baseURL = this.envService.getConfig('CONFIG_URL'); 
+    this.baseURL = this.envService.getConfig('configURL'); 
    }
 
   load(): Promise<any> {
