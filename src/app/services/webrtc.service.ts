@@ -61,6 +61,22 @@ export class WebrtcService {
       }));
   }
 
+  startRecording(name: string, roomId: string, nurseName: string) {
+    return this.http.get(`${environment.webrtcTokenServerUrl}api/startRecording?name=${name}&roomId=${roomId}&nurseName=${nurseName}`)
+      .pipe(map((res: any) => {
+        console.log("Start Recording----", res)
+        return res;
+      }));
+  }
+
+  stopRecording(name: string, roomId: string, nurseName: string) {
+    return this.http.get(`${environment.webrtcTokenServerUrl}api/stopRecording?name=${name}&roomId=${roomId}&nurseName=${nurseName}`)
+      .pipe(map((res: any) => {
+        console.log("Stop Recording----", res)
+        return res;
+      }));
+  }
+
   async createRoomAndConnectCall({
     handleTrackSubscribed = this.handleTrackSubscribed.bind(this),
     handleTrackUnsubscribed = this.handleTrackUnsubscribed,
@@ -102,14 +118,6 @@ export class WebrtcService {
       .on(RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed)
       .on(RoomEvent.ActiveSpeakersChanged, handleActiveSpeakerChange)
       .on(RoomEvent.Connected, handleConnect)
-      .on(RoomEvent.Connected, async () => {
-        try {
-          await this.room.localParticipant.enableCameraAndMicrophone()
-        } catch (error) {
-          console.log("error", error)
-          location.reload();
-        }
-      })
       .on(RoomEvent.Disconnected, handleDisconnect)
       .on(RoomEvent.LocalTrackUnpublished, handleLocalTrackUnpublished)
       .on(RoomEvent.LocalTrackPublished, handleLocalTrackPublished)

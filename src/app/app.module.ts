@@ -135,6 +135,8 @@ registerLocaleData(localeEn);
         'https://dev.intelehealth.org:3004/api/support/',
         'https://dev.intelehealth.org:3004/api/auth/validateProviderAttribute',
         'https://dev.intelehealth.org:3000/api/getToken',
+        'https://dev.intelehealth.org:3000/api/startRecording',
+        'https://dev.intelehealth.org:3000/api/stopRecording',
         'https://dev.intelehealth.org/pl/'
       ]
     }),
