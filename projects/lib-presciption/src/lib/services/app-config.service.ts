@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 // import { environment } from "../../environments/environment";
 import { LanguageModel, PatientRegistrationFieldsConfigModel, VitalModel, SpecializationModel, WebRTCConfigModel, PatientVisitSummaryConfigModel, PatientVisitSection } from './../model/model';
+import { EnvConfigService } from './env.service' 
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { LanguageModel, PatientRegistrationFieldsConfigModel, VitalModel, Specia
 export class AppConfigService {
 
   private baseURL ="https://dev.intelehealth.org:4004/api"
+  // private baseURL :string;
   public version: string;
   public apiEndpoint: string;
   public specialization: SpecializationModel[];
@@ -27,7 +29,9 @@ export class AppConfigService {
   public sidebar_menus: { [key: string]: boolean };
   public patient_visit_sections: PatientVisitSection[]
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private envService: EnvConfigService) {
+    // this.baseURL = this.envService.getConfig('CONFIG_URL'); 
+   }
 
   load(): Promise<any> {
     const promise = this.http.get(`${this.baseURL}/config/getPublishedConfig`)

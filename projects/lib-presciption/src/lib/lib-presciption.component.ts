@@ -15,12 +15,10 @@ import { calculateBMI, getFieldValueByLanguage, isFeaturePresent } from './utils
 import { conceptIds, doctorDetails, visitTypes } from './config/constant';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import * as pdfMake from 'pdfmake/build/pdfmake';
-
-(pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
-
 import { precription } from "./utils/base64"
-import { visit as visit_logos, logo as main_logo} from "./utils/base64"
 import { Observable, Subscription } from 'rxjs';
+(pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
+import { EnvConfigService } from './services/env.service';
 
 @Component({
   selector: 'lib-presciption',
@@ -34,36 +32,38 @@ import { Observable, Subscription } from 'rxjs';
   templateUrl: './lib-prescription.component.html',
   styleUrls: ['./lib-prescription.component.scss'],
   providers: [AppConfigService],
-   schemas: [NO_ERRORS_SCHEMA]
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class LibPresciptionComponent implements OnInit,OnDestroy {
 
-    @Input() isDownloadPrescription: boolean = false;
-    @Input() visitId: string;
-    @Input() download: Observable<any>;
-    envProduction: boolean = false;
-    configPublicURL = "https://dev.intelehealth.org:4004/";
-    baseUrl: string = "https://dev.intelehealth.org/openmrs/ws/rest/v1"
-    logoImageURL: string;
-    hwPhoneNo: string;
-    visit: VisitModel;
-    patient: PatientModel;
-    pvsConfigs: PatientVisitSection[] = [];
-    pvsConstant = VISIT_SECTIONS;
-    patientRegFields: string[] = [];
-    completedEncounter: EncounterModel = null;
-    visitNotePresent: EncounterModel;
-    spokenWithPatient: string = 'No';
-    notes: ObsModel[] = [];
-    medicines: MedicineModel[] = [];
-    existingDiagnosis: DiagnosisModel[] = [];
-    advices: ObsModel[] = [];
-    additionalInstructions: ObsModel[] = [];
-    tests: TestModel[] = [];
-    referrals: ReferralModel[] = [];
-    followUp: FollowUpDataModel;
-    consultedDoctor: any;
-    followUpInstructions: ObsModel[] = [];
+  @Input() isDownloadPrescription: boolean = false;
+  @Input() visitId: string;
+  @Input() download: Observable<any>;
+  envProduction: boolean = false;
+  // configPublicURL: string 
+  configPublicURL: string = "https://dev.intelehealth.org:4004/";
+  baseUrl: string = "https://dev.intelehealth.org/openmrs/ws/rest/v1"
+  //  baseUrl: string 
+  logoImageURL: string;
+  hwPhoneNo: string;
+  visit: VisitModel;
+  patient: PatientModel;
+  pvsConfigs: PatientVisitSection[] = [];
+  pvsConstant = VISIT_SECTIONS;
+  patientRegFields: string[] = [];
+  completedEncounter: EncounterModel = null;
+  visitNotePresent: EncounterModel;
+  spokenWithPatient: string = 'No';
+  notes: ObsModel[] = [];
+  medicines: MedicineModel[] = [];
+  existingDiagnosis: DiagnosisModel[] = [];
+  advices: ObsModel[] = [];
+  additionalInstructions: ObsModel[] = [];
+  tests: TestModel[] = [];
+  referrals: ReferralModel[] = [];
+  followUp: FollowUpDataModel;
+  consultedDoctor: any;
+  followUpInstructions: ObsModel[] = [];
 
   conceptDiagnosis = '537bb20d-d09d-4f88-930b-cc45c7d662df';
   conceptNote = '162169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
@@ -76,7 +76,6 @@ export class LibPresciptionComponent implements OnInit,OnDestroy {
 
   signaturePicUrl: string = null;
   signatureFile = null;
-  
   cheifComplaints: string[] = [];
   vitalObs: ObsModel[] = [];
   
@@ -98,8 +97,10 @@ export class LibPresciptionComponent implements OnInit,OnDestroy {
       private visitService: VisitService,
       private diagnosisService: DiagnosisService,
       private profileService: ProfileService,
+      // private envService: EnvConfigService
     ) {
-     
+      // this.baseUrl = this.envService.getConfig('BASE_URL');
+      // this.configPublicURL = this.envService.getConfig('CONFIG_PUBLIC_URL');
     }
 
 ngOnInit(): void {
@@ -126,12 +127,31 @@ ngOnInit(): void {
       );
     });
      this.logoImageURL = this.appConfigService.theme_config.find(obj=>obj.key==='logo')?.value;
+
+     this.pvsConfigs = this.appConfigService.patient_visit_sections?.filter((pvs: { key: string; }) => [
+      this.pvsConstant['vitals'].key,
+      this.pvsConstant['consultation_details'].key,
+      this.pvsConstant['check_up_reason'].key
+    ].includes(pvs.key));
+
   }).catch(error => {
     console.error("Failed to load AppConfigService:", error);
   });
 
   
       this.getVisit(this.isDownloadPrescription ? this.visitId : this.data.uuid);
+
+      // Object.assign(pdfMake, {
+      //   fonts: {
+      //     DmSans: {
+      //       normal: `${window.location.origin}${this.envProduction ? '/intelehealth' : ''}../../assets/fonts/DM_Sans/DMSans-Regular.ttf`,
+      //       bold: `${window.location.origin}${this.envProduction ? '/intelehealth' : ''}../../assets/fonts/DM_Sans/DMSans-Bold.ttf`,
+      //       italics: `${window.location.origin}${this.envProduction ? '/intelehealth' : ''}../../assets/fonts/DM_Sans/DMSans-Italic.ttf`,
+      //       bolditalics: `${window.location.origin}${this.envProduction ? '/intelehealth' : ''}../../assets/fonts/DM_Sans/DMSans-BoldItalic.ttf`,
+      //     }
+      //   }
+      // });
+
       pdfMake.fonts = {
         DmSans: {
           normal: `${window.location.origin}${this.envProduction ? '/intelehealth' : ''}../../assets/fonts/DM_Sans/fonts/DM_Sans/DMSans-Regular.ttf`,
@@ -590,32 +610,58 @@ ngOnInit(): void {
    async downloadPrescription(): Promise<void> {
     console.log("download the prescription")
 
-     console.log("Downloading the prescription...");
-
-    const userImageUrl = `${this.baseUrl}/personimage/${this.patient?.person?.uuid}`;
-    const logoUrl = `${this.configPublicURL}${this.logoImageURL}`;
-
-    if (!userImageUrl || !userImageUrl.startsWith('http')) {
-        console.error("Invalid User Image URL:", userImageUrl);
-        return;
-    }
-    if (!logoUrl || !logoUrl.startsWith('http')) {
-        console.error("Invalid Logo URL:", logoUrl);
-        return;
-    }
-
+   
+     const userImageUrl = `${this.baseUrl}/personimage/${this.patient?.person?.uuid}`;
+     const logoUrl = `${this.configPublicURL}${this.logoImageURL}`;
+     console.log("Downloading the prescription...",userImageUrl,logoUrl);
+     // Validate URLs before fetching
+     if (!userImageUrl) {
+         console.error("Invalid User Image URL:", userImageUrl);
+         return;
+     }
+     if (!logoUrl) {
+         console.error("Invalid Logo URL:", logoUrl);
+         return;
+     }
+     
+     // Convert URLs to Base64
+     let userImg: any = await this.toObjectUrl(userImageUrl);
+     let logo: any = await this.toObjectUrl(logoUrl);
+     
+     // Log only a portion of Base64 data to prevent flooding console
+     console.log("Raw user image data:", userImg?.substring(0, 100) + "...");
+     console.log("Raw logo data:", logo?.substring(0, 100) + "...");
+     
+     // Ensure user image is in the correct format
+     if (typeof userImg === "string" && userImg.startsWith("data:application/octet-stream")) {
+         userImg = userImg.replace("data:application/octet-stream", "data:image/jpeg"); // Adjust format
+     }
+     
+     // Ensure image data is valid before passing to pdfmake
+     if (!userImg || userImg.includes("application/json") || !userImg.startsWith("data:image/")) {
+         console.error("Invalid User Image, using fallback.");
+         userImg = "user"; // Use default placeholder image
+     }
+     
+     if (!logo || logo.includes("application/json") || !logo.startsWith("data:image/")) {
+         console.error("Invalid Logo Image, using fallback.");
+         logo = "logo-placeholder"; // Use default logo
+     }
+     
+     // Final log after modification
+     console.log("Final User Image:", userImg?.substring(0, 100) + "...");
+     console.log("Final Logo Image:", logo?.substring(0, 100) + "...");
+     
     
-
-    const userImg: any = await this.toObjectUrl(userImageUrl);
-    const logo: any = await this.toObjectUrl(logoUrl);
-
-    console.log("user img and logo",userImg,logo)
 
     //  const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
     //  const logo: any = await this.toObjectUrl(`${this.configPublicURL}${this.logoImageURL}`);
+    console.log("pvsConfigs",this.pvsConfigs)
      const checkUpReasonConfig = this.pvsConfigs.find((v) => v.key === this.pvsConstant['check_up_reason'].key);
      
      const vitalsConfig = this.pvsConfigs.find((v) => v.key === this.pvsConstant['vitals'].key); 
+
+     console.log("checkUpReasonConfig",checkUpReasonConfig,vitalsConfig)
      const pdfObj = {
        pageSize: 'A4',
        pageOrientation: 'portrait',
@@ -657,15 +703,10 @@ ngOnInit(): void {
                  {
                    colSpan: 4,
                    table: {
-                     widths: ['auto', '*'],
+                     widths: ['*'],
                      body: [
                        [
-                         {
-                           image: (userImg && !userImg?.includes('application/json')) && this.checkPatientRegField('Profile Photo') ? userImg : 'user',
-                           width: 30,
-                           height: 30,
-                           margin: [0, (userImg && !userImg?.includes('application/json')) ? 15 : 5, 0, 5]
-                         },
+                         
                          [
                            {
                              text: `${this.patient?.person?.preferredName?.givenName?.toUpperCase()}` + (this.checkPatientRegField('Middle Name') && this.patient?.person?.preferredName?.middleName ? ' ' + this.patient?.person?.preferredName?.middleName?.toUpperCase() : '' ) + ` ${this.patient?.person?.preferredName?.familyName?.toUpperCase()}`,
@@ -678,88 +719,6 @@ ngOnInit(): void {
                    },
                    layout: 'noBorders'
                  },
-                 // {
-                 //   table: {
-                 //     widths: ['100%'],
-                 //     body: [
-                 //       [
-                 //         [
-                 //           ...this.getPatientRegFieldsForPDF('Gender'),
-                 //           ...this.getPatientRegFieldsForPDF('Age'),
-                 //         ]
-                 //       ]
-                 //     ]
-                 //   },
-                 //   layout: {
-                 //     vLineWidth: function (i, node) {
-                 //       if (i === 0) {
-                 //         return 1;
-                 //       }
-                 //       return 0;
-                 //     },
-                 //     hLineWidth: function (i, node) {
-                 //       return 0;
-                 //     },
-                 //     vLineColor: function (i) {
-                 //       return "lightgray";
-                 //     },
-                 //   }
-                 // },
-                 // {
-                 //   table: {
-                 //     widths: ['100%'],
-                 //     body: [
-                 //       [
-                 //         [
-                 //           ...this.getPatientRegFieldsForPDF('Address'),
-                 //           ...this.getPatientRegFieldsForPDF('Occupation')
-                 //         ]
-                 //       ]
-                 //     ]
-                 //   },
-                 //   layout: {
-                 //     vLineWidth: function (i, node) {
-                 //       if (i === 0) {
-                 //         return 1;
-                 //       }
-                 //       return 0;
-                 //     },
-                 //     hLineWidth: function (i, node) {
-                 //       return 0;
-                 //     },
-                 //     vLineColor: function (i) {
-                 //       return "lightgray";
-                 //     },
-                 //   }
-                 // },
-                 // {
-                 //   table: {
-                 //     widths: ['100%'],
-                 //     body: [
-                 //       [ 
-                 //         [ 
-                 //           ...this.getPatientRegFieldsForPDF('National ID'),
-                 //           ...this.getPatientRegFieldsForPDF('Phone Number'),
-                 //           , {text: ' ', style: 'subheader'}, {text: ' '}
-                 //         ]
-                 //       ],
-                 //     ]
-                 //   },
-                 //   layout: {
-                 //     vLineWidth: function (i, node) {
-                 //       if (i === 0) {
-                 //         return 1;
-                 //       }
-                 //       return 0;
-                 //     },
-                 //     hLineWidth: function (i, node) {
-                 //       return 0;
-                 //     },
-                 //     vLineColor: function (i) {
-                 //       return "lightgray";
-                 //     },
-                 //   }
-                 // }
                ],
                [
                  this.getPersonalInfo()
@@ -1029,6 +988,9 @@ ngOnInit(): void {
          font: 'DmSans'
        }
      };
+
+     console.log("pdfObj",pdfObj)
+
      pdfObj.content[0].table.body = pdfObj.content[0].table.body.filter((section:any)=>{
        if(section[0].sectionName === 'vitals' && (!this.hasVitalsEnabled || !vitalsConfig?.is_enabled )) return false;
        if(section[0].sectionName === 'cheifComplaint' && !checkUpReasonConfig?.is_enabled) return false;
@@ -1036,6 +998,7 @@ ngOnInit(): void {
        if(section[0].sectionName === 'advice' && !this.isFeatureAvailable('advice')) return false;
        return true;
      });
+     console.log(JSON.stringify(pdfObj))
      pdfMake.createPdf(pdfObj).download('e-prescription');
    }
  
@@ -1149,62 +1112,69 @@ ngOnInit(): void {
    * @param {string} url - Image url
    * @return {Promise} - Promise containing base64 image
    */
-  //  toObjectUrl(url: string) {
-  //    return fetch(url)
-  //        .then((response) => {
-  //          return response.blob();
-  //        })
-  //        .then(blob => {
-  //          return new Promise((resolve, _) => {
-  //              if (!blob) { resolve(''); }
-  //              const reader = new FileReader();
-  //              reader.onloadend = () => resolve(reader.result);
-  //              reader.readAsDataURL(blob);
-  //          });
-  //        });
-  //  }
-
-// toObjectUrl(url: string): Promise<string> {
-//     return fetch(url)
-//         .then((response) => {
-//             if (!response.ok) {
-//                 throw new Error(`Failed to fetch image: ${response.statusText}`);
-//             }
-//             return response.blob();
-//         })
-//         .then(blob => {
-//             return new Promise<string>((resolve, reject) => { // Explicitly set <string>
-//                 if (!blob) {
-//                     reject("Blob is empty");
-//                     return;
-//                 }
-//                 const reader = new FileReader();
-//                 reader.onloadend = () => resolve(reader.result as string); // Cast result as string
-//                 reader.onerror = () => reject("Error reading file");
-//                 reader.readAsDataURL(blob);
-//             });
-//         })
-//         .catch(error => {
-//             console.error("Error fetching image:", error);
-//             return ""; // Return empty string if there's an error
-//         });
-// }
+   toObjectUrl(url: string) {
+     return fetch(url)
+         .then((response) => {
+           return response.blob();
+         })
+         .then(blob => {
+           return new Promise((resolve, _) => {
+               if (!blob) { resolve(''); }
+               const reader = new FileReader();
+               reader.onloadend = () => resolve(reader.result);
+               reader.readAsDataURL(blob);
+           });
+         });
+   }
 
 
-  toObjectUrl(url: string) {
-    return fetch(url)
-        .then((response) => {
-          return response.blob();
-        })
-        .then(blob => {
-          return new Promise((resolve, _) => {
-              if (!blob) { resolve(''); }
-              const reader = new FileReader();
-              reader.onloadend = () => resolve(reader.result);
-              reader.readAsDataURL(blob);
-          });
-        });
-  }
+  // toObjectUrl(url: string): Promise<string> {
+  //   console.log("Fetching URL:", url);
+
+  //   return fetch(url)
+  //     .then(response => {
+  //         console.log("Response Status:", response.status, response.statusText);
+  //         console.log("Response Headers:", response.headers);
+
+  //         if (!response.ok) {
+  //             throw new Error(`Failed to fetch: ${response.statusText} (Status: ${response.status})`);
+  //         }
+  //         return response.blob();
+  //     })
+  //     .then(blob => {
+  //         console.log("Blob Type:", blob.type, "Blob Size:", blob.size);
+
+  //         if (blob.size < 100) {
+  //             throw new Error("Invalid image blob received.");
+  //         }
+
+  //         return new Promise<string>((resolve, reject) => {
+  //             const reader = new FileReader();
+
+  //             reader.onloadend = () => {
+  //                 let base64Data = reader.result as string;
+
+  //                 // Ensure the correct MIME type for `pdfmake`
+  //                 if (base64Data.startsWith("data:application/octet-stream")) {
+  //                     base64Data = base64Data.replace("data:application/octet-stream", "data:image/jpeg");
+  //                 }
+
+  //                 console.log("Final Base64 Data:", base64Data.substring(0, 100) + "...");
+  //                 resolve(base64Data);
+  //             };
+
+  //             reader.onerror = () => reject(new Error("Error reading blob"));
+
+  //             reader.readAsDataURL(blob);
+  //         });
+  //     })
+  //     .catch(error => {
+  //         console.error("Error in toObjectUrl:", error);
+  //         return ''; // Returning empty string on error
+  //     });
+  // }
+
+  
  
    ngOnDestroy() {
      this.eventsSubscription?.unsubscribe();

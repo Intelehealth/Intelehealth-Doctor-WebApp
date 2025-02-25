@@ -65,6 +65,8 @@ import { getCacheData } from "./utils/utility-functions";
 import { languages } from "src/config/constant";
 import { AppConfigService } from "./services/app-config.service";
 import { SidebarMenuListComponent } from "./main-container/sidebar-menu-list/sidebar-menu-list.component";
+import { ENV_CONFIG } from 'lib-presciption';
+import { EnvConfigService } from 'lib-presciption';
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "#2E1E91",
@@ -162,6 +164,7 @@ registerLocaleData(localeEn);
       multi: true,
       deps: [AppConfigService]
     },
+    { provide: ENV_CONFIG, useValue: environment }, 
     CookieService,
     SocketService,
     { provide: APP_BASE_HREF, useValue: "/" },
