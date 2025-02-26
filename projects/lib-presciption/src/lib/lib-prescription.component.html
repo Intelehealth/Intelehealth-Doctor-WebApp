@@ -24,9 +24,18 @@
       <div class="row patient-info-wrapper" *ngIf="patient">
         <div class="col-md-3 patient-info-section p-3">
           <div class="patient-img-item mb-2">
-            <div class="patient-img">
+            <!-- <div class="patient-img">
               <img
                 src="{{ checkPatientRegField('Profile Photo') ? baseUrl + '/personimage/' + patient?.person.uuid : ''}}"
+                alt=""
+                width="100%"
+                height="100%"
+                data-test-id="imgPersonImage"
+              />
+            </div> -->
+            <div class="patient-img">
+              <img
+                [src]="shouldShowProfilePhoto ? baseUrl + '/personimage/' + patient?.person.uuid : ''"
                 alt=""
                 width="100%"
                 height="100%"

@@ -21,6 +21,7 @@ import { Observable, Subscription } from 'rxjs';
 import { EnvConfigService } from './services/env.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
+import { DefaultImageDirective } from './directives/default-image.directive';
 
 @Component({
   selector: 'lib-presciption',
@@ -31,7 +32,8 @@ import { MatTableModule } from '@angular/material/table';
     MatButtonModule, 
     TranslateModule,
     MatTabsModule ,
-    MatTableModule 
+    MatTableModule ,
+    DefaultImageDirective
    ],
   templateUrl: './lib-prescription.component.html',
   styleUrls: ['./lib-prescription.component.scss'],
@@ -107,9 +109,6 @@ export class LibPresciptionComponent implements OnInit,OnDestroy {
       this.baseUrl = this.envService.getConfig('baseURL');
       this.configPublicURL = this.envService.getConfig('configPublicURL');
       this.envProduction = this.envService.getConfig('production')
-
-      console.log("this.pprodBoolean",this.envProduction)
-
     }
 
 ngOnInit(): void {
@@ -290,8 +289,8 @@ ngOnInit(): void {
          if (obs.encounter.visit.uuid === this.visit.uuid) {
            this.existingDiagnosis.push({
              diagnosisName: obs.value.split(':')[0].trim(),
-             diagnosisType: obs.value.split(':')[1].split('&')[0].trim(),
-             diagnosisStatus: obs.value.split(':')[1].split('&')[1].trim(),
+             diagnosisType: obs.value.split(':')[1].split('&')[0]?.trim(),
+             diagnosisStatus: obs.value.split(':')[1].split('&')[1]?.trim(),
              uuid: obs.uuid,
              diagnosisTNMStaging: obs.value.split(':')[1]?.split('&')[2]?.trim() !== 'null' ? obs.value.split(':')[1]?.split('&')[2]?.trim() : null,
            });
@@ -387,7 +386,7 @@ ngOnInit(): void {
          response.results.forEach((obs: ObsModel) => {
            const obs_values = obs.value.split(':');
            if (obs.encounter && obs.encounter.visit.uuid === this.visit.uuid) {
-             this.referrals.push({ uuid: obs.uuid, speciality: obs_values[0].trim(), facility: obs_values[1].trim(), priority: obs_values[2].trim(), reason: obs_values[3].trim()? obs_values[3].trim():'-' });
+             this.referrals.push({ uuid: obs.uuid, speciality: obs_values[0].trim(), facility: obs_values[1]?.trim(), priority: obs_values[2]?.trim(), reason: obs_values[3]?.trim()? obs_values[3].trim():'-' });
            }
          });
        });
@@ -1203,10 +1202,17 @@ ngOnInit(): void {
      }
      return value
    }
+
+   
  
    checkPatientRegField(fieldName: string): boolean{
      return this.patientRegFields.indexOf(fieldName) !== -1;
    }
+
+   get shouldShowProfilePhoto(): boolean {
+    return this.checkPatientRegField('Profile Photo') && Boolean(this.patient?.person?.uuid);
+  }
+  
  
    getPersonalInfo() {
      const data = {
@@ -1312,8 +1318,6 @@ ngOnInit(): void {
          ''
        ]);
        let other = [];
-       console.log("this.appConfigService.patient_registration['address']",this.appConfigService.patient_registration['address'])
-       console.log("this.appConfigService.patient_registration['address']",this.patient)
        this.appConfigService.patient_registration['address'].forEach((e: PatientRegistrationFieldsModel) => {
          let value: any;
          switch (e.name) {
