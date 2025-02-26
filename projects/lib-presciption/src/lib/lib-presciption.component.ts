@@ -15,7 +15,7 @@ import { calculateBMI, getFieldValueByLanguage, isFeaturePresent } from './utils
 import { conceptIds, doctorDetails, visitTypes } from './config/constant';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import * as pdfMake from 'pdfmake/build/pdfmake';
-import { precription } from "./utils/base64"
+import { precription,logo } from "./utils/base64"
 import { Observable, Subscription } from 'rxjs';
 (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
 import { EnvConfigService } from './services/env.service';
@@ -615,58 +615,18 @@ ngOnInit(): void {
      */
    async downloadPrescription(): Promise<void> {
    
-     const userImageUrl = `${this.baseUrl}/personimage/${this.patient?.person?.uuid}`;
-     const logoUrl = `${this.configPublicURL}${this.logoImageURL}`;
-     console.log("Downloading the prescription...",userImageUrl,logoUrl);
-     // Validate URLs before fetching
-     if (!userImageUrl) {
-         console.error("Invalid User Image URL:", userImageUrl);
-         return;
-     }
-     if (!logoUrl) {
-         console.error("Invalid Logo URL:", logoUrl);
-         return;
-     }
+    const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
+    const fullURL = new URL(this.logoImageURL, this.configPublicURL).href;
+    const logoImage: any = await this.toObjectUrl(fullURL);
+    console.log("logos", fullURL);
+    // const logo: any = await this.toObjectUrl(`${this.configPublicURL}${this.logoImageURL}`);
+    // console.log("logos",logo)
+    // const logoImage = (logo && !logo?.includes('application/json')) ? logo : null;
+    const checkUpReasonConfig = this.pvsConfigs.find((v) => v.key === this.pvsConstant['check_up_reason'].key);
      
-     // Convert URLs to Base64
-     let userImg: any = await this.toObjectUrl(userImageUrl);
-     let logo: any = await this.toObjectUrl(logoUrl);
-     
-     // Log only a portion of Base64 data to prevent flooding console
-     console.log("Raw user image data:", userImg?.substring(0, 100) + "...");
-     console.log("Raw logo data:", logo?.substring(0, 100) + "...");
-     
-     // Ensure user image is in the correct format
-     if (typeof userImg === "string" && userImg.startsWith("data:application/octet-stream")) {
-         userImg = userImg.replace("data:application/octet-stream", "data:image/jpeg"); // Adjust format
-     }
-     
-     // Ensure image data is valid before passing to pdfmake
-     if (!userImg || userImg.includes("application/json") || !userImg.startsWith("data:image/")) {
-         console.error("Invalid User Image, using fallback.");
-         userImg = "user"; // Use default placeholder image
-     }
-     
-     if (!logo || logo.includes("application/json") || !logo.startsWith("data:image/")) {
-         console.error("Invalid Logo Image, using fallback.");
-         logo = "logo-placeholder"; // Use default logo
-     }
-     
-     // Final log after modification
-     console.log("Final User Image:", userImg?.substring(0, 100) + "...");
-     console.log("Final Logo Image:", logo?.substring(0, 100) + "...");
-     
-    
+    const vitalsConfig = this.pvsConfigs.find((v) => v.key === this.pvsConstant['vitals'].key); 
 
-    //  const userImg: any = await this.toObjectUrl(`${this.baseUrl}/personimage/${this.patient?.person.uuid}`);
-    //  const logo: any = await this.toObjectUrl(`${this.configPublicURL}${this.logoImageURL}`);
-    console.log("pvsConfigs",this.pvsConfigs)
-     const checkUpReasonConfig = this.pvsConfigs.find((v) => v.key === this.pvsConstant['check_up_reason'].key);
-     
-     const vitalsConfig = this.pvsConfigs.find((v) => v.key === this.pvsConstant['vitals'].key); 
-
-     console.log("checkUpReasonConfig",checkUpReasonConfig,vitalsConfig)
-     const pdfObj = {
+    const pdfObj = {
        pageSize: 'A4',
        pageOrientation: 'portrait',
        pageMargins: [ 20, 50, 20, 40 ],
@@ -674,7 +634,7 @@ ngOnInit(): void {
        header: {
          columns: [
            { text: ''},
-           { image: (logo && !logo?.includes('application/json')) ? logo : 'logo', width: 90, height: 30, alignment: 'right', margin: [0, 10, 10, 0] }
+           { image: (logoImage && !logoImage?.includes('application/json')) ? logoImage : 'logo', width: 90, height: 30, alignment: 'right', margin: [0, 10, 10, 0] }
          ]
        },
        footer: (currentPage: { toString: () => string; }, pageCount: string) => {
